@@ -16,7 +16,6 @@ const DashboardLayout = ({
         <ToolBar />
         {children}
       </main>
-      <Toaster />
     </SidebarProvider>
   );
 };

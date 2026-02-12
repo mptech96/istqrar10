@@ -1,11 +1,57 @@
 import createMiddleware from 'next-intl/middleware';
-import {routing} from './i18n/routing';
- 
-export default createMiddleware({...routing, localePrefix: 'always', localeDetection: true});
- 
+import { routing } from './i18n/routing';
+import { NextRequest, NextResponse } from 'next/server';
+
+// 1. Initialize the next-intl middleware
+const intlMiddleware = createMiddleware({
+  ...routing,
+  localePrefix: 'always',
+  localeDetection: true
+});
+
+export default function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  
+  // 2. Check for the authentication token
+  // (Change 'token' to whatever your cookie name is)
+  const token = request.cookies.get('token')?.value;
+
+  // 3. Helper: Remove the locale (e.g., "/en/dashboard" -> "/dashboard")
+  // We do this to check the *actual* route regardless of language
+  const localePattern = `^/(${routing.locales.join('|')})`;
+  const pathnameWithoutLocale = pathname.replace(new RegExp(localePattern), '') || '/';
+
+  // 4. Define your route protection rules
+  const isAuthPage = pathnameWithoutLocale === '/login' || pathnameWithoutLocale === '/register';
+  // You can either list protected routes OR assume everything is protected except public ones
+  const isProtectedRoute = pathnameWithoutLocale.startsWith('/dashboard') || pathnameWithoutLocale === '/profile';
+
+  // --- LOGIC START ---
+
+  // Scenario A: User is NOT logged in but tries to access a protected route
+  if (isProtectedRoute && !token) {
+    // Get the locale from the current URL to preserve language preference, or default
+    const currentLocale = pathname.match(new RegExp(localePattern))?.[1] || routing.defaultLocale;
+    
+    // Redirect to login page
+    return NextResponse.redirect(new URL(`/${currentLocale}/login`, request.url));
+  }
+
+  // Scenario B: User IS logged in but tries to access Login/Register
+  if (isAuthPage && token) {
+    const currentLocale = pathname.match(new RegExp(localePattern))?.[1] || routing.defaultLocale;
+    
+    // Redirect to dashboard
+    return NextResponse.redirect(new URL(`/${currentLocale}/dashboard`, request.url));
+  }
+
+  // --- LOGIC END ---
+
+  // 5. If Auth checks pass, let next-intl handle the localization
+  return intlMiddleware(request);
+}
+
+// Keep your existing matcher config
 export const config = {
-  // Match all pathnames except for
-  // - … if they start with `/api`, `/trpc`, `/_next` or `/_vercel`
-  // - … the ones containing a dot (e.g. `favicon.ico`)
   matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)'
 };

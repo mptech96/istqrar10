@@ -8,6 +8,7 @@ import { routing } from "@/i18n/routing";
 import LocaleSync from "@/providers/local-sync";
 import { Toaster } from "sonner";
 import Loader from "@/components/common/loader/loader";
+import { DirectionProvider } from "@/components/ui/direction";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -36,18 +37,24 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           <StoreProvider>
-            <ThemeWatcher />
-            <Toaster
-              position={
-                locale === "ar"
-                  ? "bottom-left"
-                  : "bottom-right"
-              }
-              richColors
-            />
-            <Loader />
-            {/* <LocaleSync /> */}
-            {children}
+            <DirectionProvider
+              dir={locale === "ar" ? "rtl" : "ltr"}
+            >
+              <LocaleSync />
+              <ThemeWatcher />
+              <Toaster
+                position={
+                  locale === "ar"
+                    ? "bottom-left"
+                    : "bottom-right"
+                }
+                richColors
+              />
+              <Loader />
+              {/* <LocaleSync /> */}
+
+              {children}
+            </DirectionProvider>
           </StoreProvider>
         </NextIntlClientProvider>
       </body>

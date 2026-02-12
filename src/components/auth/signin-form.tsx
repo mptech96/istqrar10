@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -28,6 +28,7 @@ import { Link } from "@/i18n/navigation";
 import { Separator } from "../ui/separator";
 import { useTranslations } from "next-intl";
 import {
+  useAppDispatch,
   // useAppDispatch,
   useAppSelector,
 } from "@/lib/store";
@@ -39,13 +40,15 @@ import { toast } from "sonner";
 import { Spinner } from "../ui/spinner";
 // import { setIsLoading } from "@/features/loading-slice";
 import { useLoader } from "@/hooks/use-loader";
+import { setCredentials } from "@/features/auth-slice";
 export default function SignInForm() {
-  const [showLoader, setShowLoader] = useState(false);
+  const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
   const t = useTranslations();
   const { language } = useAppSelector(
     (state) => state.settings,
   );
+  console.log(language);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const form = useForm<
@@ -63,9 +66,11 @@ export default function SignInForm() {
   /* Removed bad dispatch from render */
   const { start, stop } = useLoader();
 
-  if (isLoading) {
-    start(t("Signing in"));
-  }
+  useEffect(() => {
+    if (isLoading) {
+      start(t("Signing in"));
+    }
+  }, [isLoading, start, t]);
   async function onSubmit(
     values: z.infer<typeof signinSchema>,
   ) {
@@ -73,8 +78,9 @@ export default function SignInForm() {
     // Handle login logic here
     try {
       const res = await login(values).unwrap();
-
+      console.log(res);
       if (res.success) {
+        dispatch(setCredentials({ ...res.data }));
         toast.success(t("login successfully !"));
         router.push("/dashboard");
       }
@@ -121,7 +127,10 @@ export default function SignInForm() {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem className="flex flex-col gap-4">
+                <FormItem
+                  className="flex flex-col gap-4"
+                  dir={language === "ar" ? "rtl" : "ltr"}
+                >
                   <FormLabel>{t("Email")}</FormLabel>
                   <FormControl>
                     <Input

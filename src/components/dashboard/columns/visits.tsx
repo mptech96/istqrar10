@@ -1,0 +1,179 @@
+"use client";
+import type { ColumnDef } from "@tanstack/react-table";
+import type { _Translator } from "next-intl";
+import { Visit } from "@/types/visit";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Play, SquarePen, Trash } from "lucide-react";
+const getStatusVariant = (status: string) => {
+  switch (status) {
+    case "completed":
+      return "default";
+    case "scheduled":
+      return "secondary";
+    case "in_progress":
+      return "outline";
+    case "cancelled":
+      return "destructive";
+    default:
+      return "outline";
+  }
+};
+
+export const getColumns = (
+  t: _Translator,
+  handlers: {
+    onStartVisit: (visit: Visit) => void;
+    onEdit: (visit: Visit) => void;
+    onDelete: (visit: Visit) => void;
+    onStartQuestionnaire: (visit: Visit) => void;
+  },
+): ColumnDef<Visit>[] => [
+  {
+    accessorKey: "branch",
+    header: t("Branch"),
+    cell: ({ row }) => {
+      const branch = row.original.branch;
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">
+            {branch?.name || "-"}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {branch?.code || ""}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "auditor",
+    header: t("Auditor"),
+    cell: ({ row }) => {
+      const auditor = row.original.auditor;
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">
+            {auditor?.name || "-"}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {auditor?.email || ""}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "scheduled_date",
+    header: t("Scheduled Date"),
+    cell: ({ row }) => {
+      const date = row.original.scheduled_date;
+      const time = row.original.scheduled_time;
+      return (
+        <div className="flex flex-col">
+          <span>
+            {date
+              ? format(new Date(date), "dd-MM-yyyy")
+              : "-"}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {time || ""}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "status",
+    header: t("Status"),
+    cell: ({ row }) => {
+      const status = row.original.status;
+      const statusText = row.original.status_text;
+      return (
+        <Badge variant={getStatusVariant(status)}>
+          {statusText || t(status)}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "total_score",
+    header: t("Score"),
+    cell: ({ row }) => {
+      const score = row.original.total_score;
+      const percentage = row.original.percentage;
+      const category = row.original.category;
+      if (!score && score !== 0) return "-";
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">{percentage}%</span>
+          <span className="text-xs text-muted-foreground">
+            {t("Category")}: {category}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "estimated_duration",
+    header: t("Duration"),
+    cell: ({ row }) => {
+      const duration = row.original.estimated_duration;
+      return duration ? `${duration} ${t("min")}` : "-";
+    },
+  },
+  {
+    id: "actions",
+    header: t("Actions"),
+    cell: ({ row }) => {
+      const visit = row.original;
+      return (
+        <div className="flex gap-2">
+          {visit.status !== "in_progress" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlers.onStartVisit(visit)}
+              disabled={visit.status === "in_progress"}
+              className={
+                visit.status === "in_progress"
+                  ? "opacity-50 cursor-not-allowed"
+                  : "cursor-pointer"
+              }
+            >
+              {t("Start Visit")}
+              <Play />
+            </Button>
+          )}
+          {visit.status === "in_progress" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                handlers.onStartQuestionnaire(visit)
+              }
+            >
+              {t("Show Questionnaire")}
+              <Play />
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlers.onEdit(visit)}
+          >
+            <SquarePen />
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => handlers.onDelete(visit)}
+          >
+            <Trash />
+          </Button>
+        </div>
+      );
+    },
+  },
+];

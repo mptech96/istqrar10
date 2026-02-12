@@ -12,7 +12,7 @@ import {
 export default function LocaleSync() {
   const locale = useLocale();
   const dispatch = useDispatch();
-
+  console.log("locale from next-intl to sync", locale);
   useEffect(() => {
     // Sync URL locale to Redux store
     dispatch(setLanguage(locale as Language));

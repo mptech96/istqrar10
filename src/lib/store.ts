@@ -2,6 +2,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import settingsReducer from "@/features/setting-slice";
 import loadingReducer from "@/features/loading-slice";
+import authReducer from "@/features/auth-slice";
 import api from "@/services/api"; // Your RTK Query API
 import { type TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 export const makeStore = () => {
@@ -10,6 +11,7 @@ export const makeStore = () => {
       settings: settingsReducer,
       [api.reducerPath]: api.reducer, // Add RTK Query reducer
       loading: loadingReducer,
+      auth: authReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(api.middleware), // Add RTK Query middleware

@@ -6,6 +6,7 @@ import {
   Home,
   Inbox,
   ListChecks,
+  ListOrdered,
   Settings,
   Store,
   Wallet,
@@ -55,6 +56,12 @@ export const LeaderItems: SidebarItem[] = [
     title: "Watch lists",
     url: "/dashboard/checklists",
     icon: ListChecks ,
+    
+  },
+  {
+    title: "List Of conditions",
+    url: "/dashboard/conditions",
+    icon: ListOrdered ,
     
   },
   {

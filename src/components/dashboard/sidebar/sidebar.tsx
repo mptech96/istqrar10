@@ -1,5 +1,4 @@
 "use client";
-import { useAppSelector } from "@/lib/store";
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { Separator } from "@/components/ui/separator";
@@ -25,10 +24,8 @@ import {
 import Image from "next/image";
 
 export function AppSidebar() {
-  const { language } = useAppSelector(
-    (state) => state.settings,
-  );
-  console.log(language);
+  const locale = useLocale();
+
   const t = useTranslations();
 
   const [items] = useState(() => LeaderItems);
@@ -37,7 +34,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      side={language === "ar" ? "right" : "left"}
+      side={locale === "ar" ? "right" : "left"}
       className="p-4  "
     >
       <SidebarHeader className="  ">
@@ -91,7 +88,7 @@ export function AppSidebar() {
           <UserAvatar />
         </div>
         <Link href="/signin">
-          {language === "ar" ? (
+          {locale === "ar" ? (
             <LogOut size={20} />
           ) : (
             <LogIn size={20} />
