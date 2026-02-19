@@ -1,6 +1,6 @@
 import api from "../index";
 
-export const authApi =  api.injectEndpoints({
+export const authApi = api.injectEndpoints({
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (credentials) => ({
@@ -9,7 +9,13 @@ export const authApi =  api.injectEndpoints({
                 body: credentials,
             }),
         }),
+        logout: builder.mutation({
+            query: () => ({
+                url: "/auth/logout",
+                method: "POST",
+            }),
+        }),
     }),
 });
 
-export const { useLoginMutation } = authApi;
+export const { useLoginMutation, useLogoutMutation } = authApi;

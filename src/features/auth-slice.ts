@@ -4,37 +4,42 @@ import { User } from "@/types/user";
 
 interface AuthState {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
 }
 
-// Check cookie on load (Client-side only)
 const initialState: AuthState = {
   user: null,
-  token: typeof window !== "undefined" ? (getCookie("token") as string) || null : null,
-  isAuthenticated: typeof window !== "undefined" ? !!getCookie("token") : false,
+  isAuthenticated: false,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    hydrateAuth: (state) => {
+      const userCookie = getCookie("user");
+      if (userCookie) {
+        try {
+          state.user = JSON.parse(userCookie as string) as User;
+          state.isAuthenticated = true;
+        } catch (e) {
+          console.error("Failed to parse user cookie", e);
+        }
+      }
+    },
     setCredentials: (state, action: PayloadAction<{ user: User; token: string }>) => {
       state.user = action.payload.user;
-      state.token = action.payload.token;
       state.isAuthenticated = true;
-      
-      // Save to cookie so Middleware and Store (on refresh) can see it
-      setCookie("token", action.payload.token, { maxAge: 60 * 60 * 24 * 7 }); // 7 days
+      setCookie("user", JSON.stringify(action.payload.user), { maxAge: 60 * 60 * 24 }); // 24 hours
     },
     logout: (state) => {
       state.user = null;
-      state.token = null;
       state.isAuthenticated = false;
-      deleteCookie("token");
+      deleteCookie("user");
+      deleteCookie("auth_token");
     },
   },
 });
 
-export const { setCredentials, logout } = authSlice.actions;
+export const { setCredentials, logout, hydrateAuth } = authSlice.actions;
 export default authSlice.reducer;

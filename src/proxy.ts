@@ -14,8 +14,7 @@ export default function middleware(request: NextRequest) {
   
   // 2. Check for the authentication token
   // (Change 'token' to whatever your cookie name is)
-  const token = request.cookies.get('token')?.value;
-
+  const token = request.cookies.get('auth_token')?.value;
   // 3. Helper: Remove the locale (e.g., "/en/dashboard" -> "/dashboard")
   // We do this to check the *actual* route regardless of language
   const localePattern = `^/(${routing.locales.join('|')})`;
