@@ -49,7 +49,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Branch } from "@/types/branch";
 import { Checklist } from "@/types/checklist";
-import { Inspectors } from "@/schema/inspectors";
+import { Inspectors } from "@/types/inspectors";
 import { useAppSelector } from "@/lib/store";
 
 export default function CreateVisitForm() {

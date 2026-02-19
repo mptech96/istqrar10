@@ -3,21 +3,17 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-import { useTranslations } from "next-intl";
-import { useAppSelector } from "@/lib/store";
+import { useTranslations, useLocale } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 
 const NavLinks = () => {
   const t = useTranslations();
-  const { language } = useAppSelector(
-    (state) => state.settings,
-  );
 
   return (
     <NavigationMenu>
       <NavigationMenuList
-        className={`flex gap-4 items-center ${language === "ar" ? "flex-row-reverse" : ""}`}
+        className={`flex gap-4 items-center `}
       >
         <NavigationMenuItem>
           <Link
@@ -29,7 +25,7 @@ const NavLinks = () => {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <Link
-            href="about"
+            href="/#About"
             className="cursor-pointer hover:text-primary transition-colors"
           >
             {t("About")}

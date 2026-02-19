@@ -2,13 +2,18 @@
 import {
   Banknote,
   BarChart,
+  Building2,
+  Calendar,
   ChartGantt,
   Home,
   Inbox,
+  Landmark,
   ListChecks,
   ListOrdered,
   Settings,
   Store,
+  Telescope,
+  Users,
   Wallet,
 } from "lucide-react";
 
@@ -21,7 +26,8 @@ export interface SidebarItem {
  
 }
 
-export const LeaderItems: SidebarItem[] = [
+
+export const super_admin_items: SidebarItem[] = [
   {
     title: "Dashboard",
     url: "/dashboard",
@@ -31,19 +37,19 @@ export const LeaderItems: SidebarItem[] = [
   {
     title: "Companies",
     url: "/dashboard/companies",
-    icon: Inbox,
+    icon: Landmark,
     
   },
   {
     title: "Branches",
     url: "/dashboard/branches",
-    icon: Store,
+    icon: Building2,
     
   },
   {
     title: "inspectors",
     url: "/dashboard/inspectors",
-    icon: Banknote,
+    icon: Users,
     
   },
   {
@@ -67,13 +73,13 @@ export const LeaderItems: SidebarItem[] = [
   {
     title: "Visits",
     url: "/dashboard/visits",
-    icon: Wallet,
+    icon: Telescope,
     
   },
   {
     title: "Calendar",
     url: "/dashboard/calendar",
-    icon: BarChart,
+    icon: Calendar,
     
   },
   {
@@ -84,35 +90,104 @@ export const LeaderItems: SidebarItem[] = [
   },
 ];
 
-export const AgentItems: SidebarItem[] = [
+export const auditor_items: SidebarItem[] = [
   {
     title: "My Dashboard",
-    url: "/my-dashboard",
+    url: "/dashboard/auditor-dashboard",
     icon: Home,
     
   },
   {
     title: "Daily Visits",
-    url: "/daily-visits",
-    icon: Inbox,
+    url: "/dashboard/daily-visits",
+    icon: Telescope,
+  },
+  {
+    title: "Calendar",
+    url: "/dashboard/calendar",
+    icon: Calendar,
     
   },
   {
-    title: "My Stores",
-    url: "/my-stores",
-    icon: Store,
-    
-  },
-  {
-    title: "My Commissions",
-    url: "/my-commission",
-    icon: Banknote,
-    
-  },
-  {
-    title: "Wallet",
-    url: "/wallet",
-    icon: Wallet,
+    title: "Reports",
+    url: "/reports",
+    icon: BarChart,
     
   },
 ];
+export const company_admin_items: SidebarItem[] = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: Home,
+    
+  },
+  {
+    title: "Branches",
+    url: "/dashboard/branches",
+    icon: Building2,
+  },
+  {
+    title: "Criterias",
+    url: "/dashboard/criterias",
+    icon: ChartGantt ,
+    
+  },
+  {
+    title: "Watch lists",
+    url: "/dashboard/checklists",
+    icon: ListChecks ,
+    
+  },
+  {
+    title: "Visits",
+    url: "/dashboard/visits",
+    icon: Telescope,
+    
+  },
+  {
+    title: "Reports",
+    url: "/dashboard/reports",
+    icon: BarChart,
+    
+  },
+];
+export const branch_manager_items: SidebarItem[] = [
+  {
+    title: "Dashboard",
+    url: "/dashboard/branch-dashboard",
+    icon: Home,
+    
+  },
+  {
+    title: "Criterias",
+    url: "/dashboard/criterias",
+    icon: ChartGantt ,
+    
+  },
+  {
+    title: "Watch lists",
+    url: "/dashboard/checklists",
+    icon: ListChecks ,
+    
+  },
+  {
+    title: "Visits",
+    url: "/dashboard/visits",
+    icon: Telescope,
+    
+  },
+  {
+    title: "Reports",
+    url: "/dashboard/reports",
+    icon: BarChart,
+    
+  },
+];
+
+export const sidebarItems = {
+  super_admin: super_admin_items,
+  auditor: auditor_items,
+  company_admin: company_admin_items,
+  branch_manager: branch_manager_items,
+};

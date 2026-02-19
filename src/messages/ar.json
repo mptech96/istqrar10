@@ -461,5 +461,19 @@
   "save as draft": "حفظ كمسودة",
   "Please review the following errors": "يرجى مراجعة الأخطاء التالية",
   "Question": "السؤال",
-  "saving": "توفير"
+  "saving": "توفير",
+  "My Dashboard": "لوحة التحكم",
+  "Users": "المستخدمون",
+  "Roles": "الأدوار",
+  "Permissions": "الصلاحيات",
+  "Settings": "الإعدادات",
+  "Logout": "تسجيل الخروج",
+  "Reports": "التقارير",
+  "Daily Visits": "الزيارات اليومية",
+  "Completed visits": "الزيارات المكتملة",
+  "Pending visits": "الزيارات المعلقة",
+  "Average visit rating": "متوسط ​​تقييم الزيارة",
+  "auditor dashboard showing auditor stats , visits ,reports and more": "لوحة تحكم المدقق تظهر إحصائيات المدقق , الزيارات , التقارير و المزيد",
+  "branch dashboard showing branch stats ,users ,visits ,reports and more": "لوحة تحكم الفرع تظهر إحصائيات الفرع , المستخدمين , الزيارات , التقارير و المزيد",
+  "Total users": "إجمالي المستخدمين"
 }

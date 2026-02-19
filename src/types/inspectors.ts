@@ -1,4 +1,4 @@
-type Role = "auditor" | string;
+import { Role } from "@/types/user";
 type Gender = "male" | "female" | string;
 
 export type Inspectors = {

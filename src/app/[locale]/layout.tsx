@@ -23,7 +23,6 @@ export default async function LocaleLayout({
 }) {
   // In Next.js 16+, params is a Promise and must be awaited
   const { locale } = await params;
-  console.log(locale);
   // Middleware handles locale validation, so we can safely proceed
   const messages = await getMessages();
 

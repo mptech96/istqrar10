@@ -11,10 +11,13 @@ import {
   Star,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useGetCompanyStatisticsQuery } from "@/services/api/companies";
 
 const CompaniesStats = () => {
   const t = useTranslations();
-
+  const { data: companyStatistics, isLoading } =
+    useGetCompanyStatisticsQuery(1);
+  console.log("companyStatistics", companyStatistics);
   const statsConfig: StatsCardProps[] = [
     {
       title: "5",

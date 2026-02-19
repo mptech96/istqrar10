@@ -11,26 +11,59 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { Separator } from "@/components/ui/separator";
 import UserAvatar from "@/components/dashboard/user-avatar/user-avatar";
 
 import { LogIn, LogOut } from "lucide-react";
 import {
+  sidebarItems,
   SidebarItem,
-  LeaderItems,
 } from "@/components/dashboard/sidebar/sidebar-items";
 import Image from "next/image";
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "@/lib/store";
+import { logout as logoutAction } from "@/features/auth-slice";
+import { useRouter, usePathname } from "@/i18n/navigation";
+import { useLogoutMutation } from "@/services/api/auth";
+import { useLoader } from "@/hooks/use-loader";
 
 export function AppSidebar() {
   const locale = useLocale();
-
+  const { user } = useAppSelector((state) => state.auth);
+  const { start, stop } = useLoader();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations();
+  const [logout, { isLoading: isLogoutLoading }] =
+    useLogoutMutation();
+  const [items] = useState(() =>
+    user
+      ? sidebarItems[user.role as keyof typeof sidebarItems]
+      : [],
+  );
+  console.log(items);
 
-  const [items] = useState(() => LeaderItems);
+  const logoutHandler = async () => {
+    const res = await logout({}).unwrap();
+    console.log(res);
+    if (res.status === "success") {
+      dispatch(logoutAction());
+      router.push("/login");
+    }
+  };
 
-  // 2. Sync Language with DOM and i18n
+  useEffect(() => {
+    if (isLogoutLoading) {
+      start();
+    } else {
+      stop();
+    }
+  }, [isLogoutLoading, start, stop]);
 
   return (
     <Sidebar
@@ -66,7 +99,14 @@ export function AppSidebar() {
                   <Link href={item.url}>
                     <SidebarMenuButton
                       asChild
-                      className="text-lg py-5 hover:bg-linear-to-br from-cyan-500/10 to-coralRed/10 cursor-pointer active:bg-linear-to-br from-cyan-500/10 to-coralRed/10 "
+                      isActive={
+                        item.url === "/dashboard"
+                          ? pathname === "/dashboard"
+                          : pathname.startsWith(item.url)
+                      }
+                      className="text-lg py-5 hover:bg-linear-to-br from-cyan-500/10 to-coralRed/10 cursor-pointer relative z-10 
+                      data-[active=true]:after:content-[''] data-[active=true]:after:absolute data-[active=true]:after:top-1/2 data-[active=true]:after:-translate-y-1/2 data-[active=true]:after:end-2 data-[active=true]:after:w-1 data-[active=true]:after:h-4 data-[active=true]:after:bg-coralRed data-[active=true]:after:rounded-full data-[active=true]:after:shadow-[0_0_8px_rgba(248,113,113,0.6)]
+                      active:bg-linear-to-br from-cyan-500/10 to-coralRed/10 data-[active=true]:bg-linear-to-br data-[active=true]:from-cyan-500/15 data-[active=true]:to-coralRed/15 data-[active=true]:font-semibold"
                     >
                       <div className="flex items-center gap-2">
                         <item.icon />
@@ -87,13 +127,16 @@ export function AppSidebar() {
         <div className="flex items-center gap-2 ">
           <UserAvatar />
         </div>
-        <Link href="/signin">
+        <p
+          className="cursor-pointer"
+          onClick={logoutHandler}
+        >
           {locale === "ar" ? (
             <LogOut size={20} />
           ) : (
             <LogIn size={20} />
           )}
-        </Link>
+        </p>
       </SidebarFooter>
     </Sidebar>
   );

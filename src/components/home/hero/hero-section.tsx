@@ -1,16 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { ArrowRight } from "lucide-react";
 import { NumberTicker } from "@/components/ui/number-ticker";
-import { useAppSelector } from "@/lib/store";
 import { motion } from "motion/react";
 import { useRouter } from "@/i18n/navigation";
 const HeroSection = () => {
   const t = useTranslations();
-  const { language } = useAppSelector(
-    (state) => state.settings,
-  );
+  const language = useLocale();
   const isRTL = language === "ar";
   const router = useRouter();
   return (

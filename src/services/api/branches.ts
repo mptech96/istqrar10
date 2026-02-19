@@ -12,7 +12,14 @@ export const branchesApi = api.injectEndpoints({
     getBranches: build.query({
       query: (query: string) => `/branches?${query}`,
     }),
+    getBranchStats:build.query({
+      query: (branchId:string) => ({
+        url: `/branches/${branchId}/statistics`,
+        method: "GET",
+      }),
+      providesTags:["branchStats"]
+    })
   }),
 });
 
-export const { useCreateBranchMutation, useGetBranchesQuery } = branchesApi;
+export const { useCreateBranchMutation, useGetBranchesQuery ,useGetBranchStatsQuery } = branchesApi;

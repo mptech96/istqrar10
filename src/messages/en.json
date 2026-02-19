@@ -449,5 +449,19 @@
   "save as draft": "save as draft",
   "Please review the following errors": "Please review the following errors",
   "Question": "Question",
-  "saving": "saving"
+  "saving": "saving",
+  "My Dashboard": "My Dashboard",
+  "Users": "Users",
+  "Roles": "Roles",
+  "Permissions": "Permissions",
+  "Settings": "Settings",
+  "Logout": "Logout",
+  "Reports": "Reports",
+  "Daily Visits": "Daily Visits",
+  "Completed visits": "Completed visits",
+  "Pending visits": "Pending visits",
+  "Average visit rating": "Average visit rating",
+  "auditor dashboard showing auditor stats , visits ,reports and more": "auditor dashboard showing auditor stats , visits ,reports and more",
+  "branch dashboard showing branch stats ,users ,visits ,reports and more": "branch dashboard showing branch stats ,users ,visits ,reports and more",
+  "Total users": "Total users"
 }

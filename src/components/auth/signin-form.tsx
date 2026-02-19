@@ -34,7 +34,7 @@ import {
 } from "@/lib/store";
 import { signinSchema } from "@/schema/signin.schema.zod";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useLoginMutation } from "@/services/api/auth";
 import { toast } from "sonner";
 import { Spinner } from "../ui/spinner";
@@ -78,7 +78,6 @@ export default function SignInForm() {
     // Handle login logic here
     try {
       const res = await login(values).unwrap();
-      console.log(res);
       if (res.success) {
         dispatch(setCredentials({ ...res.data }));
         toast.success(t("login successfully !"));

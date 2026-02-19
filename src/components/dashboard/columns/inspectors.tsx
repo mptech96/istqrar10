@@ -7,7 +7,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-import { Inspectors } from "@/schema/inspectors";
+import { Inspectors } from "@/types/inspectors";
 
 export const getColumns = (
   t: _Translator,
