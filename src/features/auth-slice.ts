@@ -36,7 +36,6 @@ const authSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
       deleteCookie("user");
-      deleteCookie("auth_token");
     },
   },
 });

@@ -12,9 +12,9 @@ const intlMiddleware = createMiddleware({
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // 2. Check for the authentication token
-  // (Change 'token' to whatever your cookie name is)
-  const token = request.cookies.get('auth_token')?.value;
+  // 2. Check for the user cookie to know if the user is authenticated for routing
+  // (Since the Auth Token is an HttpOnly cross-domain cookie, we use the 'user' cookie set by the frontend on successful login)
+  const token = request.cookies.get('user')?.value;
   // 3. Helper: Remove the locale (e.g., "/en/dashboard" -> "/dashboard")
   // We do this to check the *actual* route regardless of language
   const localePattern = `^/(${routing.locales.join('|')})`;

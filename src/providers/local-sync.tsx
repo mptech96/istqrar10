@@ -1,6 +1,4 @@
-// components/LocaleSync.tsx
 "use client";
-
 import { useEffect } from "react";
 import { useLocale } from "next-intl";
 import { useDispatch } from "react-redux"; // Your Redux hooks
