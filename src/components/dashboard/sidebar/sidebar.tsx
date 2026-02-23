@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Link } from "@/i18n/navigation";
 import { Separator } from "@/components/ui/separator";
 import UserAvatar from "@/components/dashboard/user-avatar/user-avatar";
@@ -30,6 +30,7 @@ import { logout as logoutAction } from "@/features/auth-slice";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { useLogoutMutation } from "@/services/api/auth";
 import { useLoader } from "@/hooks/use-loader";
+import { toast } from "sonner";
 
 export function AppSidebar() {
   const locale = useLocale();
@@ -41,19 +42,27 @@ export function AppSidebar() {
   const t = useTranslations();
   const [logout, { isLoading: isLogoutLoading }] =
     useLogoutMutation();
-  const [items] = useState(() =>
-    user
-      ? sidebarItems[user.role as keyof typeof sidebarItems]
-      : [],
-  );
-  console.log(items);
+  const items = useMemo(() => {
+    return user && user.role
+      ? sidebarItems[
+          user.role as keyof typeof sidebarItems
+        ] || []
+      : [];
+  }, [user]);
 
   const logoutHandler = async () => {
-    const res = await logout({}).unwrap();
-    console.log(res);
-    if (res.status === "success") {
-      dispatch(logoutAction());
-      router.push("/login");
+    console.log("logout");
+    try {
+      const res = await logout({}).unwrap();
+
+      console.log("logout", res);
+      if (res.success) {
+        toast.success(t("Logged out successfully"));
+        dispatch(logoutAction());
+        router.push(`/login`);
+      }
+    } catch (error) {
+      toast.error(t("Failed to logout"));
     }
   };
 

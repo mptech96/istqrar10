@@ -4,6 +4,9 @@ import type { ColumnDef } from "@tanstack/react-table";
 import type { _Translator } from "next-intl";
 import { Criteria } from "@/types/criteria";
 import { Badge } from "@/components/ui/badge";
+import CriteriaModel from "@/components/models/criteria-model";
+import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react";
 
 export const getColumns = (
   t: _Translator,
@@ -80,6 +83,21 @@ export const getColumns = (
         >
           {isActive ? t("Active") : t("Inactive")}
         </span>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: t("Actions"),
+    cell: ({ row }) => {
+      const criteria = row.original;
+      return (
+        <div className="flex items-center gap-2">
+          <CriteriaModel criteria={criteria} />
+          <Button variant="outline" size="icon">
+            <Trash className="h-4 w-4" />
+          </Button>
+        </div>
       );
     },
   },

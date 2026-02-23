@@ -30,7 +30,7 @@ const authSlice = createSlice({
     setCredentials: (state, action: PayloadAction<{ user: User; token: string }>) => {
       state.user = action.payload.user;
       state.isAuthenticated = true;
-      setCookie("user", JSON.stringify(action.payload.user), { maxAge: 60 * 60 * 24 }); // 24 hours
+      setCookie("user", JSON.stringify(action.payload.user), { maxAge: 60 * 60  }); // 1 hour
     },
     logout: (state) => {
       state.user = null;

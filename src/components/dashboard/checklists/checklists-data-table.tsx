@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { motion } from "motion/react";
 import { useGetChecklistsQuery } from "@/services/api/checklists";
-
 const ChecklistsDataTable = () => {
   const { start, stop } = useLoader();
   const [page, setPage] = useState(1);
@@ -27,6 +26,7 @@ const ChecklistsDataTable = () => {
     isLoading,
     error,
   } = useGetChecklistsQuery(query);
+  console.log("paginatedChecklists", paginatedChecklists);
 
   useEffect(() => {
     if (isLoading) {

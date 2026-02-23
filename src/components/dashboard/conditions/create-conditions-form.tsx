@@ -35,7 +35,10 @@ import {
 import { Trash2, Plus } from "lucide-react";
 import { createConditionSchema } from "@/schema/create-condition.schema.zod";
 import { useTranslations } from "next-intl";
-import { useCreateConditionMutation } from "@/services/api/conditions";
+import {
+  useCreateConditionMutation,
+  useUpdateConditionMutation,
+} from "@/services/api/conditions";
 import { useGetCriteriaQuery } from "@/services/api/criteria";
 import { Criteria } from "@/types/criteria";
 import { useGetChecklistsQuery } from "@/services/api/checklists";
@@ -46,8 +49,26 @@ import { Checklist } from "@/types/checklist";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/store";
 
-export function CreateConditionsForm() {
-  const [createCondition] = useCreateConditionMutation();
+import { Question } from "@/types/question";
+
+interface CreateConditionsFormProps {
+  initialData?: Question;
+  onSuccess?: () => void;
+  hideCardWrapper?: boolean;
+}
+
+export function CreateConditionsForm({
+  initialData,
+  onSuccess,
+  hideCardWrapper = false,
+}: CreateConditionsFormProps) {
+  const [createCondition, { isLoading: isCreating }] =
+    useCreateConditionMutation();
+  const [updateCondition, { isLoading: isUpdating }] =
+    useUpdateConditionMutation();
+
+  const isEditMode = !!initialData;
+  const isLoading = isCreating || isUpdating;
   const { language } = useAppSelector(
     (state) => state.settings,
   );
@@ -69,7 +90,11 @@ export function CreateConditionsForm() {
   const { start, stop } = useLoader();
 
   useEffect(() => {
-    if (checklistIsLoading || criteriaIsLoading) {
+    if (
+      checklistIsLoading ||
+      criteriaIsLoading ||
+      isLoading
+    ) {
       start();
     } else {
       stop();
@@ -81,6 +106,7 @@ export function CreateConditionsForm() {
   }, [
     checklistIsLoading,
     criteriaIsLoading,
+    isLoading,
     checklistError,
     criteriaError,
     start,
@@ -95,25 +121,54 @@ export function CreateConditionsForm() {
     ) as Resolver<
       z.infer<ReturnType<typeof createConditionSchema>>
     >,
-    defaultValues: {
-      checklist_id: undefined,
-      criteria_id: undefined,
-      question_text: "",
-      description: "",
-      help_text: "",
-      type: "yes_no",
-      options: [{ value: "", score: 0, description: "" }],
-      correct_answer: "",
-      weight: 1,
-      max_score: 10,
-      passing_score: 6,
-      is_required: true,
-      is_critical: false,
-      has_attachment: false,
-      attachment_instructions: "",
-      sort_order: 1,
-      is_active: true,
-    },
+    defaultValues: initialData
+      ? {
+          checklist_id: initialData.checklist_id,
+          criteria_id: initialData.criteria_id,
+          question_text: initialData.question_text,
+          description: initialData.description || "",
+          help_text: initialData.help_text || "",
+          type: initialData.type,
+          options: initialData.options?.length
+            ? initialData.options.map((opt) => ({
+                value: opt.value,
+                score: Number(opt.score),
+                description: opt.description || "",
+              }))
+            : [{ value: "", score: 0, description: "" }],
+          correct_answer: initialData.correct_answer || "",
+          weight: initialData.weight,
+          max_score: initialData.max_score,
+          passing_score: initialData.passing_score,
+          is_required: initialData.is_required,
+          is_critical: initialData.is_critical,
+          has_attachment: initialData.has_attachment,
+          attachment_instructions:
+            initialData.attachment_instructions || "",
+          sort_order: initialData.sort_order,
+          is_active: initialData.is_active,
+        }
+      : {
+          checklist_id: undefined,
+          criteria_id: undefined,
+          question_text: "",
+          description: "",
+          help_text: "",
+          type: "yes_no",
+          options: [
+            { value: "", score: 0, description: "" },
+          ],
+          correct_answer: "",
+          weight: 1,
+          max_score: 10,
+          passing_score: 6,
+          is_required: true,
+          is_critical: false,
+          has_attachment: false,
+          attachment_instructions: "",
+          sort_order: 1,
+          is_active: true,
+        },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -159,19 +214,37 @@ export function CreateConditionsForm() {
     });
     console.log(formData);
     try {
-      await createCondition({
-        checklistId: values.checklist_id,
-        data: formData,
-      }).unwrap();
-      toast.success(t("Condition created successfully!"));
-      router.push("/dashboard/conditions");
+      if (isEditMode && initialData) {
+        await updateCondition({
+          checklistId: values.checklist_id,
+          questionId: initialData.id,
+          data: formData,
+        }).unwrap();
+        toast.success(t("Condition updated successfully!"));
+      } else {
+        await createCondition({
+          checklistId: values.checklist_id,
+          data: formData,
+        }).unwrap();
+        toast.success(t("Condition created successfully!"));
+      }
+
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push("/dashboard/conditions");
+      }
     } catch (error) {
-      toast.error(t("Failed to create condition"));
+      toast.error(
+        isEditMode
+          ? t("Failed to update condition")
+          : t("Failed to create condition"),
+      );
       console.error(error);
     }
   };
 
-  return (
+  const content = (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
@@ -180,7 +253,11 @@ export function CreateConditionsForm() {
         {/* Basic Information */}
         <Card>
           <CardHeader>
-            <CardTitle>{t("Basic Information")}</CardTitle>
+            <CardTitle>
+              {isEditMode
+                ? t("Update Question")
+                : t("Save Question")}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -715,14 +792,28 @@ export function CreateConditionsForm() {
 
         {/* Submit Button */}
         <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline">
-            {t("Cancel")}
-          </Button>
+          {!onSuccess && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+            >
+              {t("Cancel")}
+            </Button>
+          )}
           <Button type="submit">
-            {t("Save Question")}
+            {isEditMode
+              ? t("Update Question")
+              : t("Save Question")}
           </Button>
         </div>
       </form>
     </Form>
   );
+
+  if (hideCardWrapper) {
+    return content;
+  }
+
+  return <div className="w-full">{content}</div>;
 }

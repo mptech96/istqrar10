@@ -8,11 +8,20 @@ export const inspectorsApi = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Users"],
     }),
     getInspectors: build.query({
       query: (query: string) => `/users?${query}`,
     }),
+    updateInspector: build.mutation({
+      query: ({ id, data }) => ({
+        url: `/users/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Users"],
+    }),
   }),
 });
 
-export const { useCreateInspectorMutation, useGetInspectorsQuery } = inspectorsApi;
+export const { useCreateInspectorMutation, useGetInspectorsQuery, useUpdateInspectorMutation } = inspectorsApi;

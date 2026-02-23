@@ -1,3 +1,4 @@
+"use client";
 import StatsSection from "@/components/common/stats-section/stats";
 import { StatsCardProps } from "@/types/stats-card-props";
 import React from "react";

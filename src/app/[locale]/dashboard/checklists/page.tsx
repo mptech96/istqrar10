@@ -1,6 +1,7 @@
 import NewEntityButton from "@/components/common/new-entity-button/button";
 import Header from "@/components/dashboard/header/header";
-import ChecklistsDataTable from "@/components/dashboard/checklists/checklists-data-table";
+
+import ChecklistOverview from "@/components/dashboard/checklists/checklist-overview";
 
 const Checklists = () => {
   return (
@@ -10,14 +11,19 @@ const Checklists = () => {
           title="Checklists"
           description="Manage checklists"
         />
-
-        <NewEntityButton
-          url="/dashboard/checklists/new"
-          label="New Checklist"
-        />
+        <div className="flex gap-2">
+          <NewEntityButton
+            url="/dashboard/conditions/new"
+            label="Add Condition"
+          />
+          <NewEntityButton
+            url="/dashboard/checklists/new"
+            label="New Checklist"
+          />
+        </div>
       </header>
       <div className="flex flex-col gap-4">
-        <ChecklistsDataTable />
+        <ChecklistOverview />
       </div>
     </section>
   );

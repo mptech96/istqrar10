@@ -44,10 +44,18 @@ export const visitsApi = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
-    })
+    }),
+    updateVisit: build.mutation({
+      query: ({ id, data }) => ({
+        url: `/visits/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Visits"],
+    }),
   }),
 });
 
 export const { useCreateVisitMutation, useGetVisitsQuery,
    useStartVisitMutation, useEditVisitMutation, 
-   useDeleteVisitMutation, useGetVisitQuestionsQuery, useAnswerQuestionnaireMutation } = visitsApi;
+   useDeleteVisitMutation, useGetVisitQuestionsQuery, useAnswerQuestionnaireMutation, useUpdateVisitMutation } = visitsApi;

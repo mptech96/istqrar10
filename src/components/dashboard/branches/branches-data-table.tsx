@@ -1,7 +1,7 @@
 "use client";
 
 import { ServerDataTable } from "@/components/dashboard/table/server-data-table";
-import { getColumns } from "../columns/companies";
+import { getColumns } from "../columns/branches";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { useLoader } from "@/hooks/use-loader";

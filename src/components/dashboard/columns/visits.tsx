@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Play, SquarePen, Trash } from "lucide-react";
+import VisitModel from "@/components/models/visit-model";
+
 const getStatusVariant = (status: string) => {
   switch (status) {
     case "completed":
@@ -158,13 +160,7 @@ export const getColumns = (
               <Play />
             </Button>
           )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlers.onEdit(visit)}
-          >
-            <SquarePen />
-          </Button>
+          <VisitModel visit={visit} />
           <Button
             variant="destructive"
             size="sm"

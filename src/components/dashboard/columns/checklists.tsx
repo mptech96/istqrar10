@@ -4,6 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import type { _Translator } from "next-intl";
 import { Checklist } from "@/types/checklist";
 import { Badge } from "@/components/ui/badge";
+import ChecklistModel from "@/components/models/checklist-model";
 
 export const getColumns = (
   t: _Translator,
@@ -78,6 +79,14 @@ export const getColumns = (
           {isActive ? t("Active") : t("Inactive")}
         </span>
       );
+    },
+  },
+  {
+    id: "actions",
+    header: t("Actions"),
+    cell: ({ row }) => {
+      const checklist = row.original;
+      return <ChecklistModel checklist={checklist} />;
     },
   },
 ];

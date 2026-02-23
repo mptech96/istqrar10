@@ -8,6 +8,9 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Inspectors } from "@/types/inspectors";
+import InspectorModel from "@/components/models/inspector-model";
+import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react";
 
 export const getColumns = (
   t: _Translator,
@@ -74,6 +77,21 @@ export const getColumns = (
         >
           {status === 1 ? t("Active") : t("Inactive")}
         </span>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: t("Actions"),
+    cell: ({ row }) => {
+      const inspector = row.original;
+      return (
+        <div className="flex items-center gap-2">
+          <InspectorModel inspector={inspector} />
+          <Button variant="outline" size="icon">
+            <Trash className="h-4 w-4" />
+          </Button>
+        </div>
       );
     },
   },

@@ -8,6 +8,7 @@ export const branchesApi = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Branches"],
     }),
     getBranches: build.query({
       query: (query: string) => `/branches?${query}`,
@@ -18,8 +19,16 @@ export const branchesApi = api.injectEndpoints({
         method: "GET",
       }),
       providesTags:["branchStats"]
-    })
+    }),
+    updateBranch:build.mutation({
+      query: ({ id, data }) => ({
+        url: `/branches/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Branches"],
+    }),
   }),
 });
 
-export const { useCreateBranchMutation, useGetBranchesQuery ,useGetBranchStatsQuery } = branchesApi;
+export const { useCreateBranchMutation, useGetBranchesQuery ,useGetBranchStatsQuery,useUpdateBranchMutation } = branchesApi;

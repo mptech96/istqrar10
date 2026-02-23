@@ -1,6 +1,9 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import type { _Translator } from "next-intl";
 import { Branch } from "@/types/branch";
+import BranchModel from "@/components/models/branch-model";
+import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react";
 
 export const getColumns = (
   t: _Translator,
@@ -55,6 +58,21 @@ export const getColumns = (
         >
           {status ? t("Active") : t("Inactive")}
         </span>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: t("Actions"),
+    cell: ({ row }) => {
+      const branch = row.original;
+      return (
+        <div className="flex items-center gap-2">
+          <BranchModel branch={branch} />
+          <Button variant="outline" size="icon">
+            <Trash className="h-4 w-4" />
+          </Button>
+        </div>
       );
     },
   },

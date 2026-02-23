@@ -10,6 +10,11 @@ type User = {
   status: number;
   created_at: string; // or Date if you convert it
   branch_id?: number | null;
+  avatar?: string | null;
 };
 
+type profile = {
+    user: User;
+    
+}
 export type { User };

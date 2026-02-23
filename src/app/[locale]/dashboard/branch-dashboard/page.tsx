@@ -4,7 +4,7 @@ import React from "react";
 
 const BranchDashboard = () => {
   return (
-    <section>
+    <section className="flex flex-col gap-6">
       <Header
         title="Dashboard"
         description="branch dashboard showing branch stats ,users ,visits ,reports and more"

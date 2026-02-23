@@ -13,6 +13,7 @@ import {
   Settings,
   Store,
   Telescope,
+  User,
   Users,
   Wallet,
 } from "lucide-react";
@@ -47,7 +48,7 @@ export const super_admin_items: SidebarItem[] = [
     
   },
   {
-    title: "inspectors",
+    title: "Users",
     url: "/dashboard/inspectors",
     icon: Users,
     
@@ -64,19 +65,19 @@ export const super_admin_items: SidebarItem[] = [
     icon: ListChecks ,
     
   },
-  {
+  /* {
     title: "List Of conditions",
     url: "/dashboard/conditions",
     icon: ListOrdered ,
     
-  },
+  }, */
   {
     title: "Visits",
     url: "/dashboard/visits",
     icon: Telescope,
     
   },
-  {
+  /* {
     title: "Calendar",
     url: "/dashboard/calendar",
     icon: Calendar,
@@ -87,7 +88,7 @@ export const super_admin_items: SidebarItem[] = [
     url: "/dashboard/models",
     icon: Settings,
     
-  },
+  }, */
 ];
 
 export const auditor_items: SidebarItem[] = [
@@ -118,7 +119,7 @@ export const auditor_items: SidebarItem[] = [
 export const company_admin_items: SidebarItem[] = [
   {
     title: "Dashboard",
-    url: "/dashboard",
+    url: "/dashboard/company-dashboard",
     icon: Home,
     
   },
@@ -126,18 +127,6 @@ export const company_admin_items: SidebarItem[] = [
     title: "Branches",
     url: "/dashboard/branches",
     icon: Building2,
-  },
-  {
-    title: "Criterias",
-    url: "/dashboard/criterias",
-    icon: ChartGantt ,
-    
-  },
-  {
-    title: "Watch lists",
-    url: "/dashboard/checklists",
-    icon: ListChecks ,
-    
   },
   {
     title: "Visits",
@@ -149,7 +138,11 @@ export const company_admin_items: SidebarItem[] = [
     title: "Reports",
     url: "/dashboard/reports",
     icon: BarChart,
-    
+  },
+  {
+    title: "Profile",
+    url: "/dashboard/profile",
+    icon: User ,
   },
 ];
 export const branch_manager_items: SidebarItem[] = [
@@ -184,7 +177,6 @@ export const branch_manager_items: SidebarItem[] = [
     
   },
 ];
-
 export const sidebarItems = {
   super_admin: super_admin_items,
   auditor: auditor_items,
