@@ -13,6 +13,7 @@ import {
   Settings,
   Store,
   Telescope,
+  Ticket,
   User,
   Users,
   Wallet,
@@ -76,6 +77,12 @@ export const super_admin_items: SidebarItem[] = [
     url: "/dashboard/visits",
     icon: Telescope,
     
+  },
+  {
+    title: "Tickets",
+    url: "/dashboard/tickets",
+    icon: Ticket,
+
   },
   /* {
     title: "Calendar",

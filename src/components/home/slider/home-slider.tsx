@@ -6,7 +6,7 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/components/ui/carousel";
-import { AspectRatio } from "../ui/aspect-ratio";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Autoplay from "embla-carousel-autoplay";
 import { cn } from "@/lib/utils";
 
@@ -44,12 +44,22 @@ const HomeSlider = ({
     >
       <CarouselContent>
         {data.map((item, index) => (
-          <CarouselItem key={index} className={cn(itemClassName)}>
+          <CarouselItem
+            key={index}
+            className={cn(itemClassName)}
+          >
             <div className="p-0">
               <Card className="border-0 shadow-none">
                 <CardContent className="flex items-center justify-center p-0">
-                  <AspectRatio ratio={21 / 9} className="bg-muted">
-                    <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
+                  <AspectRatio
+                    ratio={21 / 9}
+                    className="bg-muted"
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="h-full w-full object-cover"
+                    />
                   </AspectRatio>
                 </CardContent>
               </Card>

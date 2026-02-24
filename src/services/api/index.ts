@@ -22,7 +22,7 @@ const api = createApi({
   endpoints: () => ({}),
   tagTypes: ["Checklists", "Questions", "Conditions", "Criterias", "Answers",
               "Users", "Roles", "Permissions", "Settings", "Notifications",
-              "Reports", "Dashboard","Visits" ,"branchStats" ,"Branches", "Companies","Criterias"],
+              "Reports", "Dashboard","Visits" ,"branchStats" ,"Branches", "Companies","Criterias","Tickets"],
 });
 
 export default api;

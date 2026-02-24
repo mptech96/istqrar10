@@ -2,6 +2,7 @@ import { AppSidebar } from "@/components/dashboard/sidebar/sidebar";
 import ToolBar from "@/components/dashboard/tool-bar/toolbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import SupportButton from "@/components/common/support-button";
 import React from "react";
 
 const DashboardLayout = ({
@@ -16,6 +17,7 @@ const DashboardLayout = ({
         <ToolBar />
         {children}
       </main>
+      <SupportButton />
     </SidebarProvider>
   );
 };
