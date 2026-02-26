@@ -614,6 +614,7 @@ export default function CreateInspectorForm({
                         }
                         initialFocus
                         captionLayout="dropdown"
+                        endMonth={new Date("2100-12-31")}
                       />
                     </PopoverContent>
                   </Popover>
@@ -707,6 +708,7 @@ export default function CreateInspectorForm({
                         }
                         initialFocus
                         captionLayout="dropdown"
+                        endMonth={new Date("2100-12-31")}
                       />
                     </PopoverContent>
                   </Popover>
@@ -798,6 +800,7 @@ export default function CreateInspectorForm({
                         }
                         initialFocus
                         captionLayout="dropdown"
+                        endMonth={new Date("2100-12-31")}
                       />
                     </PopoverContent>
                   </Popover>

@@ -430,6 +430,7 @@ export default function CreateCompanyForm({
                         }
                         initialFocus
                         captionLayout="dropdown"
+                        endMonth={new Date("2100-12-31")}
                       />
                     </PopoverContent>
                   </Popover>
@@ -491,6 +492,7 @@ export default function CreateCompanyForm({
                         }
                         initialFocus
                         captionLayout="dropdown"
+                        endMonth={new Date("2100-12-31")}
                       />
                     </PopoverContent>
                   </Popover>

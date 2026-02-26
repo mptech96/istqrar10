@@ -96,6 +96,12 @@ export const super_admin_items: SidebarItem[] = [
     icon: Settings,
     
   }, */
+  {
+    title: "Settings",
+    url: "/dashboard/settings",
+    icon: Settings,
+    
+  },
 ];
 
 export const auditor_items: SidebarItem[] = [
