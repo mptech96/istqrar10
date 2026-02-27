@@ -639,5 +639,6 @@
   "Whether this setting is accessible by unauthorized users": "ما إذا كان يمكن للمستخدمين غير المصرح لهم الوصول إلى هذا الإعداد",
   "site name": "اسم الموقع",
   "general, ai, mail etc": "مثال: general, ai, mail",
-  "Update Setting": "تحديث الإعداد"
+  "Update Setting": "تحديث الإعداد",
+  "Session expired due to inactivity": "انتهت الجلسة بسبب عدم النشاط"
 }

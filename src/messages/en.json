@@ -611,5 +611,6 @@
   "Whether this setting is accessible by unauthorized users": "Whether this setting is accessible by unauthorized users",
   "site name": "site name",
   "general, ai, mail etc": "general, ai, mail etc",
-  "Update Setting": "Update Setting"
+  "Update Setting": "Update Setting",
+  "Session expired due to inactivity": "Session expired due to inactivity"
 }
