@@ -22,6 +22,7 @@ import TicketModel from "@/components/models/ticket-model";
 import TicketAssignDialog from "./ticket-assign-dialog";
 import TicketSolveDialog from "./ticket-solve-dialog";
 import TicketCloseDialog from "./ticket-close-dialog";
+import { Input } from "@/components/ui/input";
 
 const TicketsDataTable = () => {
   const { start, stop } = useLoader();
@@ -30,12 +31,17 @@ const TicketsDataTable = () => {
     (state) => state.auth.user,
   );
   const [deleteTicket] = useDeleteTicketMutation();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const pageSize = 10;
+
+  const query = `page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ""}`;
 
   const {
     data: ticketsData,
     isLoading,
     error,
-  } = useGetAllTicketsQuery({});
+  } = useGetAllTicketsQuery(query);
 
   // Dialog states
   const [assignDialogOpen, setAssignDialogOpen] =
@@ -112,9 +118,21 @@ const TicketsDataTable = () => {
       >
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">
-              {t("Tickets")}
-            </CardTitle>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <CardTitle className="text-lg">
+                {t("Tickets")}
+              </CardTitle>
+              <div className="flex w-full md:w-64">
+                <Input
+                  placeholder={t("Search")}
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                />
+              </div>
+            </div>
           </CardHeader>
           {tickets.length === 0 && (
             <p className="text-center text-md text-muted-foreground p-4">
@@ -125,9 +143,9 @@ const TicketsDataTable = () => {
             <ServerDataTable
               columns={columns}
               data={tickets}
-              pageCount={1}
-              page={1}
-              setPage={() => {}}
+              pageCount={ticketsData?.meta?.last_page || 1}
+              page={ticketsData?.meta?.current_page || 1}
+              setPage={setPage}
             />
           )}
         </Card>

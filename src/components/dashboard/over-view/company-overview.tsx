@@ -11,13 +11,18 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React from "react";
+import BranchesDataTable from "../branches/branches-data-table";
+import VisitsDataTable from "../visits/visits-data-table";
+import { useGetCompanyDashboardQuery } from "@/services/api/stats";
 
 const CompanyOverview = () => {
   const t = useTranslations();
-
+  const { data: companyDashboard } =
+    useGetCompanyDashboardQuery({});
+  console.log("companyDashboard", companyDashboard);
   const statsConfig: StatsCardProps[] = [
     {
-      title: "5",
+      title: companyDashboard?.statistics?.branches_count,
       subtitle: t("Total Branches"),
       icon: <Store />,
       Badge: {
@@ -28,7 +33,8 @@ const CompanyOverview = () => {
       },
     },
     {
-      title: "10",
+      title:
+        companyDashboard?.statistics?.branch_managers_count,
       subtitle: t("Total users"),
       icon: <Users />,
       Badge: {
@@ -39,7 +45,7 @@ const CompanyOverview = () => {
       },
     },
     {
-      title: "20",
+      title: companyDashboard?.statistics?.total_visits,
       subtitle: t("Total Visits"),
       icon: <Telescope />,
       Badge: {
@@ -50,7 +56,8 @@ const CompanyOverview = () => {
       },
     },
     {
-      title: "20%",
+      title:
+        companyDashboard?.statistics?.avg_company_score,
       subtitle: t("Average rating"),
       icon: <Star />,
       Badge: {
@@ -64,6 +71,8 @@ const CompanyOverview = () => {
   return (
     <section className="flex flex-col gap-4">
       <StatsSection statsConfig={statsConfig} />
+      <BranchesDataTable />
+      <VisitsDataTable />
     </section>
   );
 };

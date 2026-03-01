@@ -15,6 +15,11 @@ import {
 import { useTranslations } from "next-intl";
 import { useGetBranchStatsQuery } from "@/services/api/branches";
 import { useAppSelector } from "@/lib/store";
+import { motion } from "motion/react";
+import StatsCard from "../stats-card/stats-card";
+
+import RatingPie from "./rating-pie";
+import VisitRadialBar from "./visit-radial-bar";
 
 const BranchStats = () => {
   const t = useTranslations();
@@ -26,7 +31,7 @@ const BranchStats = () => {
 
   const statsConfig: StatsCardProps[] = [
     {
-      title: "10",
+      title: "2",
       subtitle: t("Total users"),
       icon: <User2 />,
       Badge: {
@@ -37,7 +42,7 @@ const BranchStats = () => {
       },
     },
     {
-      title: "4",
+      title: branchStats?.statistics?.total_visits || 5,
       subtitle: t("Completed visits"),
       icon: <CircleCheckBig />,
       Badge: {
@@ -48,8 +53,9 @@ const BranchStats = () => {
       },
     },
     {
-      title: "2",
-      subtitle: t("Pending visits"),
+      title:
+        branchStats?.statistics?.open_tickets.length || 3,
+      subtitle: t("Pending tickets"),
       icon: <Clock />,
       Badge: {
         variant: "secondary",
@@ -59,7 +65,7 @@ const BranchStats = () => {
       },
     },
     {
-      title: "4",
+      title: branchStats?.statistics?.avg_score || 4.3,
       subtitle: t("Average visit rating"),
       icon: <Star />,
       Badge: {
@@ -71,7 +77,31 @@ const BranchStats = () => {
     },
   ];
 
-  return <StatsSection statsConfig={statsConfig} />;
+  return (
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {statsConfig.map((stat, index) => (
+          <motion.div
+            key={index}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <StatsCard
+              title={stat.title}
+              subtitle={stat.subtitle}
+              icon={stat.icon}
+              Badge={stat.Badge}
+            />
+          </motion.div>
+        ))}
+      </div>
+      <div className="">
+        <RatingPie />
+      </div>
+      <VisitRadialBar />
+    </div>
+  );
 };
 
 export default BranchStats;

@@ -165,23 +165,28 @@ export const branch_manager_items: SidebarItem[] = [
     icon: Home,
     
   },
-  {
+  /* {
     title: "Criterias",
     url: "/dashboard/criterias",
     icon: ChartGantt ,
     
-  },
+  }, 
   {
     title: "Watch lists",
     url: "/dashboard/checklists",
     icon: ListChecks ,
     
-  },
+  },*/
   {
     title: "Visits",
     url: "/dashboard/visits",
     icon: Telescope,
     
+  },
+   {
+    title: "Tickets",
+    url: "/dashboard/tickets",
+    icon: Ticket,
   },
   {
     title: "Reports",

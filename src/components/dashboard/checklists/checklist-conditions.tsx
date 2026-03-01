@@ -65,13 +65,13 @@ export const ChecklistConditions = ({
           key={condition.id}
           className="space-y-6 pt-6 border-t first:border-t-0 first:pt-0"
         >
-          <h4 className="font-semibold text-lg flex items-center gap-2">
+          <h4 className="font-semibold text-lg flex items-center  gap-2">
             <span className="bg-primary/10 text-primary w-8 h-8 rounded-full flex items-center justify-center text-sm">
               {conditionIndex + 1}
             </span>
             {condition.question_text ||
               `Condition ${conditionIndex + 1}`}
-            <div className="ml-auto">
+            <div className="ms-auto">
               <ConditionModel condition={condition} />
             </div>
           </h4>

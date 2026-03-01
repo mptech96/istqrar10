@@ -26,7 +26,11 @@ const ConditionModel = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button
+          variant="default"
+          size="icon"
+          className="cursor-pointer"
+        >
           <Edit className="h-4 w-4" />
         </Button>
       </DialogTrigger>

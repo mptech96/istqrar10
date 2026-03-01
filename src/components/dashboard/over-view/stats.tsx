@@ -11,13 +11,16 @@ import {
   Star,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useGetSuperAdminStatsQuery } from "@/services/api/stats";
 
 const OverViewStats = () => {
   const t = useTranslations();
-
+  const { data, isLoading } = useGetSuperAdminStatsQuery(
+    {},
+  );
   const statsConfig: StatsCardProps[] = [
     {
-      title: "5",
+      title: data?.statistics?.total_companies,
       subtitle: t("Total Registered Companies"),
       icon: <Store />,
       Badge: {
@@ -28,7 +31,7 @@ const OverViewStats = () => {
       },
     },
     {
-      title: "10",
+      title: data?.statistics?.total_visits,
       subtitle: t("Total daily visits"),
       icon: <Calendar />,
       Badge: {
@@ -39,7 +42,7 @@ const OverViewStats = () => {
       },
     },
     {
-      title: "20",
+      title: data?.statistics?.total_auditors,
       subtitle: t("inspectors"),
       icon: <Users />,
       Badge: {
@@ -50,7 +53,7 @@ const OverViewStats = () => {
       },
     },
     {
-      title: "20%",
+      title: data?.statistics?.avg_percentage,
       subtitle: t("Average rating"),
       icon: <Star />,
       Badge: {

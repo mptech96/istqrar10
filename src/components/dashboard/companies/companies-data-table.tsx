@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { motion } from "motion/react";
+import { Input } from "@/components/ui/input";
 
 const CompaniesDataTable = () => {
   const { start, stop } = useLoader();
@@ -21,16 +22,16 @@ const CompaniesDataTable = () => {
   const [sort, setSort] = useState("created_at");
   const [sortOrder, setSortOrder] = useState("desc");
   const [filter, setFilter] = useState("");
-  const [query, setQuery] = useState(() => {
-    const query = new URLSearchParams();
-    query.set("page", page.toString());
-    query.set("page_size", pageSize.toString());
-    query.set("search", search);
-    query.set("sort", sort);
-    query.set("sort_order", sortOrder);
-    query.set("filter", filter);
-    return query.toString();
-  });
+
+  const queryParams = new URLSearchParams();
+  queryParams.set("page", page.toString());
+  queryParams.set("page_size", pageSize.toString());
+  if (search) queryParams.set("search", search);
+  queryParams.set("sort", sort);
+  queryParams.set("sort_order", sortOrder);
+  if (filter) queryParams.set("filter", filter);
+
+  const query = queryParams.toString();
 
   const t = useTranslations();
   const {
@@ -61,9 +62,21 @@ const CompaniesDataTable = () => {
     >
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">
-            {t("List of Companies")}
-          </CardTitle>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <CardTitle className="text-lg">
+              {t("List of Companies")}
+            </CardTitle>
+            <div className="flex w-full md:w-64">
+              <Input
+                placeholder={t("Search")}
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+          </div>
         </CardHeader>
         {paginatedCompanies?.data.length === 0 && (
           <p className="text-center text-md text-muted-foreground">

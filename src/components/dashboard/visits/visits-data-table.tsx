@@ -20,13 +20,16 @@ import {
 } from "@/services/api/visits";
 import { Visit } from "@/types/visit";
 import { useRouter } from "@/i18n/navigation";
+import { Input } from "@/components/ui/input";
 
 const VisitsDataTable = () => {
   const { start, stop } = useLoader();
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const pageSize = 10;
   const router = useRouter();
-  const query = `page=${page}&page_size=${pageSize}`;
+
+  const query = `page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ""}`;
 
   const t = useTranslations();
 
@@ -101,9 +104,21 @@ const VisitsDataTable = () => {
     >
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">
-            {t("List of Visits")}
-          </CardTitle>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <CardTitle className="text-lg">
+              {t("List of Visits")}
+            </CardTitle>
+            <div className="flex w-full md:w-64">
+              <Input
+                placeholder={t("Search")}
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+          </div>
         </CardHeader>
         {paginatedVisits?.data?.length === 0 && (
           <p className="text-center text-md text-muted-foreground p-4">

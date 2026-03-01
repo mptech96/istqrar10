@@ -1,7 +1,6 @@
 import NewEntityButton from "@/components/common/new-entity-button/button";
-import DailyVisitsDataTable from "@/components/dashboard/auditor-dashboard/daily-visitsj-table";
+import DailyVisitsDataTable from "@/components/dashboard/auditor-dashboard/daily-visits-table";
 import Header from "@/components/dashboard/header/header";
-import VisitsDataTable from "@/components/dashboard/visits/visits-data-table";
 
 const DailyVisits = () => {
   return (

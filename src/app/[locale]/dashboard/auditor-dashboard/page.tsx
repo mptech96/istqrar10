@@ -1,5 +1,7 @@
 import AuditorStats from "@/components/dashboard/auditor-dashboard/auditor-stats";
 import Header from "@/components/dashboard/header/header";
+import VisitAreaChart from "@/components/dashboard/over-view/visit-chart";
+import VisitRatingChart from "@/components/dashboard/auditor-dashboard/visit-rating-chart";
 
 const AuditorDashboard = () => {
   return (
@@ -9,6 +11,8 @@ const AuditorDashboard = () => {
         description="auditor dashboard showing auditor stats , visits ,reports and more"
       />
       <AuditorStats />
+      <VisitAreaChart />
+      <VisitRatingChart />
     </section>
   );
 };

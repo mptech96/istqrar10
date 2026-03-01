@@ -11,8 +11,8 @@ const ticketsApi = api.injectEndpoints({
             invalidatesTags: ["Tickets"],
         }),   
         getAllTickets: builder.query({
-            query: () => ({
-                url: "/tickets",
+            query: (query?: string) => ({
+                url: query ? `/tickets?${query}` : "/tickets",
                 method: "GET",
             }),
             providesTags: ["Tickets"],

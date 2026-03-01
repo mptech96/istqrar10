@@ -13,12 +13,14 @@ import {
 } from "@/components/ui/card";
 import { motion } from "motion/react";
 import { useGetChecklistsQuery } from "@/services/api/checklists";
+import { Input } from "@/components/ui/input";
 const ChecklistsDataTable = () => {
   const { start, stop } = useLoader();
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const pageSize = 10;
 
-  const query = `page=${page}&page_size=${pageSize}`;
+  const query = `page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ""}`;
 
   const t = useTranslations();
   const {
@@ -51,9 +53,21 @@ const ChecklistsDataTable = () => {
     >
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">
-            {t("List of Checklists")}
-          </CardTitle>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <CardTitle className="text-lg">
+              {t("List of Checklists")}
+            </CardTitle>
+            <div className="flex w-full md:w-64">
+              <Input
+                placeholder={t("Search")}
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+          </div>
         </CardHeader>
         {paginatedChecklists?.data?.length === 0 && (
           <p className="text-center text-md text-muted-foreground p-4">
