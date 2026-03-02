@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
+import { Role } from "@/types/user";
 
 export interface SidebarItem {
   title: string;
@@ -205,4 +206,19 @@ export const sidebarItems = {
   auditor: auditor_items,
   company_admin: company_admin_items,
   branch_manager: branch_manager_items,
+};
+
+export const getDashboardUrl = (role: Role): string => {
+  switch (role) {
+    case "super_admin":
+      return "/dashboard";
+    case "auditor":
+      return "/dashboard/auditor-dashboard";
+    case "company_admin":
+      return "/dashboard/company-dashboard";
+    case "branch_manager":
+      return "/dashboard/branch-dashboard";
+    default:
+      return "/dashboard";
+  }
 };

@@ -41,8 +41,27 @@ export default function middleware(request: NextRequest) {
   if (isAuthPage && token) {
     const currentLocale = pathname.match(new RegExp(localePattern))?.[1] || routing.defaultLocale;
     
-    // Redirect to dashboard
-    return NextResponse.redirect(new URL(`/${currentLocale}/dashboard`, request.url));
+    // Determine the dashboard path based on user role
+    let dashboardPath = '/dashboard';
+    const userCookie = request.cookies.get('user')?.value;
+    if (userCookie) {
+      try {
+        const user = JSON.parse(decodeURIComponent(userCookie));
+        const role = user.role;
+        if (role === 'auditor') {
+          dashboardPath = '/dashboard/auditor-dashboard';
+        } else if (role === 'company_admin') {
+          dashboardPath = '/dashboard/company-dashboard';
+        } else if (role === 'branch_manager') {
+          dashboardPath = '/dashboard/branch-dashboard';
+        }
+      } catch {
+        // Fallback to default dashboard if parsing fails
+      }
+    }
+    
+    // Redirect to the role-specific dashboard
+    return NextResponse.redirect(new URL(`/${currentLocale}${dashboardPath}`, request.url));
   }
 
   // --- LOGIC END ---

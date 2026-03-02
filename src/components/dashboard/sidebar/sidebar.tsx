@@ -84,7 +84,7 @@ export function AppSidebar() {
           <div className=" ">
             <Image
               className="object-fill "
-              src="https://res.cloudinary.com/doxyvufkz/image/upload/v1769547758/Gemini_Generated_Image_v13ifrv13ifrv13i-removebg-preview_lqvicb.png"
+              src="https://res.cloudinary.com/doxyvufkz/image/upload/v1772428106/ChatGPT_Image_Mar_2_2026_07_08_05_AM_ccmhaf.png"
               alt="istqrar"
               width={80}
               height={80}

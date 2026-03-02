@@ -12,7 +12,7 @@ const NavBar = () => {
         <div className="flex items-center w-20 h-14    ">
           <AspectRatio ratio={16 / 14}>
             <Image
-              src="https://res.cloudinary.com/doxyvufkz/image/upload/v1769547758/Gemini_Generated_Image_v13ifrv13ifrv13i-removebg-preview_lqvicb.png"
+              src="https://res.cloudinary.com/doxyvufkz/image/upload/v1772428106/ChatGPT_Image_Mar_2_2026_07_08_05_AM_ccmhaf.png"
               alt="Istqrar"
               className="object-cover"
               width={80}

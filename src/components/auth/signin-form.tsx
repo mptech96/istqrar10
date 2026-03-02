@@ -37,10 +37,11 @@ import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import { useLoginMutation } from "@/services/api/auth";
 import { toast } from "sonner";
-import { Spinner } from "../ui/spinner";
 // import { setIsLoading } from "@/features/loading-slice";
 import { useLoader } from "@/hooks/use-loader";
 import { setCredentials } from "@/features/auth-slice";
+import { getDashboardUrl } from "../dashboard/sidebar/sidebar-items";
+
 export default function SignInForm() {
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
@@ -81,9 +82,12 @@ export default function SignInForm() {
       if (res.success) {
         dispatch(setCredentials({ ...res.data }));
         toast.success(t("login successfully !"));
-        router.push("/dashboard");
+        const dashboardUrl = getDashboardUrl(
+          res.data.user.role,
+        );
+        router.push(dashboardUrl);
       }
-    } catch (error) {
+    } catch {
       toast.error(t("login failed !"));
     } finally {
       stop();
