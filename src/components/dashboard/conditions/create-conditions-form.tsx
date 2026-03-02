@@ -232,7 +232,7 @@ export function CreateConditionsForm({
       if (onSuccess) {
         onSuccess();
       } else {
-        router.push("/dashboard/conditions");
+        router.push("/dashboard/checklists");
       }
     } catch (error) {
       toast.error(

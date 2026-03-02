@@ -6,8 +6,8 @@ const NewInspector = () => {
   return (
     <section className="flex flex-col gap-6">
       <Header
-        title="New Inspector"
-        description="Add a new inspector"
+        title="New User"
+        description="Add a new user"
       />
       <CreateInspectorForm />
     </section>

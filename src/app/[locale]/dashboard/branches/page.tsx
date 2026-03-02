@@ -19,7 +19,6 @@ const Branches = () => {
         />
       </div>
       <div className="mt-6">
-        <BranchesStats />
         <div className="mt-6">
           <BranchesDataTable />
         </div>

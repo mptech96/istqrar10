@@ -53,9 +53,13 @@ export const visitsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Visits"],
     }),
+    getBranchVisits: build.query({
+      query: (branchId: string) => `/visits/branch/${branchId}`,
+      providesTags: ["BranchVisits"],
+    }),
   }),
 });
 
 export const { useCreateVisitMutation, useGetVisitsQuery,
    useStartVisitMutation, useEditVisitMutation, 
-   useDeleteVisitMutation, useGetVisitQuestionsQuery, useAnswerQuestionnaireMutation, useUpdateVisitMutation } = visitsApi;
+   useDeleteVisitMutation, useGetVisitQuestionsQuery, useAnswerQuestionnaireMutation, useUpdateVisitMutation,useGetBranchVisitsQuery } = visitsApi;

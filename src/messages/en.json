@@ -669,5 +669,12 @@
   "Auditors Count": "Auditors Count",
   "Managers Count": "Managers Count",
   "Last Visit Percentage": "Last Visit Percentage",
-  "Pending Corrections": "Pending Corrections"
+  "Pending Corrections": "Pending Corrections",
+  "Admin": "Admin",
+  "Super Admin": "Super Admin",
+  "User": "User",
+  "branch manager": "branch manager",
+  "company admin": "company admin",
+  "Failed to update condition": "Failed to update condition",
+  "Update Question": "Update Question"
 }

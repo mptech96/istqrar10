@@ -42,7 +42,6 @@ const VisitsDataTable = () => {
     isLoading,
     error,
   } = useGetVisitsQuery(query);
-  console.log("paginatedVisits", paginatedVisits?.data);
   useEffect(() => {
     if (isLoading || isStartingVisit) {
       start();
@@ -65,11 +64,13 @@ const VisitsDataTable = () => {
           `/dashboard/visits/${visit.id}/question-list`,
         );
       } else {
-        throw new Error(t("Failed to start visit"));
+        console.log("start res ", res.message);
+        throw new Error(res.message);
       }
     } catch (error: any) {
+      console.log("start error ", error);
       toast.error(
-        error.message || t("Failed to start visit"),
+        error.data.message || t("Failed to start visit"),
       );
     }
   };

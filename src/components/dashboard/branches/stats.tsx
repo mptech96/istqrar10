@@ -18,7 +18,7 @@ const BranchesStats = () => {
   const statsConfig: StatsCardProps[] = [
     {
       title: "5",
-      subtitle: t("Total Registered Companies"),
+      subtitle: t("Total Users"),
       icon: <Store />,
       Badge: {
         variant: "secondary",
@@ -29,7 +29,7 @@ const BranchesStats = () => {
     },
     {
       title: "10",
-      subtitle: t("Total daily visits"),
+      subtitle: t("Total Visits"),
       icon: <Calendar />,
       Badge: {
         variant: "secondary",
@@ -40,7 +40,7 @@ const BranchesStats = () => {
     },
     {
       title: "20",
-      subtitle: t("inspectors"),
+      subtitle: t("Total Tickets"),
       icon: <Users />,
       Badge: {
         variant: "secondary",

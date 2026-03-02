@@ -324,11 +324,20 @@ export default function CreateInspectorForm({
                       <SelectItem value="auditor">
                         {t("Auditor")}
                       </SelectItem>
-                      <SelectItem value="inspector">
-                        {t("Inspector")}
+                      <SelectItem value="admin">
+                        {t("Admin")}
                       </SelectItem>
-                      <SelectItem value="supervisor">
-                        {t("Supervisor")}
+                      <SelectItem value="super_admin">
+                        {t("Super Admin")}
+                      </SelectItem>
+                      <SelectItem value="user">
+                        {t("User")}
+                      </SelectItem>
+                      <SelectItem value="branch_manager">
+                        {t("branch manager")}
+                      </SelectItem>
+                      <SelectItem value="company_admin">
+                        {t("company admin")}
                       </SelectItem>
                     </SelectContent>
                   </Select>

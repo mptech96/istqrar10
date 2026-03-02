@@ -154,15 +154,15 @@ export const company_admin_items: SidebarItem[] = [
     
   },
   {
+    title: "Tickets",
+    url: "/dashboard/tickets",
+    icon: Ticket ,
+  },
+  {
     title: "Reports",
     url: "/dashboard/reports/company",
     icon: BarChart,
   },
-  /* {
-    title: "Profile",
-    url: "/dashboard/profile",
-    icon: User ,
-  }, */
 ];
 export const branch_manager_items: SidebarItem[] = [
   {
@@ -196,7 +196,7 @@ export const branch_manager_items: SidebarItem[] = [
   },
   {
     title: "Reports",
-    url: "/dashboard/reports",
+    url: "/dashboard/reports/branch",
     icon: BarChart,
     
   },
