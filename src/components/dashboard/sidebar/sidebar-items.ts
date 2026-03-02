@@ -102,6 +102,11 @@ export const super_admin_items: SidebarItem[] = [
     icon: Settings,
     
   },
+  {
+    title: "Reports",
+    url: "/dashboard/reports",
+    icon: BarChart,
+  },
 ];
 
 export const auditor_items: SidebarItem[] = [
@@ -149,14 +154,14 @@ export const company_admin_items: SidebarItem[] = [
   },
   {
     title: "Reports",
-    url: "/dashboard/reports",
+    url: "/dashboard/reports/company",
     icon: BarChart,
   },
-  {
+  /* {
     title: "Profile",
     url: "/dashboard/profile",
     icon: User ,
-  },
+  }, */
 ];
 export const branch_manager_items: SidebarItem[] = [
   {

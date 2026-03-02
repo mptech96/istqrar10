@@ -19,7 +19,6 @@ const CompanyOverview = () => {
   const t = useTranslations();
   const { data: companyDashboard } =
     useGetCompanyDashboardQuery({});
-  console.log("companyDashboard", companyDashboard);
   const statsConfig: StatsCardProps[] = [
     {
       title: companyDashboard?.statistics?.branches_count,

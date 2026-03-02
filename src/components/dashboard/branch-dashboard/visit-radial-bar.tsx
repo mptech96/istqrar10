@@ -221,7 +221,7 @@ const VisitRadialBar = () => {
                   background
                   dataKey="value"
                   cornerRadius={10}
-                  shape={CustomSector}
+                  shape={CustomSector as any}
                 />
                 <Tooltip
                   contentStyle={{

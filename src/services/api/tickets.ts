@@ -62,6 +62,13 @@ const ticketsApi = api.injectEndpoints({
             }),
             invalidatesTags: ["Tickets"],
         }),
+        getTicketsStats: builder.query({
+            query: () => ({
+                url: "/tickets/statistics/overview",
+                method: "GET",
+            }),
+            providesTags: ["Tickets"],
+        }),
     }),
 });
 
@@ -77,4 +84,5 @@ export const {
   useAssignTicketMutation,
   useSolveTicketMutation,
   useCloseTicketMutation,
+  useGetTicketsStatsQuery,
 } = ticketsApi;
