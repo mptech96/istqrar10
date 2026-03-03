@@ -12,7 +12,7 @@ import { useReactToPrint } from "react-to-print";
 
 import BranchReportsStats from "@/components/dashboard/reports/branch/branch-reports-stats";
 import BranchTicketsTable from "@/components/dashboard/reports/branch/branch-tickets-table";
-import VisitCategoryPieChart from "@/components/dashboard/reports/visit-category-pie";
+import FlexPieChart from "@/components/dashboard/reports/flex-pie-chart";
 
 const BranchReportsPage = () => {
   const t = useTranslations();
@@ -64,9 +64,7 @@ const BranchReportsPage = () => {
             statistics={statistics}
             branch_info={branch_info}
           />
-          <VisitCategoryPieChart
-            data={recent_visits || []}
-          />
+          <FlexPieChart data={recent_visits || []} />
         </div>
       )}
 

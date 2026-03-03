@@ -44,33 +44,62 @@ const VisitCategoryPieChart = ({
     // Mock data fallback if no real data is provided
     if (!data || data.length === 0) {
       return [
-        { name: t("Excellent"), value: 40 },
-        { name: t("Good"), value: 30 },
-        { name: t("Satisfactory"), value: 20 },
-        { name: t("Poor"), value: 10 },
+        { name: t("Excellent"), value: 95 },
+        { name: t("Good"), value: 80 },
+        { name: t("Satisfactory"), value: 65 },
+        { name: t("Poor"), value: 45 },
       ];
     }
 
-    const counts: Record<string, number> = {};
+    const categoryStats: Record<
+      string,
+      { totalScore: number; count: number }
+    > = {};
+
     data.forEach((visit) => {
       const category =
-        visit.category ||
         visit.category_text ||
+        visit.category ||
         t("Unclassified");
-      counts[category] = (counts[category] || 0) + 1;
+
+      if (!categoryStats[category]) {
+        categoryStats[category] = {
+          totalScore: 0,
+          count: 0,
+        };
+      }
+
+      // Calculate score based on percentage or total/max score
+      const score =
+        visit.percentage !== undefined &&
+        visit.percentage !== null
+          ? visit.percentage
+          : visit.total_score !== undefined &&
+              visit.max_possible_score
+            ? (visit.total_score /
+                visit.max_possible_score) *
+              100
+            : 0;
+
+      categoryStats[category].totalScore += score;
+      categoryStats[category].count += 1;
     });
 
-    return Object.entries(counts).map(([name, value]) => ({
-      name,
-      value,
-    }));
+    return Object.entries(categoryStats).map(
+      ([name, stats]) => ({
+        name,
+        value: Number(
+          (stats.totalScore / stats.count).toFixed(2),
+        ),
+      }),
+    );
   }, [data, t]);
 
   return (
     <Card className="w-full h-full min-h-100">
       <CardHeader>
         <CardTitle className="text-xl font-bold">
-          {t("Visits by Category")}
+          {t("Average Score by Category")}
         </CardTitle>
       </CardHeader>
       <CardContent className="h-75">
@@ -84,8 +113,8 @@ const VisitCategoryPieChart = ({
               outerRadius={80}
               fill="#8884d8"
               dataKey="value"
-              label={({ name, percent }) =>
-                `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
+              label={({ name, value }) =>
+                `${name} (${value}%)`
               }
             >
               {chartData.map((entry, index) => (
@@ -96,6 +125,11 @@ const VisitCategoryPieChart = ({
               ))}
             </Pie>
             <Tooltip
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              formatter={(value: any) => [
+                `${value}%`,
+                t("Average Score"),
+              ]}
               contentStyle={{
                 backgroundColor: "#fff",
                 borderRadius: "8px",

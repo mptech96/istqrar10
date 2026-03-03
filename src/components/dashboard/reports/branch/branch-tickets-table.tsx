@@ -29,7 +29,7 @@ const BranchTicketsTable = ({
       accessorKey: "ticket_number",
       header: t("Ticket Number"),
       cell: ({ row }) => (
-        <span className="font-medium text-blue-600">
+        <span className="font-medium ">
           {row.original.ticket_number}
         </span>
       ),
@@ -73,7 +73,7 @@ const BranchTicketsTable = ({
       accessorKey: "status",
       header: t("Status"),
       cell: ({ row }) => (
-        <Badge variant="outline" className="text-slate-600">
+        <Badge variant="outline" className="">
           {row.original.status_text || row.original.status}
         </Badge>
       ),

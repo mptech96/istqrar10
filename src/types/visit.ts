@@ -11,7 +11,9 @@ export type Visit = {
   status: string;
   status_text?: string;
   total_score?: number;
+  max_possible_score?: number;
   percentage?: number;
+  percentage_formatted?: string;
   category?: string;
   category_text?: string;
   estimated_duration?: number;

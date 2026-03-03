@@ -123,16 +123,14 @@ export const auditor_items: SidebarItem[] = [
     icon: Telescope,
   },
   {
-    title: "Calendar",
-    url: "/dashboard/calendar",
-    icon: Calendar,
-    
+    title: "Tickets",
+    url: "/dashboard/tickets",
+    icon: Ticket,
   },
   {
     title: "Reports",
-    url: "/reports",
+    url: "/dashboard/reports/auditor",
     icon: BarChart,
-    
   },
 ];
 export const company_admin_items: SidebarItem[] = [

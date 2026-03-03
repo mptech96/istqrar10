@@ -37,25 +37,25 @@ const RatingPie = () => {
     ) {
       return [
         {
-          label: t("Excellent"),
+          label: t("a"),
           count: 12,
           percentage: 40,
           color: "#10b981",
         },
         {
-          label: t("Good"),
+          label: t("b"),
           count: 9,
           percentage: 30,
           color: "#3b82f6",
         },
         {
-          label: t("Satisfactory"),
+          label: t("c"),
           count: 6,
           percentage: 20,
           color: "#eab308",
         },
         {
-          label: t("Poor"),
+          label: t("d"),
           count: 3,
           percentage: 10,
           color: "#ef4444",
