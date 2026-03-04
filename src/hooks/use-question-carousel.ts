@@ -28,6 +28,7 @@ export function useQuestionCarousel(visitId: number): UseQuestionCarouselReturn 
   const [lastPage, setLastPage] = useState(1);
   const [direction, setDirection] = useState<"next" | "prev">("next");
   const fetchedPages = useRef<Set<number>>(new Set());
+  const prevQuestionsLength = useRef(0);
 
   const { data, isLoading, isFetching } = useGetVisitQuestionsQuery({
     id: visitId,
@@ -35,23 +36,28 @@ export function useQuestionCarousel(visitId: number): UseQuestionCarouselReturn 
     per_page: 15,
   });
 
-  // Merge fetched questions into allQuestions (deduplicate by id)
+  // Merge fetched questions into allQuestions
+  // KEY FIX: Use data.meta.current_page (from the API response) as the guard,
+  // NOT the currentPage state. This prevents the race condition where stale data
+  // from a previous page gets processed under the new page's key.
   useEffect(() => {
-    if (data?.data && !fetchedPages.current.has(currentPage)) {
-      fetchedPages.current.add(currentPage);
-      setAllQuestions((prev) => {
-        const existingIds = new Set(prev.map((q) => q.id));
-        const newQuestions = data.data.filter(
-          (q: Question) => !existingIds.has(q.id)
-        );
-        return [...prev, ...newQuestions];
-      });
-    }
-    if (data?.meta) {
+    if (data?.data && data?.meta) {
+      const responsePage = data.meta.current_page;
+      if (!fetchedPages.current.has(responsePage)) {
+        fetchedPages.current.add(responsePage);
+        setAllQuestions((prev) => {
+          const existingIds = new Set(prev.map((q) => q.id));
+          const newQuestions = data.data.filter(
+            (q: Question) => !existingIds.has(q.id)
+          );
+          if (newQuestions.length === 0) return prev;
+          return [...prev, ...newQuestions];
+        });
+      }
       setTotalQuestions(data.meta.total);
       setLastPage(data.meta.last_page);
     }
-  }, [data, currentPage]);
+  }, [data]);
 
   // Prefetch next page when user reaches last 2 questions of loaded data
   useEffect(() => {
@@ -65,21 +71,30 @@ export function useQuestionCarousel(visitId: number): UseQuestionCarouselReturn 
     }
   }, [currentIndex, allQuestions.length, currentPage, lastPage, isFetching]);
 
+  // Auto-advance: when new questions load and user was stuck at the boundary
+  useEffect(() => {
+    if (allQuestions.length > prevQuestionsLength.current && prevQuestionsLength.current > 0) {
+      const wasAtBoundary = currentIndex === prevQuestionsLength.current - 1;
+      prevQuestionsLength.current = allQuestions.length;
+      if (wasAtBoundary) {
+        setDirection("next");
+        setCurrentIndex((prev) => prev + 1);
+      }
+    } else {
+      prevQuestionsLength.current = allQuestions.length;
+    }
+  }, [allQuestions.length, currentIndex]);
+
   const goNext = useCallback(() => {
     setDirection("next");
     setCurrentIndex((prev) => {
       const next = prev + 1;
-      // Allow going up to allQuestions.length - 1, or if more pages exist, allow going further
       if (next < allQuestions.length) {
         return next;
       }
-      // If we're at the end but more questions exist on the server
-      if (next < totalQuestions) {
-        return next; // The prefetch effect will load more
-      }
-      return prev;
+      return prev; // Stay put — data will load and auto-advance will kick in
     });
-  }, [allQuestions.length, totalQuestions]);
+  }, [allQuestions.length]);
 
   const goPrev = useCallback(() => {
     setDirection("prev");
