@@ -76,7 +76,7 @@ export default function CreateCompanyForm({
     z.infer<ReturnType<typeof createCompanySchema>>
   >({
     resolver: zodResolver(
-      createCompanySchema(t),
+      createCompanySchema(t, isEditMode),
     ) as Resolver<
       z.infer<ReturnType<typeof createCompanySchema>>
     >,
@@ -84,7 +84,6 @@ export default function CreateCompanyForm({
       ? {
           status: initialData.status,
           is_verified: initialData.is_verified,
-          user_status: initialData.user?.status ?? true,
           subscription_status:
             initialData.subscription_status,
           category: initialData.category || "",
@@ -99,14 +98,16 @@ export default function CreateCompanyForm({
           subscription_start:
             initialData.subscription_start,
           subscription_end: initialData.subscription_end,
-          user_name: initialData.user?.name || "",
-          user_email: initialData.user?.email || "",
+          user_name: initialData.manager?.name || "",
+          user_email: initialData.manager?.email || "",
           user_password: "",
           user_password_confirmation: "",
-          user_phone: initialData.user?.phone || "",
+          user_phone: initialData.manager?.phone || "",
           user_birth_date:
-            initialData.user?.birth_date || "",
-          user_gender: initialData.user?.gender || 1,
+            initialData.manager?.birth_date || "",
+          user_status:
+            Boolean(initialData.manager?.status) || true,
+          user_gender: initialData.manager?.gender || 1,
         }
       : {
           status: true,
@@ -134,7 +135,7 @@ export default function CreateCompanyForm({
   });
 
   useEffect(() => {
-    if (isLoading) {
+    if (isCreating || isUpdating) {
       start(
         isEditMode
           ? t("Updating company")
@@ -143,13 +144,23 @@ export default function CreateCompanyForm({
     } else {
       stop();
     }
-  }, [isLoading, isEditMode, start, stop, t]);
+  }, [isCreating, isUpdating, isEditMode, start, stop, t]);
 
   async function onSubmit(
     values: z.infer<ReturnType<typeof createCompanySchema>>,
   ) {
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
+      // Ignore empty password fields when updating
+      if (
+        isEditMode &&
+        (key === "user_password" ||
+          key === "user_password_confirmation") &&
+        !value
+      ) {
+        return;
+      }
+
       if (value !== undefined && value !== null) {
         if (typeof value === "boolean") {
           formData.append(key, value ? "1" : "0");
@@ -178,20 +189,30 @@ export default function CreateCompanyForm({
       } else {
         router.push("/dashboard/companies");
       }
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       toast.error(
         isEditMode
-          ? t("failedToUpdateCompany")
-          : t("failedToCreateCompany"),
+          ? error?.data?.message ||
+              t("Failed To Update Company")
+          : error?.data?.message ||
+              t("Failed To Create Company"),
       );
-      console.error(error);
     }
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onInvalid = (errors: any) => {
+    console.log(
+      "Form validation failed with errors:",
+      errors,
+    );
+  };
 
   const content = (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit, onInvalid)}
         className="space-y-8"
       >
         {/* Company Details */}
@@ -792,7 +813,10 @@ export default function CreateCompanyForm({
         </div>
 
         {/* Submit Button */}
-        <Button type="submit" className="w-full">
+        <Button
+          type="submit"
+          className="w-full cursor-pointer"
+        >
           {isEditMode
             ? t("Update Company")
             : t("Create Company")}

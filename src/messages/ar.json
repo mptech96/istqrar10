@@ -810,5 +810,16 @@
   "Performance": "الأداء",
   "View and print your performance metrics": "عرض وطباعة مقاييس الأداء لشركتك",
   "Average Score": "متوسط الدرجة",
-  "Total visits": "إجمالي الزيارات"
+  "Total visits": "إجمالي الزيارات",
+  "Update Company": "تحديث الشركة",
+  "Updating company": "تحديث الشركة",
+  "Failed to update branch": "فشل في تحديث الفرع",
+  "Failed To Create Company": "فشل في إنشاء الشركة",
+  "Company updated successfully!": "تم تحديث الشركة بنجاح!",
+  "Updating criteria": "تحديث المعايير",
+  "Answered": "تمت الإجابة",
+  "Not answered": "لم تتم الإجابة",
+  "more": "أكثر",
+  "Please answer all required questions": "يرجى الإجابة على جميع الأسئلة المطلوبة",
+  "and": "و"
 }

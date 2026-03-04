@@ -6,7 +6,6 @@ import * as z from "zod";
 import { Question } from "@/types/question";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { QuestionField } from "@/components/dashboard/question-field/question-field";
 import {
   Card,
   CardContent,
@@ -15,33 +14,40 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useState } from "react";
-import { CheckCircle2, Save } from "lucide-react";
+import { CheckCircle2, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { createAnswersSchema } from "@/schema/create-answer.schema.zod";
 import { useAnswerQuestionnaireMutation } from "@/services/api/visits";
 import { useLoader } from "@/hooks/use-loader";
+import { useParams } from "next/navigation";
+import { useQuestionCarousel } from "@/hooks/use-question-carousel";
+import { QuestionCarousel } from "./question-carousel";
 
-interface VisitAnswersFormProps {
-  questions: Question[];
-  visitId: number;
-}
-
-export function VisitAnswersForm({
-  questions,
-  visitId,
-}: VisitAnswersFormProps) {
+export function VisitAnswersForm() {
   const { start, stop } = useLoader();
+  const { visitId } = useParams();
+  const t = useTranslations();
+
+  const carousel = useQuestionCarousel(Number(visitId));
 
   const [
     answerQuestionnaire,
     { isLoading: isSubmittingAnswers },
   ] = useAnswerQuestionnaireMutation();
-  const t = useTranslations();
+
   const [totalScore, setTotalScore] = useState<{
     score: number;
     maxScore: number;
   } | null>(null);
+
+  useEffect(() => {
+    if (carousel.isLoading) {
+      start();
+    } else {
+      stop();
+    }
+  }, [carousel.isLoading, start, stop]);
 
   useEffect(() => {
     if (isSubmittingAnswers) {
@@ -57,34 +63,35 @@ export function VisitAnswersForm({
     questionsList: Question[],
   ) => {
     let currentScore = 0;
-    const processedAnswers = answers.map(
-      (answer, index) => {
-        const question = questionsList[index];
-        let score = 0;
+    const processedAnswers = answers.map((answer) => {
+      const question = questionsList.find(
+        (q) => q.id === answer.question_id,
+      );
+      if (!question) return { ...answer, score: 0 };
 
-        if (
-          question.type === "multiple_choice" &&
-          question.options
-        ) {
-          const selectedOption = question.options.find(
-            (opt) => opt.value === answer.answer_value, // ✅ Changed
-          );
-          score = selectedOption
-            ? Number(selectedOption.score)
+      let score = 0;
+      if (
+        question.type === "multiple_choice" &&
+        question.options
+      ) {
+        const selectedOption = question.options.find(
+          (opt) => opt.value === answer.answer_value,
+        );
+        score = selectedOption
+          ? Number(selectedOption.score)
+          : 0;
+      } else if (question.type === "rating") {
+        score = Number(answer.answer_value);
+      } else if (question.type === "yes_no") {
+        score =
+          answer.answer_value === "yes"
+            ? question.max_score
             : 0;
-        } else if (question.type === "rating") {
-          score = Number(answer.answer_value); // ✅ Changed
-        } else if (question.type === "yes_no") {
-          score =
-            answer.answer_value === "yes"
-              ? question.max_score
-              : 0; // ✅ Changed
-        }
+      }
 
-        currentScore += score;
-        return { ...answer, score };
-      },
-    );
+      currentScore += score;
+      return { ...answer, score };
+    });
 
     const maxScore = questionsList.reduce(
       (acc, q) => acc + q.max_score,
@@ -93,54 +100,105 @@ export function VisitAnswersForm({
 
     return { processedAnswers, currentScore, maxScore };
   };
-  // Generate dynamic schema
-  const formSchema = createAnswersSchema(questions, t);
+
+  // Schema
+  const formSchema = createAnswersSchema();
   type FormValues = z.infer<typeof formSchema>;
 
-  // Initialize form with default values
+  // Initialize form
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
-      answers: questions.map((question) => ({
-        question_id: question.id,
-        answer_value: undefined,
-        comment: "",
-        auditor_comment: "",
-        corrective_action: "",
-        corrective_deadline: "",
-        attachments: [],
-      })),
+      answers: [],
     },
   });
 
-  // Reset form when questions are loaded
+  // Update form answers array when new questions are loaded
   useEffect(() => {
-    if (questions.length > 0) {
-      form.reset({
-        answers: questions.map((question) => ({
-          question_id: Number(question.id),
-          answer: undefined,
-          notes: "",
-          attachments: [],
-        })),
-      });
-    }
-  }, [questions, form]);
+    if (carousel.allQuestions.length > 0) {
+      const currentAnswers =
+        form.getValues("answers") || [];
+      const existingIds = new Set(
+        currentAnswers.map((a: any) => a?.question_id),
+      );
 
-  // Calculate progress
+      const newAnswers = carousel.allQuestions
+        .filter((q) => !existingIds.has(q.id))
+        .map((question: Question) => ({
+          question_id: question.id,
+          answer_value: undefined,
+          comment: "",
+          auditor_comment: "",
+          corrective_action: "",
+          corrective_deadline: "",
+          attachments: [],
+        }));
+
+      if (newAnswers.length > 0) {
+        form.setValue("answers", [
+          ...currentAnswers,
+          ...newAnswers,
+        ]);
+      }
+    }
+  }, [carousel.allQuestions, form]);
+
+  // Watch answers for progress and carousel
   const watchedAnswers = form.watch("answers");
-  const answeredCount = watchedAnswers.filter(
-    (answer) =>
-      answer.answer_value !== undefined &&
-      answer.answer_value !== "", // ✅ Changed
-  ).length;
-  const progress = (answeredCount / questions.length) * 100;
+
+  // Count answered across all loaded questions
+  const answeredCount =
+    watchedAnswers?.filter(
+      (answer: any) =>
+        answer?.answer_value !== undefined &&
+        answer?.answer_value !== "",
+    ).length ?? 0;
+
+  const overallProgress =
+    carousel.totalQuestions > 0
+      ? (answeredCount / carousel.totalQuestions) * 100
+      : 0;
+
+  // Validate required questions at submit time
+  const validateRequired = (): string[] => {
+    const errors: string[] = [];
+    carousel.allQuestions.forEach((question, index) => {
+      if (question.is_required) {
+        const answer = watchedAnswers?.[index];
+        if (
+          !answer?.answer_value ||
+          answer.answer_value === ""
+        ) {
+          errors.push(
+            `${t("Question")} ${index + 1}: ${question.question_text}`,
+          );
+        }
+      }
+    });
+    return errors;
+  };
 
   // Handle form submission
   async function onSubmit(data: FormValues) {
+    // Validate required questions
+    const requiredErrors = validateRequired();
+    if (requiredErrors.length > 0) {
+      toast.error(
+        `${t("Please answer all required questions")}:\n${requiredErrors.slice(0, 3).join("\n")}${requiredErrors.length > 3 ? `\n...${t("and")} ${requiredErrors.length - 3} ${t("more")}` : ""}`,
+      );
+      return;
+    }
+
     try {
       const { processedAnswers, currentScore, maxScore } =
-        calculateTotalScores(data.answers, questions);
+        calculateTotalScores(
+          data.answers.filter(
+            (a: any) =>
+              a.answer_value !== undefined &&
+              a.answer_value !== "",
+          ),
+          carousel.allQuestions,
+        );
 
       setTotalScore({
         score: currentScore,
@@ -148,71 +206,62 @@ export function VisitAnswersForm({
       });
 
       const formData = new FormData();
-      processedAnswers.forEach((answer, index) => {
-        formData.append(
-          `answers[${index}][question_id]`,
-          String(answer.question_id),
-        );
-        formData.append(
-          `answers[${index}][answer_value]`, // ✅ Changed
-          answer.answer_value ?? "",
-        );
-        if (answer.score !== undefined) {
+      processedAnswers.forEach(
+        (answer: any, index: number) => {
           formData.append(
-            `answers[${index}][score]`,
-            String(answer.score),
+            `answers[${index}][question_id]`,
+            String(answer.question_id),
           );
-        }
-        if (answer.comment) {
-          // ✅ Changed
           formData.append(
-            `answers[${index}][comment]`,
-            answer.comment,
+            `answers[${index}][answer_value]`,
+            answer.answer_value ?? "",
           );
-        }
-        if (answer.auditor_comment) {
-          // ✅ Added
-          formData.append(
-            `answers[${index}][auditor_comment]`,
-            answer.auditor_comment,
-          );
-        }
-        if (answer.corrective_action) {
-          // ✅ Added
-          formData.append(
-            `answers[${index}][corrective_action]`,
-            answer.corrective_action,
-          );
-        }
-        if (answer.corrective_deadline) {
-          // ✅ Added
-          formData.append(
-            `answers[${index}][corrective_deadline]`,
-            answer.corrective_deadline,
-          );
-        }
+          if (answer.score !== undefined) {
+            formData.append(
+              `answers[${index}][score]`,
+              String(answer.score),
+            );
+          }
+          if (answer.comment) {
+            formData.append(
+              `answers[${index}][comment]`,
+              answer.comment,
+            );
+          }
+          if (answer.auditor_comment) {
+            formData.append(
+              `answers[${index}][auditor_comment]`,
+              answer.auditor_comment,
+            );
+          }
+          if (answer.corrective_action) {
+            formData.append(
+              `answers[${index}][corrective_action]`,
+              answer.corrective_action,
+            );
+          }
+          if (answer.corrective_deadline) {
+            formData.append(
+              `answers[${index}][corrective_deadline]`,
+              answer.corrective_deadline,
+            );
+          }
 
-        if (
-          answer.attachments &&
-          Array.isArray(answer.attachments)
-        ) {
-          answer.attachments.forEach(
-            (file: any, fileIndex: number) => {
-              formData.append(
-                `answers[${index}][attachments][${fileIndex}]`,
-                file,
-              );
-            },
-          );
-        }
-      });
-
-      console.log("Submitting FormData entries:");
-      for (const [key, value] of (
-        formData as any
-      ).entries()) {
-        console.log(`${key}:`, value);
-      }
+          if (
+            answer.attachments &&
+            Array.isArray(answer.attachments)
+          ) {
+            answer.attachments.forEach(
+              (file: any, fileIndex: number) => {
+                formData.append(
+                  `answers[${index}][attachments][${fileIndex}]`,
+                  file,
+                );
+              },
+            );
+          }
+        },
+      );
 
       await answerQuestionnaire({
         visitId: Number(visitId),
@@ -222,13 +271,24 @@ export function VisitAnswersForm({
       toast.success(
         t("your answers have been saved successfully"),
       );
-    } catch (error) {
-      console.error("Submission Error:", error);
-      toast.error(t("an error occurred while saving"));
+    } catch (error: any) {
+      toast.error(
+        error?.data?.message ||
+          t("an error occurred while saving"),
+      );
     } finally {
       stop();
     }
   }
+
+  if (carousel.isLoading) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <Form {...form}>
       <form
@@ -260,36 +320,26 @@ export function VisitAnswersForm({
           </Card>
         )}
 
-        {/* Progress Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>{t("progress")}</span>
-              <span className="text-sm font-normal text-muted-foreground">
-                {answeredCount} {t("of")} {questions.length}{" "}
-                {t("questions")}
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Progress value={progress} className="h-2" />
-          </CardContent>
-        </Card>
-
-        {/* Questions */}
-        <div className="space-y-6">
-          {questions.map((question, index) => (
-            <QuestionField
-              key={question.id}
-              question={question}
-              control={form.control}
-              index={index}
-            />
-          ))}
-        </div>
+        {/* Carousel */}
+        <QuestionCarousel
+          currentQuestion={carousel.currentQuestion}
+          currentIndex={carousel.currentIndex}
+          allQuestions={carousel.allQuestions}
+          totalQuestions={carousel.totalQuestions}
+          isLoadingMore={carousel.isLoadingMore}
+          goNext={carousel.goNext}
+          goPrev={carousel.goPrev}
+          goTo={carousel.goTo}
+          hasNext={carousel.hasNext}
+          hasPrev={carousel.hasPrev}
+          progress={overallProgress}
+          direction={carousel.direction}
+          control={form.control}
+          watchedAnswers={watchedAnswers}
+        />
 
         {/* Submit Buttons */}
-        <div className="flex gap-4 sticky bottom-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 rounded-lg border shadow-lg ">
+        <div className="flex gap-4 pt-4">
           <Button
             type="submit"
             className="flex-1 cursor-pointer"
@@ -309,7 +359,6 @@ export function VisitAnswersForm({
             type="button"
             variant="outline"
             onClick={() => {
-              // Save as draft logic
               toast.info(t("saved as draft"));
             }}
             size="lg"
@@ -318,10 +367,6 @@ export function VisitAnswersForm({
             {t("save as draft")}
           </Button>
         </div>
-
-        {/* Validation Summary */}
-        {/* Validation Summary */}
-        {/* Validation Summary - REMOVED */}
       </form>
     </Form>
   );

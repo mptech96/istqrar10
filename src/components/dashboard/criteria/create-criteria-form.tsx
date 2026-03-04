@@ -160,13 +160,15 @@ export default function CreateCriteriaForm({
       } else {
         router.push("/dashboard/criterias");
       }
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       toast.error(
         isEditMode
-          ? t("Failed to update criteria")
-          : t("Failed to create criteria"),
+          ? error?.data?.message ||
+              t("Failed to update criteria")
+          : error?.data?.message ||
+              t("Failed to create criteria"),
       );
-      console.error(error);
     }
   }
 

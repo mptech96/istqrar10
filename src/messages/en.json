@@ -118,7 +118,7 @@
   "Female": "Female",
   "Personal Photo": "Personal Photo",
   "Create Company": "Create Company",
-  "Creating company": "Creating company...",
+  "Creating company": "Creating company",
   "Company created successfully!": "Company created successfully!",
   "Enter company name": "Enter company name",
   "Enter email address": "Enter email address",
@@ -676,5 +676,11 @@
   "branch manager": "branch manager",
   "company admin": "company admin",
   "Failed to update condition": "Failed to update condition",
-  "Update Question": "Update Question"
+  "Update Question": "Update Question",
+  "Updating company": "Updating company",
+  "Failed to update branch": "Failed to update branch",
+  "Update Company": "Update Company",
+  "Failed To Update Company": "Failed To Update Company",
+  "Failed To Create Company": "Failed To Create Company",
+  "Updating criteria": "Updating criteria"
 }

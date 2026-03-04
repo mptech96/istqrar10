@@ -21,7 +21,7 @@ const CompanyModel = ({
 }) => {
   const [open, setOpen] = useState(false);
   const t = useTranslations();
-
+  console.log("company data", company);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

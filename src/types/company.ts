@@ -14,7 +14,7 @@ export interface Company {
   category: string;
   status: boolean;
   is_verified: boolean;
-  user?: User; // Depending on if user details are nested in response
+  manager?: User; // Depending on if user details are nested in response
   created_at: string;
   updated_at: string;
 }

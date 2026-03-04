@@ -45,7 +45,7 @@ const DailyVisitsDataTable = () => {
     isLoading,
     error,
   } = useGetVisitsQuery(query.toString());
-
+  console.log("visits", paginatedVisits);
   useEffect(() => {
     if (isLoading || isStartingVisit) {
       start();

@@ -99,18 +99,18 @@ export default function CreateBranchForm({
           longitude: initialData.longitude,
           compliance_score:
             initialData.compliance_score || 0,
-          user_name: initialData.user_name || "",
-          user_email: initialData.user_email || "",
+          user_name: initialData.manager?.name || "",
+          user_email: initialData.manager?.email || "",
           user_password: "",
           user_password_confirmation: "",
-          user_phone: initialData.user_phone || "",
-          user_birth_date: initialData.user_birth_date
+          user_phone: initialData.manager?.phone || "",
+          user_birth_date: initialData.manager?.birth_date
             ? format(
-                new Date(initialData.user_birth_date),
+                new Date(initialData.manager?.birth_date),
                 "yyyy-MM-dd",
               )
             : "",
-          user_gender: initialData.user_gender || 1,
+          user_gender: initialData.manager?.gender || 1,
           company_id: initialData.company_id,
         }
       : {
@@ -177,13 +177,16 @@ export default function CreateBranchForm({
       } else {
         router.push("/dashboard/branches");
       }
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.log("error", error);
       toast.error(
         isEditMode
-          ? t("Failed to update branch")
-          : t("Failed to create branch"),
+          ? error?.data?.message ||
+              t("Failed to update branch")
+          : error?.data?.message ||
+              t("Failed to create branch"),
       );
-      console.error(error);
     }
   }
 
