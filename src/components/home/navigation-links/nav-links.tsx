@@ -17,7 +17,7 @@ const NavLinks = () => {
       >
         <NavigationMenuItem>
           <Link
-            href="/"
+            href="/#home"
             className=" relative cursor-pointer hover:text-primary transition-colors data-[active=true]:text-primary data-[active=true]:font-bold "
           >
             {t("Home")}
@@ -25,7 +25,7 @@ const NavLinks = () => {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <Link
-            href="/#About"
+            href="/#about"
             className="cursor-pointer hover:text-primary transition-colors"
           >
             {t("About")}
@@ -33,7 +33,7 @@ const NavLinks = () => {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <Link
-            href="services"
+            href="/#services"
             className="cursor-pointer hover:text-primary transition-colors"
           >
             {t("Services")}
@@ -41,7 +41,7 @@ const NavLinks = () => {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <Link
-            href="contact"
+            href="/#contact"
             className="cursor-pointer hover:text-primary transition-colors"
           >
             {t("Contact")}
