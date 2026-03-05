@@ -65,10 +65,10 @@ const Services = () => {
         viewport={{ once: true, margin: "-100px" }}
         transition={{ delay: 0.2, duration: 0.5 }}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2  gap-4 mt-10 h-[90%] ">
+        <div className="grid grid-cols-1 md:grid-cols-2  gap-4 mt-10  ">
           <ol
             start={1}
-            className="  grid grid-cols-1 md:grid-cols-2"
+            className="  grid grid-cols-1 md:grid-cols-2  h-2/3"
           >
             {servicesData.map((service, index) => (
               <motion.div
@@ -107,6 +107,7 @@ const Services = () => {
                     alt={t("Istqrar")}
                     className="h-full w-full rounded-md object-cover"
                     fill
+                    loading="eager"
                   />
                 </AspectRatio>
               </CardContent>

@@ -13,17 +13,20 @@ import { useTranslations } from "next-intl";
 const certificatesData: sliderProps[] = [
   {
     title: "شهادة اعتماد في الجودة والسلامة",
-    image: "https://istaqrar.sa/_astro/cert6.B9dR0VDe.png",
+    image:
+      "https://res.cloudinary.com/doxyvufkz/image/upload/v1772681969/ISO-certification-scaled-1-removebg-preview_p9t4hs.png",
   },
 
   {
     title: "شهادة جودة وسلامة غذائية",
-    image: "https://istaqrar.sa/_astro/cert7.CZwRDOQH.png",
+    image:
+      "https://res.cloudinary.com/doxyvufkz/image/upload/v1769906379/cert8_b68o0b.png",
   },
 
   {
     title: "شهادة ISO في سلامة الأغذية",
-    image: "https://istaqrar.sa/_astro/cert8.DEPg7b_c.png",
+    image:
+      "https://res.cloudinary.com/doxyvufkz/image/upload/v1772681771/pngtree-iso-9001-certified-company-logo-badge-vector-png-image_20971536_pqmacb.png",
   },
 ];
 
