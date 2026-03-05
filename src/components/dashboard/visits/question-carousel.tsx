@@ -211,6 +211,7 @@ export function QuestionCarousel({
           )}
         >
           <QuestionField
+            key={currentQuestion.id}
             question={currentQuestion}
             control={control}
             index={currentIndex}

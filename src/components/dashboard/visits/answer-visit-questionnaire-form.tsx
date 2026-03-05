@@ -108,6 +108,7 @@ export function VisitAnswersForm() {
   // Initialize form
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema) as any,
+    shouldUnregister: false,
     defaultValues: {
       answers: [],
     },
@@ -122,29 +123,52 @@ export function VisitAnswersForm() {
         currentAnswers.map((a: any) => a?.question_id),
       );
 
-      const newAnswers = carousel.allQuestions
-        .filter((q) => !existingIds.has(q.id))
-        .map((question: Question) => ({
-          question_id: question.id,
-          answer_value: undefined,
-          comment: "",
-          auditor_comment: "",
-          corrective_action: "",
-          corrective_deadline: "",
-          attachments: [],
-        }));
-
-      if (newAnswers.length > 0) {
-        form.setValue("answers", [
-          ...currentAnswers,
-          ...newAnswers,
-        ]);
-      }
+      carousel.allQuestions.forEach((question, index) => {
+        if (!existingIds.has(question.id)) {
+          form.setValue(
+            `answers.${index}`,
+            {
+              question_id: question.id,
+              answer_value: undefined,
+              comment: "",
+              auditor_comment: "",
+              corrective_action: "",
+              corrective_deadline: "",
+              attachments: [],
+            },
+            { shouldDirty: false },
+          );
+        }
+      });
     }
   }, [carousel.allQuestions, form]);
 
   // Watch answers for progress and carousel
   const watchedAnswers = form.watch("answers");
+
+  // Validate current question before allowing Next navigation
+  const validateCurrentQuestion = (): boolean => {
+    if (!carousel.currentQuestion) return true;
+    const question = carousel.currentQuestion;
+    const answer = watchedAnswers?.[carousel.currentIndex];
+    if (
+      question.is_required &&
+      (!answer?.answer_value || answer.answer_value === "")
+    ) {
+      toast.error(
+        `${t("Answer is required")}: ${question.question_text}`,
+      );
+      return false;
+    }
+    return true;
+  };
+
+  // Wrapped goNext that validates before navigating
+  const handleGoNext = () => {
+    if (validateCurrentQuestion()) {
+      carousel.goNext();
+    }
+  };
 
   // Count answered across all loaded questions
   const answeredCount =
@@ -327,7 +351,7 @@ export function VisitAnswersForm() {
           allQuestions={carousel.allQuestions}
           totalQuestions={carousel.totalQuestions}
           isLoadingMore={carousel.isLoadingMore}
-          goNext={carousel.goNext}
+          goNext={handleGoNext}
           goPrev={carousel.goPrev}
           goTo={carousel.goTo}
           hasNext={carousel.hasNext}
