@@ -155,9 +155,10 @@ const VisitRatingChart = () => {
                   boxShadow:
                     "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                 }}
-                formatter={(
-                  value: string | number | undefined,
-                ) => [`${value ?? 0}%`, t("Score")]}
+                formatter={(value) => [
+                  `${value ?? 0}%`,
+                  t("Score"),
+                ]}
               />
               <Area
                 type="monotone"
