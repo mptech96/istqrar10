@@ -99,8 +99,8 @@ const Services = () => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            <Card className="bg-linear-to-br from-coralRed/5 to-cyan-500/5 border border-coralRed/10">
-              <CardContent className="flex items-center justify-center p-0">
+            <div className="bg-linear-to-br from-coralRed/5 to-cyan-500/5 border border-coralRed/10">
+              <div className="flex items-center justify-center p-0">
                 <AspectRatio ratio={16 / 9}>
                   <Image
                     src="https://res.cloudinary.com/doxyvufkz/image/upload/v1770082774/Banner-1_1_brc12d.png"
@@ -110,8 +110,8 @@ const Services = () => {
                     loading="eager"
                   />
                 </AspectRatio>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </motion.div>
         </div>
       </motion.div>
