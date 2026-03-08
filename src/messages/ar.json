@@ -823,5 +823,8 @@
   "Not answered": "لم تتم الإجابة",
   "more": "أكثر",
   "Please answer all required questions": "يرجى الإجابة على جميع الأسئلة المطلوبة",
-  "and": "و"
+  "and": "و",
+  "your visit has been closed successfully": "لقد تم إغلاق زيارتك بنجاح",
+  "an error occurred while closing the visit": "حدث خطأ أثناء إغلاق الزيارة",
+  "close visit": "انهاء الزيارة"
 }

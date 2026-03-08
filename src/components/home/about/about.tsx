@@ -44,7 +44,7 @@ const About = () => {
             <div className="flex items-center justify-center p-0">
               <AspectRatio ratio={16 / 9}>
                 <Image
-                  src="https://res.cloudinary.com/doxyvufkz/image/upload/v1769914291/Banner-2_bktjar.png"
+                  src="https://drive.google.com/file/d/1rgFt4vOd3vMlNk1C7x7KjN3UPpXEZh--/view?usp=drive_link"
                   alt={t("Istqrar")}
                   className="h-full w-full rounded-md object-cover"
                   fill

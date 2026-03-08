@@ -36,15 +36,10 @@ export const getColumns = (
     accessorKey: "branch",
     header: t("Branch"),
     cell: ({ row }) => {
-      const branch = row.original.branch;
+      const branch_id = row.original.branch_id;
       return (
         <div className="flex flex-col">
-          <span className="font-medium">
-            {branch?.name || "-"}
-          </span>
-          <span className="text-xs text-muted-foreground">
-            {branch?.code || ""}
-          </span>
+          <span className="font-medium">{branch_id}</span>
         </div>
       );
     },
@@ -53,15 +48,13 @@ export const getColumns = (
     accessorKey: "auditor",
     header: t("Auditor"),
     cell: ({ row }) => {
-      const auditor = row.original.auditor;
+      const auditor_id = row.original.auditor_id;
       return (
         <div className="flex flex-col">
-          <span className="font-medium">
-            {auditor?.name || "-"}
-          </span>
-          <span className="text-xs text-muted-foreground">
+          <span className="font-medium">{auditor_id}</span>
+          {/*  <span className="text-xs text-muted-foreground">
             {auditor?.email || ""}
-          </span>
+          </span> */}
         </div>
       );
     },

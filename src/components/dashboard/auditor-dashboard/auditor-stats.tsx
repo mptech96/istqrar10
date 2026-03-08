@@ -16,12 +16,30 @@ import { useAppSelector } from "@/lib/store";
 import StatsSection from "@/components/common/stats-section/stats";
 import { Visit } from "@/types/visit";
 import { useLoader } from "@/hooks/use-loader";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { number } from "zod";
+
+interface AuditorStats {
+  totalVisits: number;
+  completedVisits: Visit[];
+  pendingVisits: Visit[];
+  inProgressVisits: Visit[];
+  cancelledVisits: Visit[];
+  averagePercentage: number;
+}
 
 const AuditorStats = () => {
   const t = useTranslations();
   const { start, stop } = useLoader();
   const { user } = useAppSelector((state) => state.auth);
+  const [stats, setStats] = useState<AuditorStats>({
+    totalVisits: 0,
+    completedVisits: [],
+    pendingVisits: [],
+    inProgressVisits: [],
+    cancelledVisits: [],
+    averagePercentage: 0,
+  });
   const query = new URLSearchParams({
     page: "1",
     limit: "100",
@@ -32,7 +50,6 @@ const AuditorStats = () => {
     query.toString(),
   );
   console.log("auditor visits", data);
-
   useEffect(() => {
     if (isLoading) {
       start();
@@ -41,30 +58,23 @@ const AuditorStats = () => {
       stop();
     }
   }, [isLoading, start, stop]);
-  const getAuditorStats = (
-    data: Visit[],
-  ): {
-    totalVisits: number;
-    completedVisits: Visit[];
-    pendingVisits: Visit[];
-    inProgressVisits: Visit[];
-    cancelledVisits: Visit[];
-    averagePercentage: number;
-  } => {
-    const completedVisits = data?.filter(
+
+  const getAuditorStats = useCallback(() => {
+    const completedVisits = data?.data?.filter(
       (visit: Visit) => visit.status === "completed",
     );
-    const totalVisits = data?.length;
-    const pendingVisits = data?.filter(
-      (visit: Visit) => visit.status === "pending",
-    );
-    const inProgressVisits = data?.filter(
+    const totalVisits = data?.data?.length;
+    const pendingVisits = data?.data?.filter(
       (visit: Visit) => visit.status === "in_progress",
     );
-    const cancelledVisits = data?.filter(
-      (visit: Visit) => visit.status === "cancelled",
+    console.log("pendingVisits", pendingVisits);
+    const inProgressVisits = data?.data?.filter(
+      (visit: Visit) => visit.status === "in_progress",
     );
-    if (!completedVisits || completedVisits.length === 0)
+    const cancelledVisits = data?.data?.filter(
+      (visit: Visit) => visit.status === "scheduled",
+    );
+    /*  if (!completedVisits || completedVisits.length === 0)
       return {
         totalVisits,
         completedVisits,
@@ -72,14 +82,13 @@ const AuditorStats = () => {
         inProgressVisits,
         cancelledVisits,
         averagePercentage: 0,
-      };
+      }; */
     const averagePercentage =
-      completedVisits.reduce(
-        (acc: number, visit: Visit) =>
-          acc + (visit.percentage || 0),
-        0,
-      ) / completedVisits.length;
-
+      pendingVisits?.reduce((acc: number, visit: Visit) => {
+        console.log("visit", visit.percentage);
+        return acc + (visit.percentage || 0);
+      }, 0) / pendingVisits?.length;
+    console.log("averagePercentage", averagePercentage);
     return {
       totalVisits,
       completedVisits,
@@ -88,7 +97,8 @@ const AuditorStats = () => {
       cancelledVisits,
       averagePercentage,
     };
-  };
+  }, [data]);
+  console.log("auditor stats", getAuditorStats());
 
   const statsConfig: StatsCardProps[] = [
     {
@@ -103,8 +113,7 @@ const AuditorStats = () => {
       },
     },
     {
-      title: getAuditorStats(data?.data).completedVisits
-        ?.length,
+      title: getAuditorStats().completedVisits?.length,
       subtitle: t("Completed visits"),
       icon: <CircleCheckBig />,
       Badge: {
@@ -115,8 +124,7 @@ const AuditorStats = () => {
       },
     },
     {
-      title: getAuditorStats(data?.data).pendingVisits
-        ?.length,
+      title: getAuditorStats().inProgressVisits?.length,
       subtitle: t("Pending visits"),
       icon: <Clock />,
       Badge: {
@@ -127,7 +135,7 @@ const AuditorStats = () => {
       },
     },
     {
-      title: getAuditorStats(data?.data).averagePercentage,
+      title: getAuditorStats().averagePercentage,
       subtitle: t("Average visit rating"),
       icon: <Star />,
       Badge: {

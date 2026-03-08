@@ -27,7 +27,7 @@ const RatingPie = () => {
     useGetBranchVisitsQuery(String(branchId), {
       skip: !branchId,
     });
-
+  console.log("branch visits", visits);
   const ratingData = useMemo(() => {
     // If loading or no data, return mock data
     if (

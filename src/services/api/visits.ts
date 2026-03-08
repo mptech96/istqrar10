@@ -57,9 +57,17 @@ export const visitsApi = api.injectEndpoints({
       query: (branchId: string) => `/visits/branch/${branchId}`,
       providesTags: ["BranchVisits"],
     }),
+    closeVisit: build.mutation({
+      query: ({id, data}) => ({
+        url: `/visits/${id}/complete`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Visits"],
+    }),
   }),
 });
 
 export const { useCreateVisitMutation, useGetVisitsQuery,
    useStartVisitMutation, useEditVisitMutation, 
-   useDeleteVisitMutation, useGetVisitQuestionsQuery, useAnswerQuestionnaireMutation, useUpdateVisitMutation,useGetBranchVisitsQuery } = visitsApi;
+   useDeleteVisitMutation, useGetVisitQuestionsQuery, useAnswerQuestionnaireMutation, useUpdateVisitMutation,useGetBranchVisitsQuery,useCloseVisitMutation } = visitsApi;

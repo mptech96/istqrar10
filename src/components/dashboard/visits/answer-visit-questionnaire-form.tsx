@@ -18,7 +18,10 @@ import { CheckCircle2, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { createAnswersSchema } from "@/schema/create-answer.schema.zod";
-import { useAnswerQuestionnaireMutation } from "@/services/api/visits";
+import {
+  useAnswerQuestionnaireMutation,
+  useCloseVisitMutation,
+} from "@/services/api/visits";
 import { useLoader } from "@/hooks/use-loader";
 import { useParams } from "next/navigation";
 import { useQuestionCarousel } from "@/hooks/use-question-carousel";
@@ -33,8 +36,10 @@ export function VisitAnswersForm() {
 
   const [
     answerQuestionnaire,
-    { isLoading: isSubmittingAnswers },
+    { isLoading: isSubmittingAnswers, isSuccess },
   ] = useAnswerQuestionnaireMutation();
+  const [closeVisit, { isLoading: isClosingVisit }] =
+    useCloseVisitMutation();
 
   const [totalScore, setTotalScore] = useState<{
     score: number;
@@ -42,12 +47,12 @@ export function VisitAnswersForm() {
   } | null>(null);
 
   useEffect(() => {
-    if (carousel.isLoading) {
+    if (carousel.isLoading || isClosingVisit) {
       start();
     } else {
       stop();
     }
-  }, [carousel.isLoading, start, stop]);
+  }, [carousel.isLoading, isClosingVisit, start, stop]);
 
   useEffect(() => {
     if (isSubmittingAnswers) {
@@ -305,6 +310,29 @@ export function VisitAnswersForm() {
     }
   }
 
+  const handleCloseVisit = async () => {
+    try {
+      console.log("visitId", visitId);
+      await closeVisit({
+        id: visitId,
+        data: {
+          auditor_notes: "تمت الزيارة بنجاح",
+        },
+      }).unwrap();
+
+      toast.success(
+        t("your visit has been closed successfully"),
+      );
+    } catch (error: any) {
+      toast.error(
+        error?.data?.message ||
+          t("an error occurred while closing the visit"),
+      );
+    } finally {
+      stop();
+    }
+  };
+
   if (carousel.isLoading) {
     return (
       <div className="flex items-center justify-center p-12">
@@ -345,40 +373,55 @@ export function VisitAnswersForm() {
         )}
 
         {/* Carousel */}
-        <QuestionCarousel
-          currentQuestion={carousel.currentQuestion}
-          currentIndex={carousel.currentIndex}
-          allQuestions={carousel.allQuestions}
-          totalQuestions={carousel.totalQuestions}
-          isLoadingMore={carousel.isLoadingMore}
-          goNext={handleGoNext}
-          goPrev={carousel.goPrev}
-          goTo={carousel.goTo}
-          hasNext={carousel.hasNext}
-          hasPrev={carousel.hasPrev}
-          progress={overallProgress}
-          direction={carousel.direction}
-          control={form.control}
-          watchedAnswers={watchedAnswers}
-        />
+        {isSuccess ? (
+          <div className="flex items-center justify-center p-12"></div>
+        ) : (
+          <QuestionCarousel
+            currentQuestion={carousel.currentQuestion}
+            currentIndex={carousel.currentIndex}
+            allQuestions={carousel.allQuestions}
+            totalQuestions={carousel.totalQuestions}
+            isLoadingMore={carousel.isLoadingMore}
+            goNext={handleGoNext}
+            goPrev={carousel.goPrev}
+            goTo={carousel.goTo}
+            hasNext={carousel.hasNext}
+            hasPrev={carousel.hasPrev}
+            progress={overallProgress}
+            direction={carousel.direction}
+            control={form.control}
+            watchedAnswers={watchedAnswers}
+          />
+        )}
 
         {/* Submit Buttons */}
         <div className="flex gap-4 pt-4">
-          <Button
-            type="submit"
-            className="flex-1 cursor-pointer"
-            size="lg"
-          >
-            {isSubmittingAnswers ? (
-              t("saving")
-            ) : (
-              <>
-                <CheckCircle2 className="ml-2 h-5 w-5" />
-                {t("send answers")}
-              </>
-            )}
-          </Button>
-
+          {isSuccess ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCloseVisit}
+              size="lg"
+            >
+              <CheckCircle2 className="ml-2 h-5 w-5" />
+              {t("close visit")}
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              className="flex-1 cursor-pointer"
+              size="lg"
+            >
+              {isSubmittingAnswers ? (
+                t("saving")
+              ) : (
+                <>
+                  <CheckCircle2 className="ml-2 h-5 w-5" />
+                  {t("send answers")}
+                </>
+              )}
+            </Button>
+          )}
           <Button
             type="button"
             variant="outline"

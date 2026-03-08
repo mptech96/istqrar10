@@ -684,5 +684,8 @@
   "Update Company": "Update Company",
   "Failed To Update Company": "Failed To Update Company",
   "Failed To Create Company": "Failed To Create Company",
-  "Updating criteria": "Updating criteria"
+  "Updating criteria": "Updating criteria",
+  "your visit has been closed successfully": "your visit has been closed successfully",
+  "an error occurred while closing the visit": "an error occurred while closing the visit",
+  "close visit": "close visit"
 }
