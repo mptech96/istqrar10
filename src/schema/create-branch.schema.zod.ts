@@ -24,7 +24,12 @@ export const createBranchSchema = (t: any) =>
     user_email: z.string().email(t("Invalid user email address")),
     user_password: z
       .string()
-      .min(8, t("Password must be at least 8 characters")),
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/,
+        {
+          message: t("Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one special character '!@$%^&*#', and one number"),
+        }
+      ),
     user_password_confirmation: z.string().min(1, t("Password confirmation is required")),
     user_phone: z.string().min(1, t("User phone is required")),
     user_personal_photo: z

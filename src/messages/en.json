@@ -693,5 +693,15 @@
   "Sending message": "Sending message",
   "Failed to send message": "Failed to send message",
   " Please try again": "Please try again",
-  "Message sent successfully!": "Message sent successfully!"
+  "Message sent successfully!": "Message sent successfully!",
+  "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one special character '!@$%^&*#', and one number": "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one special character '!@$%^&*#', and one number",
+  "Updating user": "Updating user",
+  "Creating user": "Creating user",
+  "Failed to update user": "Failed to update user",
+  "Failed to create user": "Failed to create user",
+  "Enter name": "Enter name",
+  "Enter email": "Enter email",
+  "Phone": "Phone",
+  "Department": "Department",
+  "Position": "Position"
 }

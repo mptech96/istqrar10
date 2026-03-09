@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { createInspectorSchema } from "@/schema/create-inspector.schema.zod";
 import {
@@ -36,7 +36,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
@@ -46,7 +46,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { Inspectors } from "@/types/inspectors";
 
@@ -68,7 +68,8 @@ export default function CreateInspectorForm({
     useCreateInspectorMutation();
   const [updateInspector, { isLoading: isUpdating }] =
     useUpdateInspectorMutation();
-
+  const [showPassword, setShowPassword] = useState(false);
+  const language = useLocale();
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
 
@@ -145,8 +146,8 @@ export default function CreateInspectorForm({
     if (isLoading) {
       start(
         isEditMode
-          ? t("Updating inspector")
-          : t("Creating inspector"),
+          ? t("Updating user")
+          : t("Creating user"),
       );
     } else {
       stop();
@@ -181,10 +182,10 @@ export default function CreateInspectorForm({
           id: initialData.id,
           data: formData,
         }).unwrap();
-        toast.success(t("Inspector updated successfully!"));
+        toast.success(t("User updated successfully!"));
       } else {
         await createInspector(formData).unwrap();
-        toast.success(t("Inspector created successfully!"));
+        toast.success(t("User created successfully!"));
       }
 
       if (onSuccess) {
@@ -195,8 +196,8 @@ export default function CreateInspectorForm({
     } catch (error) {
       toast.error(
         isEditMode
-          ? t("Failed to update inspector")
-          : t("Failed to create inspector"),
+          ? t("Failed to update user")
+          : t("Failed to create user"),
       );
       console.error(error);
     }
@@ -252,14 +253,32 @@ export default function CreateInspectorForm({
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("Password")} *</FormLabel>
+                <FormItem className="flex flex-col gap-4">
+                  <FormLabel>{t("Password")}</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder={t("Enter password")}
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input
+                        type={
+                          showPassword ? "text" : "password"
+                        }
+                        placeholder="p@ssw0rd"
+                        className={`${language === "ar" ? "pl-10" : "pr-10"}`}
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowPassword(!showPassword)
+                        }
+                        className={`absolute  top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${language === "ar" ? "left-3" : "right-3"}`}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

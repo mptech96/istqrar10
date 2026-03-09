@@ -832,5 +832,10 @@
   "Sending message": "جارٍ إرسال الرسالة",
   "Failed to send message": "فشل في إرسال الرسالة",
   " Please try again": "يرجى المحاولة مرة أخرى",
-  "Message sent successfully!": "تم إرسال رسالتك بنجاح!"
+  "Message sent successfully!": "تم إرسال رسالتك بنجاح!",
+  "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one special character '!@$%^&*#', and one number": "يجب أن يتكون كلمة المرور من 8 أحرف على الأقل وتحتوي على حرف كبير واحد على الأقل، وحرف صغير واحد على الأقل، ورمز خاص واحد '!@$%^&*#'، ورقم واحد",
+  "Updating user": "تحديث المستخدم",
+  "Creating user": "إنشاء المستخدم",
+  "Failed to update user": "فشل تحديث المستخدم",
+  "Failed to create user": "فشل في إنشاء المستخدم"
 }

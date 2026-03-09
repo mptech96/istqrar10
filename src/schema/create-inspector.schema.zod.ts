@@ -8,7 +8,12 @@ export const createInspectorSchema = (t: any) =>
   z.object({
     name: z.string().min(1, t("Name is required")),
     email: z.string().email(t("Invalid email address")),
-    password: z.string().min(8, t("Password must be at least 8 characters")),
+    password: z.string().regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/,
+        {
+          message: t("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character"),
+        }
+      ),
     password_confirmation: z.string().min(1, t("Password confirmation is required")),
     phone: z.string().min(1, t("Phone number is required")),
     role: z.string().min(1, t("Role is required")),
