@@ -3,27 +3,76 @@ import { useTranslations } from "next-intl";
 import SectionHeader from "../section-header/section-header";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
-import { Mail, MapPin, Phone, Send } from "lucide-react";
-import { useState } from "react";
+import { Resolver, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  contactSchema,
+  type ContactFormData,
+} from "@/schema/contact";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import {
+  Loader2,
+  Mail,
+  MapPin,
+  Phone,
+  Send,
+} from "lucide-react";
 import { motion } from "motion/react";
+import z from "zod";
+import { useLoader } from "@/hooks/use-loader";
 
 const Contact = () => {
   const t = useTranslations();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { start, stop } = useLoader();
+  useEffect(() => {
+    if (isSubmitting) {
+      start();
+    } else {
+      stop();
+    }
+  }, [isSubmitting, start, stop, t]);
+
+  const form = useForm<
+    z.infer<ReturnType<typeof contactSchema>>
+  >({
+    resolver: zodResolver(contactSchema(t)) as Resolver<
+      z.infer<ReturnType<typeof contactSchema>>
+    >,
+    defaultValues: {
+      name: "",
+      email: "",
+      message: "",
+    },
   });
 
-  const phoneNumber = "+966500000000";
-  const email = "info@istqrar.sa";
+  const phoneNumber = "+966593283732";
+  const email = "info@qsco.sa";
   const address = "Riyadh, Saudi Arabia";
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log(formData);
+  const onSubmit = async (data: ContactFormData) => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+      form.reset();
+      toast.success(t("Message sent successfully!"));
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error(t("Failed to send message"));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -128,72 +177,65 @@ const Contact = () => {
           </h3>
 
           <form
-            onSubmit={handleSubmit}
+            onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4"
           >
             <div>
               <Input
                 type="text"
                 placeholder={t("Your Name")}
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    name: e.target.value,
-                  })
-                }
-                className="bg-background/50"
-                required
+                {...form.register("name")}
+                className={`bg-background/50 ${form.formState.errors.name ? "border-red-500" : ""}`}
               />
+              {form.formState.errors.name && (
+                <p className="text-xs text-red-500 mt-1">
+                  {form.formState.errors.name.message}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                type="email"
-                placeholder={t("Email Address")}
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    email: e.target.value,
-                  })
-                }
-                className="bg-background/50"
-                required
-              />
-              <Input
-                type="tel"
-                placeholder={t("Phone Number")}
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    phone: e.target.value,
-                  })
-                }
-                className="bg-background/50"
-              />
+              <div>
+                <Input
+                  type="email"
+                  placeholder={t("Email Address")}
+                  {...form.register("email")}
+                  className={`bg-background/50 ${form.formState.errors.email ? "border-red-500" : ""}`}
+                />
+                {form.formState.errors.email && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {form.formState.errors.email.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <Input
+                  type="tel"
+                  placeholder={t("Phone Number")}
+                  {...form.register("phone")}
+                  className="bg-background/50"
+                />
+              </div>
             </div>
 
             <div>
               <textarea
                 placeholder={t("Your Message")}
-                value={formData.message}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    message: e.target.value,
-                  })
-                }
+                {...form.register("message")}
                 rows={4}
-                className="w-full px-3 py-2 rounded-md border border-input bg-background/50 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
-                required
+                className={`w-full px-3 py-2 rounded-md border border-input bg-background/50 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none ${form.formState.errors.message ? "border-red-500" : ""}`}
               />
+              {form.formState.errors.message && (
+                <p className="text-xs text-red-500 mt-1">
+                  {form.formState.errors.message.message}
+                </p>
+              )}
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-linear-to-r from-coralRed to-cyan-600 hover:from-coralRed hover:to-cyan-500 text-white shadow-[0_0_20px_rgba(240,89,87,0.3)]"
+              disabled={isSubmitting}
+              className="w-full bg-linear-to-r from-coralRed to-cyan-600 hover:from-coralRed hover:to-cyan-500 text-white shadow-[0_0_20px_rgba(240,89,87,0.3)] disabled:opacity-70"
             >
               <Send className="w-4 h-4 me-2" />
               {t("Send Message")}
