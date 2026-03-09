@@ -1,5 +1,5 @@
 "use client";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import SectionHeader from "../section-header/section-header";
 import { motion } from "motion/react";
 import {
@@ -14,6 +14,12 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
+
+const imageSrc = {
+  ar: "https://res.cloudinary.com/doxyvufkz/image/upload/v1773015520/our_service-3-Arabic_zwru1d.png",
+  en: "https://res.cloudinary.com/doxyvufkz/image/upload/v1773015616/Banner-3-English-_ds6jkx.png",
+};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const servicesData: { title: string; icon: any }[] = [
   {
     title: "Integrated quality department",
@@ -47,6 +53,7 @@ const servicesData: { title: string; icon: any }[] = [
 
 const Services = () => {
   const t = useTranslations();
+  const locale = useLocale();
   return (
     <section className="min-h-[450px] flex flex-col   gap-20 ">
       <motion.div
@@ -103,9 +110,13 @@ const Services = () => {
               <div className="flex items-center justify-center p-0">
                 <AspectRatio ratio={16 / 9}>
                   <Image
-                    src="https://res.cloudinary.com/doxyvufkz/image/upload/v1770082774/Banner-1_1_brc12d.png"
+                    src={
+                      imageSrc[
+                        locale as keyof typeof imageSrc
+                      ]
+                    } // Use the appropriate image based on the locale
                     alt={t("Istqrar")}
-                    className="h-full w-full rounded-md object-cover"
+                    className="h-full w-full rounded-md object-fill"
                     fill
                     loading="eager"
                   />

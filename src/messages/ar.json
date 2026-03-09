@@ -826,5 +826,11 @@
   "and": "و",
   "your visit has been closed successfully": "لقد تم إغلاق زيارتك بنجاح",
   "an error occurred while closing the visit": "حدث خطأ أثناء إغلاق الزيارة",
-  "close visit": "انهاء الزيارة"
+  "close visit": "انهاء الزيارة",
+  "Name must be at least 3 characters": "يجب أن يتكون الاسم من 3 أحرف على الأقل",
+  "Message must be at least 10 characters": "يجب أن تكون الرسالة 10 أحرف على الأقل",
+  "Sending message": "جارٍ إرسال الرسالة",
+  "Failed to send message": "فشل في إرسال الرسالة",
+  " Please try again": "يرجى المحاولة مرة أخرى",
+  "Message sent successfully!": "تم إرسال رسالتك بنجاح!"
 }

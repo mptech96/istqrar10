@@ -10,11 +10,6 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "**", // Allows all paths from Cloudinary
       },
-      {
-        protocol: "https",
-        hostname: "drive.google.com",
-        pathname: "**", // Allows all paths from Sanity
-      },
     ],
   },
 };

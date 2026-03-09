@@ -6,8 +6,8 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   // Replace with actual contact info
-  const phoneNumber = "+966500000000";
-  const email = "info@istqrar.sa";
+  const phoneNumber = "+966593283732";
+  const email = "info@qsco.sa";
   const website = "https://istqrar.sa";
 
   return (
@@ -84,8 +84,8 @@ const Footer = () => {
         {/* Copyright */}
         <div className="text-center text-white/70 text-sm">
           <p>
-            © {currentYear} {t("Istqrar")}.{" "}
-            {t("All rights reserved")}.
+            {t("All rights reserved")}.{t("Istqrar")}©{" "}
+            {currentYear}
           </p>
         </div>
       </div>
