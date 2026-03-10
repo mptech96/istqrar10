@@ -448,10 +448,11 @@ export default function CreateCompanyForm({
                           )
                         }
                         disabled={(date) =>
-                          date < new Date("1900-01-01")
+                          date < new Date("2023-12-31")
                         }
                         initialFocus
                         captionLayout="dropdown"
+                        startMonth={new Date("2024-01-1")}
                         endMonth={new Date("2100-12-31")}
                       />
                     </PopoverContent>
@@ -509,12 +510,19 @@ export default function CreateCompanyForm({
                               : "",
                           )
                         }
-                        disabled={(date) =>
-                          date < new Date("1900-01-01")
-                        }
+                        disabled={(date) => {
+                          return date < new Date();
+                        }}
                         initialFocus
                         captionLayout="dropdown"
-                        endMonth={new Date("2100-12-31")}
+                        startMonth={
+                          new Date(
+                            new Date().getFullYear(),
+                            0,
+                            1,
+                          )
+                        }
+                        endMonth={new Date("2050-12-31")}
                       />
                     </PopoverContent>
                   </Popover>

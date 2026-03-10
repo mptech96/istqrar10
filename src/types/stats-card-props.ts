@@ -10,6 +10,6 @@ export type StatsCardProps = {
         variant: variantType,
         className: string,
         badgeTitle: string,
-        badgeIcon: JSX.Element,
+        badgeIcon: JSX.Element | null,
     }
 }

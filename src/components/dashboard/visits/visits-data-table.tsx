@@ -21,8 +21,14 @@ import {
 import { Visit } from "@/types/visit";
 import { useRouter } from "@/i18n/navigation";
 import { Input } from "@/components/ui/input";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import { User } from "@/types/user";
 
 const VisitsDataTable = () => {
+  const user = useSelector(
+    (state: RootState) => state.auth.user,
+  );
   const { start, stop } = useLoader();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -89,13 +95,24 @@ const VisitsDataTable = () => {
     // Handle delete action
     console.log(visit);
   };
+  const handleShowReport = (visit: Visit) => {
+    // Handle show report action
+    router.push(
+      `/dashboard/visits/${visit.id}/visit-report`,
+    );
+  };
 
-  const columns = getColumns(t, {
-    onStartVisit: handleStartVisit,
-    onEdit: handleEdit,
-    onDelete: handleDelete,
-    onStartQuestionnaire: handleStartQuestionnaire,
-  });
+  const columns = getColumns(
+    t,
+    {
+      onStartVisit: handleStartVisit,
+      onEdit: handleEdit,
+      onDelete: handleDelete,
+      onStartQuestionnaire: handleStartQuestionnaire,
+      onShowReport: handleShowReport,
+    },
+    user as User,
+  );
 
   return (
     <motion.div

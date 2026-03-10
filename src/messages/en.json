@@ -33,7 +33,7 @@
   "Improving compliance with food quality and safety regulations": "Improving compliance with food quality and safety regulations",
   "Building and developing operational plans": "Building and developing operational plans",
   "Real field experience": "Real field experience",
-  "about_description": "It is an organization founded in 2025 that is interested in and specialized in developing and improving food safety and security quality and operational solutions. We support small, medium and large enterprises to maintain the highest level of quality and food safety and to build and develop operational plans",
+  "about_description": "The first company interested in and specialized in developing and improving the security and quality of food safety for restaurants, cafes and companies to reduce fixed costs and convert them into net profit to enhance support for the Kingdom of Saudi Arabia to be among the countries of the world in the security and quality of food safety.",
   "Quality Control Excellence": "Quality Control Excellence",
   "Istqrar": "Istqrar",
   "All rights reserved": "All rights reserved",
@@ -703,5 +703,10 @@
   "Enter email": "Enter email",
   "Phone": "Phone",
   "Department": "Department",
-  "Position": "Position"
+  "Position": "Position",
+  "Show Report": "Show Report",
+  "Total questions": "Total questions",
+  "Incorrect answers": "Incorrect answers",
+  "Correct answers": "Correct answers",
+  "Critical errors": "Critical errors"
 }

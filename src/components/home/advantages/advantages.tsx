@@ -9,6 +9,8 @@ import SectionHeader from "../section-header/section-header";
 import Slider, { type sliderProps } from "../slider/slider";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
 
 const certificatesData: sliderProps[] = [
   {
@@ -97,19 +99,23 @@ const Advantages = () => {
           </ol>
         </motion.div>
         <motion.div
-          className="flex justify-center"
           initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <Slider
-            data={certificatesData}
-            autoplay={true}
-            className="max-w-full"
-            itemClassName="basis-1/2 md:basis-1/3 "
-            showControls={false}
-          />
+          <div className="bg-linear-to-br from-coralRed/5 to-cyan-500/5 border border-coralRed/10">
+            <div className="flex items-center justify-center p-0">
+              <AspectRatio ratio={16 / 9}>
+                <Image
+                  src="https://res.cloudinary.com/doxyvufkz/image/upload/v1773091606/advantages_jusonv.png"
+                  alt={t("Istqrar")}
+                  className="h-full w-full rounded-md object-center"
+                  fill
+                />
+              </AspectRatio>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>

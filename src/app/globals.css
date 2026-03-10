@@ -174,7 +174,8 @@ body {
 }
 
 @theme inline {
-  --color-coralRed: #f05957;
+  --color-coralRed: #eb374f;
+  --color-darkRed: #bc1f34;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

@@ -65,9 +65,16 @@ export const visitsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Visits"],
     }),
+    getVisitReport: build.query({
+      query: (id: string) => `/visits/${id}/analysis`,
+      providesTags: ["VisitReport"],
+    }),
   }),
 });
 
 export const { useCreateVisitMutation, useGetVisitsQuery,
-   useStartVisitMutation, useEditVisitMutation, 
-   useDeleteVisitMutation, useGetVisitQuestionsQuery, useAnswerQuestionnaireMutation, useUpdateVisitMutation,useGetBranchVisitsQuery,useCloseVisitMutation } = visitsApi;
+    useStartVisitMutation, useEditVisitMutation, 
+    useDeleteVisitMutation, useGetVisitQuestionsQuery,
+    useAnswerQuestionnaireMutation, useUpdateVisitMutation,
+    useGetBranchVisitsQuery,useCloseVisitMutation, useGetVisitReportQuery
+     } = visitsApi;

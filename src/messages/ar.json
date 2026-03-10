@@ -32,7 +32,7 @@
   "Improving compliance with food quality and safety regulations": "تحسين الامتثال للوائح جودة وسلامة الأغذية",
   "Building and developing operational plans": "بناء وتطوير الخطط التشغيلية",
   "Real field experience": "خبرة ميدانية حقيقية",
-  "about_description": "هي مؤسسة تأسست عام 2025 مهتمة ومتخصصة في تطوير وتحسين أمن وجودة السلامة الغذائية والحلول التشغيلية. ندعم المنشآت الصغيرة والمتوسطة والكبيرة للمحافظة على أعلى مستوى من الجودة والسلامة الغذائية وبناء وتطوير الخطط التشغيلية",
+  "about_description": "اول شركة مهتمة و متخصصة في تطوير وتحسين امن و جودة السلامة الغذائية للمطاعم و المقاهي والشركات لتقليل التكاليف الثابتة وتحويلها الى صافي ربح لتعزيز دعم المملكة العربية السعودية بأن تكون في مصاف دول العالم في أمن وجودة السلامة الغذائية .",
   "Quality Control Excellence": "التميز في مراقبة الجودة",
   "Istqrar": "استقرار",
   "All rights reserved": "جميع الحقوق محفوظة",
@@ -837,5 +837,17 @@
   "Updating user": "تحديث المستخدم",
   "Creating user": "إنشاء المستخدم",
   "Failed to update user": "فشل تحديث المستخدم",
-  "Failed to create user": "فشل في إنشاء المستخدم"
+  "Failed to create user": "فشل في إنشاء المستخدم",
+  "Add a new user": "أضافة مستخدم جديد",
+  "New User": "مستخدم جديد",
+  "Checklist updated successfully!": "تم تحديث قائمة المراجعة بنجاح!",
+  "Updating checklist": "تحديث قائمة المراجعة",
+  "Average Score by Category": "متوسط الدرجة حسب الفئة",
+  "Show Report": "عرض التقرير",
+  "Total questions": "مجموع الأسئلة",
+  "Incorrect answers": "إجابات غير صحيحة",
+  "Correct answers": "الإجابات الصحيحة",
+  "Critical errors": "أخطاء فادحة",
+  "Visit Report": "تقرير الزيارة",
+  "Visit report": "تقرير الزيارة"
 }

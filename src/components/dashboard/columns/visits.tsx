@@ -7,6 +7,8 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Play, SquarePen, Trash } from "lucide-react";
 import VisitModel from "@/components/models/visit-model";
+import { getCookie } from "cookies-next";
+import { User } from "@/types/user";
 
 const getStatusVariant = (status: string) => {
   switch (status) {
@@ -30,7 +32,9 @@ export const getColumns = (
     onEdit: (visit: Visit) => void;
     onDelete: (visit: Visit) => void;
     onStartQuestionnaire: (visit: Visit) => void;
+    onShowReport: (visit: Visit) => void;
   },
+  user: User,
 ): ColumnDef<Visit>[] => [
   {
     accessorKey: "branch",
@@ -125,42 +129,60 @@ export const getColumns = (
       const visit = row.original;
       return (
         <div className="flex gap-2">
-          {visit.status !== "in_progress" && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlers.onStartVisit(visit)}
-              disabled={visit.status === "in_progress"}
-              className={
-                visit.status === "in_progress"
-                  ? "opacity-50 cursor-not-allowed"
-                  : "cursor-pointer"
-              }
-            >
-              {t("Start Visit")}
-              <Play />
-            </Button>
-          )}
-          {visit.status === "in_progress" && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                handlers.onStartQuestionnaire(visit)
-              }
-            >
-              {t("Show Questionnaire")}
-              <Play />
-            </Button>
-          )}
-          <VisitModel visit={visit} />
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => handlers.onDelete(visit)}
-          >
-            <Trash />
-          </Button>
+          {visit.status !== "in_progress" &&
+            user.role === "auditor" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlers.onStartVisit(visit)}
+                disabled={visit.status === "in_progress"}
+                className={
+                  visit.status === "in_progress"
+                    ? "opacity-50 cursor-not-allowed"
+                    : "cursor-pointer"
+                }
+              >
+                {t("Start Visit")}
+                <Play />
+              </Button>
+            )}
+          {visit.status === "in_progress" &&
+            user.role === "auditor" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  handlers.onStartQuestionnaire(visit)
+                }
+              >
+                {t("Show Questionnaire")}
+                <Play />
+              </Button>
+            )}
+          {user.role === "admin" ||
+            (user.role === "super_admin" && (
+              <>
+                <VisitModel visit={visit} />
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handlers.onDelete(visit)}
+                >
+                  <Trash />
+                </Button>
+              </>
+            ))}
+          {user.role === "branch_manager" &&
+            visit.status === "completed" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlers.onShowReport(visit)}
+              >
+                {t("Show Report")}
+                <SquarePen />
+              </Button>
+            )}
         </div>
       );
     },
