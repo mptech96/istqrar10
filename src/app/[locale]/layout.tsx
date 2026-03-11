@@ -33,7 +33,7 @@ export default async function LocaleLayout({
       className="dark"
       style={{ colorScheme: "dark" }}
     >
-      <body>
+      <body className="font-din">
         <NextIntlClientProvider messages={messages}>
           <StoreProvider>
             <DirectionProvider

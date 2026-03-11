@@ -6,55 +6,67 @@ import {
 import { useTranslations, useLocale } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { useAppSelector } from "@/lib/store";
 
 const NavLinks = () => {
   const t = useTranslations();
+  const theme = useAppSelector(
+    (state) => state.settings.theme,
+  );
+
+  const links = [
+    {
+      href: "/#home",
+      label: "Home",
+    },
+    {
+      href: "/#about",
+      label: "About",
+    },
+    {
+      href: "/#services",
+      label: "Services",
+    },
+    {
+      href: "/#Subscriptions",
+      label: "Subscriptions",
+    },
+    {
+      href: "/#Blogs",
+      label: "Blogs",
+    },
+    {
+      href: "/#contact",
+      label: "Contact",
+    },
+  ];
 
   return (
     <NavigationMenu>
       <NavigationMenuList
-        className={`flex gap-4 items-center `}
+        /* 
+      display: flex;
+width: 712px;
+padding: 16px 24px;
+align-items: center;
+gap: 12px;
+flex-shrink: 0;
+       */
+        className={`flex  items-center bg-[#F0F0F0] dark:bg-[#1e1e1e]   px-6 py-1.5 gap-3 rounded-full text-primary `}
       >
-        <NavigationMenuItem>
-          <Link
-            href="/#home"
-            className=" relative cursor-pointer hover:text-primary transition-colors data-[active=true]:text-primary data-[active=true]:font-bold "
+        {links.map((link, index) => (
+          <NavigationMenuItem
+            key={index}
+            className="px-4 py-2.5 leading-11.25 font-[400] text-[18px]  "
           >
-            {t("Home")}
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link
-            href="/#about"
-            className="cursor-pointer hover:text-primary transition-colors"
-          >
-            {t("About")}
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link
-            href="/#services"
-            className="cursor-pointer hover:text-primary transition-colors"
-          >
-            {t("Services")}
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link
-            href="/#contact"
-            className="cursor-pointer hover:text-primary transition-colors"
-          >
-            {t("Contact")}
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link
-            href="/login"
-            className="bg-primary cursor-pointer text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
-          >
-            {t("Join Now")}
-          </Link>
-        </NavigationMenuItem>
+            <Link
+              href={link.href}
+              className=" relative cursor-pointer  hover:text-primary transition-colors data-[active=true]:text-primary data-[active=true]:font-bold  "
+            >
+              {t(link.label)}
+            </Link>
+          </NavigationMenuItem>
+        ))}
       </NavigationMenuList>
     </NavigationMenu>
   );

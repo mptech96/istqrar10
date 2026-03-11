@@ -5,6 +5,7 @@ import Footer from "@/components/home/footer/footer";
 import HeroSection from "@/components/home/hero/hero-section";
 import NavBar from "@/components/home/nav-bar/navbar";
 import Services from "@/components/home/services/services";
+import PricingSection from "@/components/home/pricing/pricing-section";
 import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 
@@ -51,19 +52,23 @@ export default function Home() {
     <section>
       <NavBar />
       <main className=" flex flex-col space-y-20">
-        <div id="home">
+        <div id="home" className="w-[90%] mx-auto ">
           <HeroSection />
         </div>
-
-        <div id="services">
+        <div id="about" className="w-[90%] mx-auto">
+          <About />
+        </div>
+        <div id="services" className="w-[90%] mx-auto">
           <Services />
+        </div>
+        <div id="pricing" className="w-[90%] mx-auto">
+          <PricingSection />
         </div>
 
         <div className="w-[90%] mx-auto flex flex-col space-y-20">
-          <div id="about">
+          {/*   <div id="">
             <Advantages />
-            <About />
-          </div>
+          </div> */}
           <div id="contact">
             <Contact />
           </div>

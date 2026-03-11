@@ -6,15 +6,21 @@ const SectionHeader = ({
   subtitle?: string;
 }) => {
   return (
-    <header className="text-center">
-      <span
-        className="text-center relative text-3xl tracking-wider font-bold after:content-[''] after:absolute after:top-full after:w-20 after:h-0.5 after:bg-coralRed after:z-10 after:left-1/2 after:-translate-x-1/2"
-        style={{ fontStretch: "75%" }}
-      >
-        {title}
-      </span>
+    <header className="flex flex-col items-center justify-center gap-4">
+      <div className="inline-flex items-center gap-2 px-8 py-4 rounded-[16px] bg-gradient-to-r from-[rgba(235,55,79,0.07)] to-[rgba(188,31,52,0.07)]">
+        <span
+          className="text-coralRed text-3xl font-bold leading-none flex items-center gap-4"
+          style={{ fontStretch: "75%" }}
+        >
+          {title}
+          <span className="w-2.5 h-2.5 rounded-full bg-coralRed" />
+        </span>
+      </div>
+
       {subtitle && (
-        <p className="text-gray-600">{subtitle}</p>
+        <p className="text-gray-600 max-w-2xl text-center">
+          {subtitle}
+        </p>
       )}
     </header>
   );

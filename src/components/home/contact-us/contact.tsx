@@ -83,7 +83,12 @@ const Contact = () => {
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
       >
-        <SectionHeader title={t("Contact Us")} />
+        <SectionHeader
+          title={t("Contact Us")}
+          subtitle={t(
+            "Contact us for any inquiries about quality control services",
+          )}
+        />
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12">
@@ -235,7 +240,7 @@ const Contact = () => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-linear-to-r from-coralRed to-cyan-600 hover:from-coralRed hover:to-cyan-500 text-white shadow-[0_0_20px_rgba(240,89,87,0.3)] disabled:opacity-70"
+              className="w-54.5 cursor-pointer bg-linear-to-r  from-coralRed to-darkRed py-2.5 text-white shadow-[0_0_20px_rgba(240,89,87,0.3)] disabled:opacity-70"
             >
               <Send className="w-4 h-4 me-2" />
               {t("Send Message")}

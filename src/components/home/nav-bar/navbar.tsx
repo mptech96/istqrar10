@@ -1,27 +1,34 @@
 "use client";
 
 import NavLinks from "../navigation-links/nav-links";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
+import NavActions from "../nav-actions/actions";
+import { useAppSelector } from "@/lib/store";
 
 const NavBar = () => {
+  const theme = useAppSelector(
+    (state) => state.settings.theme,
+  );
+  const logo =
+    theme === "dark"
+      ? "https://res.cloudinary.com/doxyvufkz/image/upload/v1773234414/logo-white_text_xewlqs.svg"
+      : "https://res.cloudinary.com/doxyvufkz/image/upload/v1773188599/logo_yilq7x.svg";
   return (
-    <nav className="absolute top-0 z-50 w-full py-2 h-28 flex items-center ">
-      <div className="flex items-center justify-between w-[90%] mx-auto">
+    <nav className="absolute top-10 z-50 w-full  h-28 flex items-center ">
+      <div className="flex items-center justify-between w-[90%] mx-auto ">
         {/* logo */}
-        <div className="flex items-center w-20 h-14    ">
-          <AspectRatio ratio={16 / 14}>
-            <Image
-              src="https://res.cloudinary.com/doxyvufkz/image/upload/v1772428106/ChatGPT_Image_Mar_2_2026_07_08_05_AM_ccmhaf.png"
-              alt="Istqrar"
-              className="object-cover"
-              width={80}
-              height={80}
-            />
-          </AspectRatio>
+        <div className="flex items-center ">
+          <Image
+            src={logo}
+            alt="Istqrar"
+            className="object-cover"
+            width={120}
+            height={140}
+          />
         </div>
         {/* nav-links */}
         <NavLinks />
+        <NavActions />
       </div>
     </nav>
   );

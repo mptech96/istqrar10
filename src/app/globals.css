@@ -1,6 +1,57 @@
 @import "tailwindcss";
 
 @import "tw-animate-css";
+@layer utilities {
+  .leading-trim-both {
+    leading-trim: both;
+  }
+
+  .text-edge-cap {
+    text-edge: cap;
+  }
+}
+@font-face {
+  font-family: "DIN Next Arabic";
+  src: url("/font/DINNextLTArabic-Ultralight-3.ttf")
+    format("truetype");
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "DIN Next Arabic";
+  src: url("/font/DINNextLTArabic-Light-2-2.ttf")
+    format("truetype");
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "DIN Next Arabic";
+  src: url("/font/DINNextLTArabic-Regular-3.ttf")
+    format("truetype");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "DIN Next Arabic";
+  src: url("/font/DINNextLTArabic-Medium-3.ttf")
+    format("truetype");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "DIN Next Arabic";
+  src: url("/font/DINNextLTArabic-Bold-4.ttf")
+    format("truetype");
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "DIN Next Arabic";
+  src: url("/font/DINNextLTArabic-Black-4.ttf")
+    format("truetype");
+  font-weight: 900;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -174,6 +225,7 @@ body {
 }
 
 @theme inline {
+  --font-din: "DIN Next Arabic", sans-serif;
   --color-coralRed: #eb374f;
   --color-darkRed: #bc1f34;
   --radius-sm: calc(var(--radius) - 4px);

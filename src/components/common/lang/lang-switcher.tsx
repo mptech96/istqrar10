@@ -34,12 +34,12 @@ const LangSwitcher = () => {
         toggleLanguage(value as Language)
       }
     >
-      <SelectTrigger className="w-25  bg-transparent border-0 focus:ring-0 focus:ring-offset-0">
+      <SelectTrigger className="w-[60px] bg-transparent border-0 focus:ring-0 focus:ring-offset-0">
         <SelectValue placeholder={t("language")} />
       </SelectTrigger>
-      <SelectContent className="mt-10">
-        <SelectItem value="ar">{t("arabic")}</SelectItem>
-        <SelectItem value="en">{t("english")}</SelectItem>
+      <SelectContent className="mt-10 w-20">
+        <SelectItem value="ar">{t("ar")}</SelectItem>
+        <SelectItem value="en">{t("en")}</SelectItem>
       </SelectContent>
     </Select>
   );
