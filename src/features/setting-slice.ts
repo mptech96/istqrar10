@@ -9,7 +9,7 @@ interface SettingsState {
 }
 
 const initialState: SettingsState = {
-  theme: "dark",
+  theme: "light",
   language: "ar",
 };
 

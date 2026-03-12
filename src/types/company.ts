@@ -6,6 +6,8 @@ export interface Company {
   commercial_registration: string;
   city: string;
   address: string;
+  latitude?: number;
+  longitude?: number;
   contact_person: string;
   logo: string | null;
   subscription_start: string;

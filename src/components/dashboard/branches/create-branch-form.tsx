@@ -51,6 +51,7 @@ import { useEffect } from "react";
 import { Company } from "@/types/company";
 
 import { Branch } from "@/types/branch";
+import { LocationPicker } from "@/components/ui/location-picker";
 
 interface CreateBranchFormProps {
   initialData?: Branch;
@@ -373,54 +374,19 @@ export default function CreateBranchForm({
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="latitude"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("Latitude")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="any"
-                      placeholder={t("Enter latitude")}
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(
-                          Number(e.target.value),
-                        )
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="longitude"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("Longitude")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="any"
-                      placeholder={t("Enter longitude")}
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(
-                          Number(e.target.value),
-                        )
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="md:col-span-2">
+              <FormItem>
+                <FormLabel>{t("Location Pin")}</FormLabel>
+                <LocationPicker
+                  initialLat={form.getValues("latitude")}
+                  initialLng={form.getValues("longitude")}
+                  onChange={(lat, lng) => {
+                    form.setValue("latitude", lat, { shouldValidate: true });
+                    form.setValue("longitude", lng, { shouldValidate: true });
+                  }}
+                />
+              </FormItem>
+            </div>
 
             <FormField
               control={form.control}

@@ -1,3 +1,4 @@
+import NewEntityButton from "@/components/common/new-entity-button/button";
 import CompaniesDataTable from "@/components/dashboard/companies/companies-data-table";
 import CompaniesStats from "@/components/dashboard/companies/stats";
 import Header from "@/components/dashboard/header/header";
@@ -14,13 +15,10 @@ const Companies = () => {
           description="show all companies in the system , with reports"
         />
 
-        <div className="">
-          <Link href="/dashboard/companies/new">
-            <Button className="bg-[rgba(248,142,140,0.97)] text-white hover:bg-coralRed cursor-pointer py-4 ">
-              Add Company
-            </Button>
-          </Link>
-        </div>
+        <NewEntityButton
+          url="/dashboard/companies/new"
+          label="Add new Facility"
+        />
       </header>
       <div>
         <CompaniesStats />

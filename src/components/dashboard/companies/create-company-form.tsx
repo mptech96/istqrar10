@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
+import { LocationPicker } from "@/components/ui/location-picker";
 
 import { Company } from "@/types/company";
 
@@ -95,6 +96,8 @@ export default function CreateCompanyForm({
             initialData.commercial_registration,
           city: initialData.city,
           address: initialData.address,
+          latitude: initialData.latitude,
+          longitude: initialData.longitude,
           contact_person: initialData.contact_person,
           subscription_start:
             initialData.subscription_start,
@@ -122,6 +125,8 @@ export default function CreateCompanyForm({
           commercial_registration: "",
           city: "",
           address: "",
+          latitude: undefined,
+          longitude: undefined,
           contact_person: "",
           subscription_start: "",
           subscription_end: "",
@@ -326,6 +331,19 @@ export default function CreateCompanyForm({
                 </FormItem>
               )}
             />
+            <div className="md:col-span-2">
+              <FormItem>
+                <FormLabel>{t("Location Pin")}</FormLabel>
+                <LocationPicker
+                  initialLat={form.getValues("latitude")}
+                  initialLng={form.getValues("longitude")}
+                  onChange={(lat, lng) => {
+                    form.setValue("latitude", lat, { shouldValidate: true });
+                    form.setValue("longitude", lng, { shouldValidate: true });
+                  }}
+                />
+              </FormItem>
+            </div>
             <FormField
               control={form.control}
               name="contact_person"

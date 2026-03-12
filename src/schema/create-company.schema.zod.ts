@@ -36,6 +36,8 @@ export const createCompanySchema = (t: any, isEditMode: boolean = false) =>
     category: z.string().min(1, t("Category is required")),
     status: z.boolean().optional().default(true),
     is_verified: z.boolean().optional().default(false),
+    latitude: z.coerce.number().optional(),
+    longitude: z.coerce.number().optional(),
 
     // User Details
     user_name: z.string().min(1, t("User name is required")),

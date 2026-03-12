@@ -21,7 +21,7 @@ import {
   sidebarItems,
   SidebarItem,
 } from "@/components/dashboard/sidebar/sidebar-items";
-import Image from "next/image";
+import { ThemeLogo } from "@/components/ui/theme-logo";
 import {
   useAppDispatch,
   useAppSelector,
@@ -51,18 +51,16 @@ export function AppSidebar() {
   }, [user]);
 
   const logoutHandler = async () => {
-    console.log("logout");
     try {
       const res = await logout({}).unwrap();
-
-      console.log("logout", res);
       if (res.success) {
         toast.success(t("Logged out successfully"));
-        dispatch(logoutAction());
         router.push(`/login`);
+        dispatch(logoutAction());
       }
-    } catch (error) {
-      toast.error(t("Failed to logout"));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.message || t("Failed to logout"));
     }
   };
 
@@ -81,14 +79,8 @@ export function AppSidebar() {
     >
       <SidebarHeader className="  ">
         <div className="flex items-center gap-2 justify-center  ">
-          <div className=" ">
-            <Image
-              className="object-fill "
-              src="https://res.cloudinary.com/doxyvufkz/image/upload/v1772428106/ChatGPT_Image_Mar_2_2026_07_08_05_AM_ccmhaf.png"
-              alt="istqrar"
-              width={80}
-              height={80}
-            />
+          <div className="flex justify-center items-center w-full">
+            <ThemeLogo width={80} height={80} />
           </div>
           {/* <h2 className="text-xl font-semibold leading-12 text-(--primary-300)  h-16">
             {t("alballd")}

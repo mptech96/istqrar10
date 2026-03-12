@@ -24,12 +24,12 @@ const Loader = () => {
     <Dialog open={isLoading} onOpenChange={closeLoader}>
       <DialogContent
         showCloseButton={false}
-        className="fixed z-[9999] flex  max-w-none flex-col items-center justify-center gap-4 bg-black/50 backdrop-blur-sm border-none shadow-none rounded-none m-0 p-0 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        className="fixed z-[9999] flex w-24   flex-col items-center justify-center gap-4 bg-transparent backdrop-blur-sm border-none shadow-none rounded-none m-0 p-0 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 "
       >
         <DialogTitle className="sr-only">
           Spinner
         </DialogTitle>
-        <Spinner className="size-12 text-primary animate-spin" />
+        <Spinner className="size-12 text-primary animate-spin   " />
         {message && (
           <p className="text-sm font-medium text-muted-foreground animate-pulse text-center">
             {message}

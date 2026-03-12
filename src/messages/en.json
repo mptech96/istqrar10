@@ -673,10 +673,10 @@
   "Last Visit Percentage": "Last Visit Percentage",
   "Pending Corrections": "Pending Corrections",
   "Admin": "Admin",
-  "Super Admin": "Super Admin",
+  "Super Admin": "adminstrator ",
   "User": "User",
   "branch manager": "branch manager",
-  "company admin": "company admin",
+  "company admin": "facility admin",
   "Failed to update condition": "Failed to update condition",
   "Update Question": "Update Question",
   "Updating company": "Updating company",
@@ -750,6 +750,14 @@
   "feature_7": "Dispute Resolution Ticketing System",
   "feature_8": "Additional Services Based on Facility Size",
   "Riyadh - Saudi Arabia": "Riyadh - Saudi Arabia",
+  "Get Current Location": "Get Current Location",
+  "Location Pin": "Location Pin",
+  "Facilities": "Facilities",
   "It is an organization founded in 2025 that is interested in and specialized in developing and improving food safety and security quality and operational solutions, We support small, medium and large enterprises to maintain the highest level of quality and food safety and to build and develop operational plans": "It is an organization founded in 2025 that is interested in and specialized in developing and improving food safety and security quality and operational solutions. We support small, medium and large enterprises to maintain the highest level of quality and food safety and to build and develop operational plans",
-  "Contact us for any inquiries about quality control services": "Contact us for any inquiries about quality control services."
+  "Contact us for any inquiries about quality control services": "Contact us for any inquiries about quality control services.",
+  "Locating": "Locating",
+  "Sign In Now": "Sign In Now",
+  "Create new account": "Create new account",
+  "Forgot Password?": "Forgot Password?",
+  "Email or Phone Number": "Email or Phone Number"
 }

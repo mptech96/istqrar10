@@ -91,14 +91,14 @@ const About = () => {
         </div>
 
         {/* Middle Column: Diamond Image Layered Effect */}
-        <div className="flex justify-center order-2 px-12 py-10 lg:py-0">
+        <div className="flex justify-center order-2 px-12 py-14 ">
           <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96">
             {/* Background Layer (Red Diamond Offset) */}
             <motion.div
               initial={{
                 opacity: 0,
                 x: isRTL ? -40 : 40,
-                y: 0,
+                y: 40,
                 rotate: 45,
               }}
               whileInView={{
@@ -133,7 +133,7 @@ const About = () => {
                   src="https://res.cloudinary.com/doxyvufkz/image/upload/v1773190541/groups_daj24s.jpg"
                   alt="Istqrar Team"
                   width={350}
-                  height={500}
+                  height={450}
                   priority
                 />
               </div>

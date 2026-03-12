@@ -38,7 +38,7 @@ export const super_admin_items: SidebarItem[] = [
     
   },
   {
-    title: "Companies",
+    title: "Facilities",
     url: "/dashboard/companies",
     icon: Landmark,
     
