@@ -198,12 +198,12 @@ const VisitAreaChart = () => {
                 >
                   <stop
                     offset="5%"
-                    stopColor="#fff"
+                    stopColor="#10b981"
                     stopOpacity={0.9}
                   />
                   <stop
                     offset="95%"
-                    stopColor="#fff"
+                    stopColor="#10b981"
                     stopOpacity={0.1}
                   />
                 </linearGradient>
@@ -234,7 +234,7 @@ const VisitAreaChart = () => {
               <Area
                 type="monotone"
                 dataKey="visits"
-                stroke="#fff"
+                stroke="#10b981"
                 strokeWidth={3}
                 fillOpacity={1}
                 fill="url(#colorVisits)"

@@ -21,6 +21,7 @@ import {
 import { Visit } from "@/types/visit";
 import { useRouter } from "@/i18n/navigation";
 import { useAppSelector } from "@/lib/store";
+import { User } from "@/types/user";
 
 const DailyVisitsDataTable = () => {
   const { start, stop } = useLoader();
@@ -91,12 +92,23 @@ const DailyVisitsDataTable = () => {
     console.log(visit);
   };
 
-  const columns = getColumns(t, {
-    onStartVisit: handleStartVisit,
-    onEdit: handleEdit,
-    onDelete: handleDelete,
-    onStartQuestionnaire: handleStartQuestionnaire,
-  });
+  const handleShowReport = (visit: Visit) => {
+    // Handle show report action
+    router.push(
+      `/dashboard/visits/${visit.id}/visit-report`,
+    );
+  };
+  const columns = getColumns(
+    t,
+    {
+      onStartVisit: handleStartVisit,
+      onEdit: handleEdit,
+      onDelete: handleDelete,
+      onStartQuestionnaire: handleStartQuestionnaire,
+      onShowReport: handleShowReport,
+    },
+    user as User,
+  );
 
   return (
     <motion.div

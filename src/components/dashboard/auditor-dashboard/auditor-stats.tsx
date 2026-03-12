@@ -113,7 +113,7 @@ const AuditorStats = () => {
       },
     },
     {
-      title: getAuditorStats().completedVisits?.length,
+      title: getAuditorStats()?.completedVisits?.length,
       subtitle: t("Completed visits"),
       icon: <CircleCheckBig />,
       Badge: {
@@ -124,7 +124,7 @@ const AuditorStats = () => {
       },
     },
     {
-      title: getAuditorStats().inProgressVisits?.length,
+      title: getAuditorStats()?.inProgressVisits?.length,
       subtitle: t("Pending visits"),
       icon: <Clock />,
       Badge: {
@@ -135,7 +135,7 @@ const AuditorStats = () => {
       },
     },
     {
-      title: getAuditorStats().averagePercentage,
+      title: getAuditorStats()?.averagePercentage,
       subtitle: t("Average visit rating"),
       icon: <Star />,
       Badge: {

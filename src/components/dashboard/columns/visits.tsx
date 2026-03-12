@@ -31,7 +31,7 @@ export const getColumns = (
     onStartVisit: (visit: Visit) => void;
     onEdit: (visit: Visit) => void;
     onDelete: (visit: Visit) => void;
-    onStartQuestionnaire: (visit: Visit) => void;
+    onStartQuestionnaire?: (visit: Visit) => void;
     onShowReport: (visit: Visit) => void;
   },
   user: User,
@@ -152,7 +152,7 @@ export const getColumns = (
                 variant="outline"
                 size="sm"
                 onClick={() =>
-                  handlers.onStartQuestionnaire(visit)
+                  handlers.onStartQuestionnaire?.(visit)
                 }
               >
                 {t("Show Questionnaire")}

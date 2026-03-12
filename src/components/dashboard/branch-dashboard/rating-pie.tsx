@@ -15,6 +15,7 @@ interface RatingCategory {
   label: string;
   count: number;
   percentage: number;
+  avgScore: number;
   color: string;
 }
 
@@ -40,58 +41,64 @@ const RatingPie = () => {
           label: t("a"),
           count: 12,
           percentage: 40,
+          avgScore: 85,
           color: "#10b981",
         },
         {
           label: t("b"),
           count: 9,
           percentage: 30,
+          avgScore: 75,
           color: "#3b82f6",
         },
         {
           label: t("c"),
           count: 6,
           percentage: 20,
+          avgScore: 60,
           color: "#eab308",
         },
         {
           label: t("d"),
           count: 3,
           percentage: 10,
+          avgScore: 45,
           color: "#ef4444",
         },
       ];
     }
 
     // Process real data
-    const categories: Record<
-      string,
-      { count: number; color: string }
-    > = {
-      Excellent: { count: 0, color: "#10b981" },
-      Good: { count: 0, color: "#3b82f6" },
-      Satisfactory: { count: 0, color: "#eab308" },
-      Poor: { count: 0, color: "#ef4444" },
-    };
+    const categoryMap: Record<string, { count: number; totalPercentage: number }> = {};
 
     visits.data?.forEach((visit: any) => {
-      const p = visit.percentage || 0;
-      if (p >= 90) categories.Excellent.count++;
-      else if (p >= 75) categories.Good.count++;
-      else if (p >= 50) categories.Satisfactory.count++;
-      else categories.Poor.count++;
+      const cat = visit.category || t("Uncategorized");
+      if (!categoryMap[cat]) {
+        categoryMap[cat] = { count: 0, totalPercentage: 0 };
+      }
+      categoryMap[cat].count++;
+      categoryMap[cat].totalPercentage += visit.percentage || 0;
     });
 
-    const total = visits.length;
-    return Object.entries(categories)
-      .map(([label, data]) => ({
-        label: t(label),
-        count: data.count,
-        percentage:
-          total > 0 ? (data.count / total) * 100 : 0,
-        color: data.color,
-      }))
-      .filter((cat) => cat.count > 0 || !visits); // Keep all if no real visits to show mock behavior or empty state
+    const categoryColors = [
+      "#10b981", // Emerald
+      "#3b82f6", // Blue
+      "#f59e0b", // Amber
+      "#ef4444", // Red
+      "#8b5cf6", // Violet
+      "#ec4899", // Pink
+      "#06b6d4", // Cyan
+    ];
+
+    const totalVisits = visits.data?.length || 0;
+    
+    return Object.entries(categoryMap).map(([label, stats], index) => ({
+      label,
+      count: stats.count,
+      percentage: totalVisits > 0 ? (stats.count / totalVisits) * 100 : 0,
+      avgScore: stats.count > 0 ? stats.totalPercentage / stats.count : 0,
+      color: categoryColors[index % categoryColors.length],
+    }));
   }, [visits, isLoading, t]);
 
   // Generate conic gradient string
@@ -136,7 +143,7 @@ const RatingPie = () => {
               <div className="w-32 h-32 bg-white dark:bg-slate-950 rounded-full flex items-center justify-center shadow-inner">
                 <div className="text-center">
                   <p className="text-3xl font-extrabold text-slate-900 dark:text-white leading-none">
-                    {visits?.length || 30}
+                    {visits?.data?.length || 30}
                   </p>
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-1">
                     {t("Total Visits")}
@@ -163,9 +170,14 @@ const RatingPie = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-right">
-                  <span className="text-sm font-black text-slate-800 dark:text-slate-100">
-                    {data.count}
-                  </span>
+                  <div className="flex flex-col items-end">
+                    <span className="text-sm font-black text-slate-800 dark:text-slate-100">
+                      {data.count} {t("Visits")}
+                    </span>
+                    <span className="text-[10px] font-bold text-coralRed">
+                      {Math.round(data.avgScore)}% {t("Avg Score")}
+                    </span>
+                  </div>
                   <span className="text-[11px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 min-w-[40px] text-center">
                     {Math.round(data.percentage)}%
                   </span>
