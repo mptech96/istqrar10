@@ -28,7 +28,7 @@ const RatingPie = () => {
     useGetBranchVisitsQuery(String(branchId), {
       skip: !branchId,
     });
-  console.log("branch visits", visits);
+
   const ratingData = useMemo(() => {
     // If loading or no data, return mock data
     if (
@@ -69,15 +69,20 @@ const RatingPie = () => {
     }
 
     // Process real data
-    const categoryMap: Record<string, { count: number; totalPercentage: number }> = {};
+    const categoryMap: Record<
+      string,
+      { count: number; totalPercentage: number }
+    > = {};
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     visits.data?.forEach((visit: any) => {
       const cat = visit.category || t("Uncategorized");
       if (!categoryMap[cat]) {
         categoryMap[cat] = { count: 0, totalPercentage: 0 };
       }
       categoryMap[cat].count++;
-      categoryMap[cat].totalPercentage += visit.percentage || 0;
+      categoryMap[cat].totalPercentage +=
+        visit.percentage || 0;
     });
 
     const categoryColors = [
@@ -91,14 +96,23 @@ const RatingPie = () => {
     ];
 
     const totalVisits = visits.data?.length || 0;
-    
-    return Object.entries(categoryMap).map(([label, stats], index) => ({
-      label,
-      count: stats.count,
-      percentage: totalVisits > 0 ? (stats.count / totalVisits) * 100 : 0,
-      avgScore: stats.count > 0 ? stats.totalPercentage / stats.count : 0,
-      color: categoryColors[index % categoryColors.length],
-    }));
+
+    return Object.entries(categoryMap).map(
+      ([label, stats], index) => ({
+        label,
+        count: stats.count,
+        percentage:
+          totalVisits > 0
+            ? (stats.count / totalVisits) * 100
+            : 0,
+        avgScore:
+          stats.count > 0
+            ? stats.totalPercentage / stats.count
+            : 0,
+        color:
+          categoryColors[index % categoryColors.length],
+      }),
+    );
   }, [visits, isLoading, t]);
 
   // Generate conic gradient string
@@ -175,7 +189,8 @@ const RatingPie = () => {
                       {data.count} {t("Visits")}
                     </span>
                     <span className="text-[10px] font-bold text-coralRed">
-                      {Math.round(data.avgScore)}% {t("Avg Score")}
+                      {Math.round(data.avgScore)}%{" "}
+                      {t("Avg Score")}
                     </span>
                   </div>
                   <span className="text-[11px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 min-w-[40px] text-center">

@@ -208,12 +208,7 @@ export default function CreateCompanyForm({
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onInvalid = (errors: any) => {
-    console.log(
-      "Form validation failed with errors:",
-      errors,
-    );
-  };
+  const onInvalid = (errors: any) => {};
 
   const content = (
     <Form {...form}>
@@ -338,8 +333,12 @@ export default function CreateCompanyForm({
                   initialLat={form.getValues("latitude")}
                   initialLng={form.getValues("longitude")}
                   onChange={(lat, lng) => {
-                    form.setValue("latitude", lat, { shouldValidate: true });
-                    form.setValue("longitude", lng, { shouldValidate: true });
+                    form.setValue("latitude", lat, {
+                      shouldValidate: true,
+                    });
+                    form.setValue("longitude", lng, {
+                      shouldValidate: true,
+                    });
                   }}
                 />
               </FormItem>

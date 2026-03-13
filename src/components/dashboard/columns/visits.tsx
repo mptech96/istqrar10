@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Play, SquarePen, Trash } from "lucide-react";
 import VisitModel from "@/components/models/visit-model";
-import { getCookie } from "cookies-next";
+import LocatingBranchAuditor from "@/components/models/locating-branch-auditor";
 import { User } from "@/types/user";
 
 const getStatusVariant = (status: string) => {
@@ -127,10 +127,20 @@ export const getColumns = (
     header: t("Actions"),
     cell: ({ row }) => {
       const visit = row.original;
+
       return (
         <div className="flex gap-2">
+          {((user && user.role === "super_admin") ||
+            user?.role === "admin" ||
+            user?.role === "auditor") && (
+            <LocatingBranchAuditor
+              visit={visit}
+              userRole={user.role}
+            />
+          )}
           {visit.status !== "in_progress" &&
-            user.role === "auditor" && (
+            user &&
+            user?.role === "auditor" && (
               <Button
                 variant="outline"
                 size="sm"
@@ -147,7 +157,8 @@ export const getColumns = (
               </Button>
             )}
           {visit.status === "in_progress" &&
-            user.role === "auditor" && (
+            user &&
+            user?.role === "auditor" && (
               <Button
                 variant="outline"
                 size="sm"
@@ -159,8 +170,8 @@ export const getColumns = (
                 <Play />
               </Button>
             )}
-          {user.role === "admin" ||
-            (user.role === "super_admin" && (
+          {(user && user.role === "admin") ||
+            (user?.role === "super_admin" && (
               <>
                 <VisitModel visit={visit} />
                 <Button
@@ -172,7 +183,8 @@ export const getColumns = (
                 </Button>
               </>
             ))}
-          {user.role === "branch_manager" &&
+          {user &&
+            user?.role === "branch_manager" &&
             visit.status === "completed" && (
               <Button
                 variant="outline"

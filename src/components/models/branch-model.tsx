@@ -15,7 +15,6 @@ import { Branch } from "@/types/branch";
 import CreateBranchForm from "../dashboard/branches/create-branch-form";
 
 const BranchModel = ({ branch }: { branch: Branch }) => {
-  console.log("branch data", branch);
   const [open, setOpen] = useState(false);
   const t = useTranslations();
   return (

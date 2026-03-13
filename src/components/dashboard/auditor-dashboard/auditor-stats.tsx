@@ -49,7 +49,7 @@ const AuditorStats = () => {
   const { data, isLoading } = useGetVisitsQuery(
     query.toString(),
   );
-  console.log("auditor visits", data);
+
   useEffect(() => {
     if (isLoading) {
       start();
@@ -67,7 +67,7 @@ const AuditorStats = () => {
     const pendingVisits = data?.data?.filter(
       (visit: Visit) => visit.status === "in_progress",
     );
-    console.log("pendingVisits", pendingVisits);
+
     const inProgressVisits = data?.data?.filter(
       (visit: Visit) => visit.status === "in_progress",
     );
@@ -85,10 +85,9 @@ const AuditorStats = () => {
       }; */
     const averagePercentage =
       pendingVisits?.reduce((acc: number, visit: Visit) => {
-        console.log("visit", visit.percentage);
         return acc + (visit.percentage || 0);
       }, 0) / pendingVisits?.length;
-    console.log("averagePercentage", averagePercentage);
+
     return {
       totalVisits,
       completedVisits,
@@ -98,7 +97,6 @@ const AuditorStats = () => {
       averagePercentage,
     };
   }, [data]);
-  console.log("auditor stats", getAuditorStats());
 
   const statsConfig: StatsCardProps[] = [
     {

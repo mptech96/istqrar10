@@ -14,8 +14,12 @@ export const visitsApi = api.injectEndpoints({
       query: (query: string) => `/visits?${query}`,
       providesTags: ["Visits"],
     }),
+    getVisitById: build.query({
+      query: (id: string | number) => `/visits/${id}`,
+      providesTags: ["Visits"],
+    }),
     startVisit: build.mutation({
-      query: (id) => ({url:`visits/${id}/start`, method:"post"}),
+      query: ({id, data}) => ({url:`visits/${id}/start`, method:"post", body:data}),
       invalidatesTags: ["Visits"],
     }),
     editVisit: build.mutation({
@@ -72,7 +76,7 @@ export const visitsApi = api.injectEndpoints({
   }),
 });
 
-export const { useCreateVisitMutation, useGetVisitsQuery,
+export const { useCreateVisitMutation, useGetVisitsQuery, useGetVisitByIdQuery,
     useStartVisitMutation, useEditVisitMutation, 
     useDeleteVisitMutation, useGetVisitQuestionsQuery,
     useAnswerQuestionnaireMutation, useUpdateVisitMutation,

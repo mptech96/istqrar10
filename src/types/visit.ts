@@ -24,15 +24,21 @@ export type Visit = {
     id: number;
     name: string;
     code: string;
+    latitude?: number;
+    longitude?: number;
   };
   auditor?: {
     id: number;
     name: string;
     email: string;
+    latitude?: number;
+    longitude?: number;
   };
   checklist?: {
     id: number;
     name: string;
     code: string;
   };
+  start_latitude?: string;
+  start_longitude?: string;
 };

@@ -10,7 +10,7 @@ import { useAppSelector } from "@/lib/store";
 const UserAvatar = () => {
   const t = useTranslations();
   const { user } = useAppSelector((state) => state.auth);
-  console.log("data", user);
+
   return (
     <>
       <Avatar>

@@ -48,7 +48,7 @@ const VisitsDataTable = () => {
     isLoading,
     error,
   } = useGetVisitsQuery(query);
-  console.log("visits", paginatedVisits);
+  console.log("paginatedVisits", paginatedVisits);
   useEffect(() => {
     if (isLoading || isStartingVisit) {
       start();
@@ -63,23 +63,52 @@ const VisitsDataTable = () => {
 
   // Handle start visit action
   const handleStartVisit = async (visit: Visit) => {
-    try {
-      const res = await startVisit(visit.id).unwrap();
-      if (res.data.status === "in_progress") {
-        toast.success(t("Visit started successfully"));
-        router.push(
-          `/dashboard/visits/${visit.id}/question-list`,
-        );
-      } else {
-        console.log("start res ", res.message);
-        throw new Error(res.message);
-      }
-    } catch (error: any) {
-      console.log("start error ", error);
+    if (!navigator.geolocation) {
       toast.error(
-        error.data.message || t("Failed to start visit"),
+        t("Geolocation is not supported by your browser"),
       );
+      return;
     }
+    console.log("visit", visit.id);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          console.log("position", {
+            start_latitude: position.coords.latitude,
+            start_longitude: position.coords.longitude,
+          });
+          const res = await startVisit({
+            id: visit.id,
+            data: {
+              start_latitude: position.coords.latitude,
+              start_longitude: position.coords.longitude,
+            },
+          }).unwrap();
+          if (res.data.status === "in_progress") {
+            toast.success(t("Visit started successfully"));
+            router.push(
+              `/dashboard/visits/${visit.id}/question-list`,
+            );
+          } else {
+            throw new Error(res.message);
+          }
+        } catch (error: any) {
+          toast.error(
+            error.data?.message ||
+              t("Failed to start visit"),
+          );
+        }
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        toast.error(
+          t(
+            "Please enable location access to start the visit",
+          ),
+        );
+      },
+      { enableHighAccuracy: true },
+    );
   };
   const handleStartQuestionnaire = async (visit: Visit) => {
     router.push(

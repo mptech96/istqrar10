@@ -28,7 +28,6 @@ const ChecklistsDataTable = () => {
     isLoading,
     error,
   } = useGetChecklistsQuery(query);
-  console.log("paginatedChecklists", paginatedChecklists);
 
   useEffect(() => {
     if (isLoading) {

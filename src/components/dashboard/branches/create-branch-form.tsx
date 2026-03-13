@@ -180,7 +180,6 @@ export default function CreateBranchForm({
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log("error", error);
       toast.error(
         isEditMode
           ? error?.data?.message ||
@@ -381,8 +380,12 @@ export default function CreateBranchForm({
                   initialLat={form.getValues("latitude")}
                   initialLng={form.getValues("longitude")}
                   onChange={(lat, lng) => {
-                    form.setValue("latitude", lat, { shouldValidate: true });
-                    form.setValue("longitude", lng, { shouldValidate: true });
+                    form.setValue("latitude", lat, {
+                      shouldValidate: true,
+                    });
+                    form.setValue("longitude", lng, {
+                      shouldValidate: true,
+                    });
                   }}
                 />
               </FormItem>

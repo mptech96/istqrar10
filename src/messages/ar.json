@@ -901,5 +901,9 @@
   "Create new account": "إنشاء حساب جديد",
   "Forgot Password?": "هل نسيت كلمة المرور ؟",
   "Email or Phone Number": "البريد الإلكتروني أو رقم الجوال",
-  "Add new Facility":"اضافة منشأه جديدة"
+  "Add new Facility": "اضافة منشأه جديدة",
+  "Locate Branch and Auditor": "تحديد موقع الفرع والمراجع",
+  "Locate": "تحديد موقع",
+  "Visit Location": "موقع الزيارة ",
+  "Please enable location access to start the visit": "يرجى تمكين الوصول إلى الموقع لبدء الزيارة"
 }

@@ -27,8 +27,6 @@ const BranchStats = () => {
   const { data: branchStats, isLoading } =
     useGetBranchStatsQuery(String(user?.branch_id));
 
-  console.log("branchStats", branchStats);
-
   const statsConfig: StatsCardProps[] = [
     {
       title: "2",

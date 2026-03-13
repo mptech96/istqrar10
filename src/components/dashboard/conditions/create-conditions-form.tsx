@@ -86,7 +86,7 @@ export function CreateConditionsForm({
     isLoading: criteriaIsLoading,
     error: criteriaError,
   } = useGetCriteriaQuery("page=1&limit=1000");
-  console.log(criteriaData);
+
   const { start, stop } = useLoader();
 
   useEffect(() => {
@@ -212,7 +212,7 @@ export function CreateConditionsForm({
         }
       }
     });
-    console.log(formData);
+
     try {
       if (isEditMode && initialData) {
         await updateCondition({

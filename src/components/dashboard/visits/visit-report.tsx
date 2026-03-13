@@ -25,7 +25,6 @@ const VisitReport = () => {
   } = useGetVisitReportQuery(params.visitId as string);
   const t = useTranslations();
 
-  console.log("visitReport", visitReport);
   useEffect(() => {
     if (isLoading) {
       start();

@@ -39,6 +39,7 @@ const DailyVisitsDataTable = () => {
 
   const [startVisit, { isLoading: isStartingVisit }] =
     useStartVisitMutation();
+  const [starting, setStarting] = useState(false);
   const [editVisit] = useEditVisitMutation();
   const [deleteVisit] = useDeleteVisitMutation();
   const {
@@ -46,9 +47,9 @@ const DailyVisitsDataTable = () => {
     isLoading,
     error,
   } = useGetVisitsQuery(query.toString());
-  console.log("visits", paginatedVisits);
+
   useEffect(() => {
-    if (isLoading || isStartingVisit) {
+    if (isStartingVisit) {
       start();
     } else {
       stop();
@@ -61,21 +62,56 @@ const DailyVisitsDataTable = () => {
 
   // Handle start visit action
   const handleStartVisit = async (visit: Visit) => {
-    try {
-      const res = await startVisit(visit.id).unwrap();
-      if (res.data.status === "in_progress") {
-        toast.success(t("Visit started successfully"));
-        router.push(
-          `/dashboard/visits/${visit.id}/question-list`,
-        );
-      } else {
-        throw new Error(t("Failed to start visit"));
-      }
-    } catch (error: any) {
+    if (!navigator.geolocation) {
       toast.error(
-        error.message || t("Failed to start visit"),
+        t("Geolocation is not supported by your browser"),
       );
+      return;
     }
+    setStarting(true);
+    console.log("visit", visit.id);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          console.log("position", {
+            start_latitude: position.coords.latitude,
+            start_longitude: position.coords.longitude,
+          });
+          const res = await startVisit({
+            id: visit.id,
+            data: {
+              start_latitude: position.coords.latitude,
+              start_longitude: position.coords.longitude,
+            },
+          }).unwrap();
+          if (res.data.status === "in_progress") {
+            toast.success(t("Visit started successfully"));
+            router.push(
+              `/dashboard/visits/${visit.id}/question-list`,
+            );
+          } else {
+            throw new Error(res.message);
+          }
+        } catch (error: any) {
+          toast.error(
+            error.data?.message ||
+              t("Failed to start visit"),
+          );
+        } finally {
+          setStarting(false);
+        }
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        toast.error(
+          t(
+            "Please enable location access to start the visit",
+          ),
+        );
+        setStarting(false);
+      },
+      { enableHighAccuracy: true },
+    );
   };
   const handleStartQuestionnaire = async (visit: Visit) => {
     router.push(
@@ -84,12 +120,10 @@ const DailyVisitsDataTable = () => {
   };
   const handleEdit = (visit: Visit) => {
     // Handle edit action
-    console.log(visit);
   };
 
   const handleDelete = (visit: Visit) => {
     // Handle delete action
-    console.log(visit);
   };
 
   const handleShowReport = (visit: Visit) => {

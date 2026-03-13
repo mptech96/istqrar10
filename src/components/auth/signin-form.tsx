@@ -36,7 +36,7 @@ export default function SignInForm() {
   const { language } = useAppSelector(
     (state) => state.settings,
   );
-  console.log(language);
+
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const form = useForm<
@@ -62,7 +62,6 @@ export default function SignInForm() {
   async function onSubmit(
     values: z.infer<typeof signinSchema>,
   ) {
-    console.log(values);
     // Handle login logic here
     try {
       const res = await login(values).unwrap();

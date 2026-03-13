@@ -759,5 +759,9 @@
   "Sign In Now": "Sign In Now",
   "Create new account": "Create new account",
   "Forgot Password?": "Forgot Password?",
-  "Email or Phone Number": "Email or Phone Number"
+  "Email or Phone Number": "Email or Phone Number",
+  "Locate Branch and Auditor": "Locate Branch and Auditor",
+  "Locate": "Locate",
+  "Visit Location": "Visit Location",
+  "Please enable location access to start the visit": "Please enable location access to start the visit"
 }

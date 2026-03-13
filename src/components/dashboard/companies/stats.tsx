@@ -17,7 +17,7 @@ const CompaniesStats = () => {
   const t = useTranslations();
   const { data: companyStatistics, isLoading } =
     useGetCompanyStatisticsQuery(1);
-  console.log("companyStatistics", companyStatistics);
+
   const statsConfig: StatsCardProps[] = [
     {
       title: "5",

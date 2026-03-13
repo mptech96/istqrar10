@@ -312,7 +312,6 @@ export function VisitAnswersForm() {
 
   const handleCloseVisit = async () => {
     try {
-      console.log("visitId", visitId);
       await closeVisit({
         id: visitId,
         data: {
@@ -344,9 +343,10 @@ export function VisitAnswersForm() {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit, (errors) => {
-          console.log("Validation Errors:", errors);
-        })}
+        onSubmit={form.handleSubmit(
+          onSubmit,
+          (errors) => {},
+        )}
         className="space-y-6"
       >
         {/* Score Card */}

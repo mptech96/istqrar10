@@ -39,7 +39,7 @@ const CompaniesDataTable = () => {
     isLoading,
     error,
   } = useGetCompaniesQuery(query);
-  console.log(paginatedCompanies);
+
   useEffect(() => {
     if (isLoading) {
       start();

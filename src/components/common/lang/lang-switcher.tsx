@@ -23,7 +23,6 @@ const LangSwitcher = () => {
     (state) => state.settings,
   );
   const toggleLanguage = (newLanguage: Language) => {
-    console.log(newLanguage);
     dispatch(setLanguage(newLanguage));
     router.replace(pathname, { locale: newLanguage });
   };
