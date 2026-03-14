@@ -130,7 +130,12 @@ const VisitsDataTable = () => {
       `/dashboard/visits/${visit.id}/visit-report`,
     );
   };
-
+  const handleShowAIAnalysis = (visit: Visit) => {
+    // Handle show report action
+    router.push(
+      `/dashboard/visits/${visit.id}/ai-analysis`,
+    );
+  };
   const columns = getColumns(
     t,
     {
@@ -139,6 +144,7 @@ const VisitsDataTable = () => {
       onDelete: handleDelete,
       onStartQuestionnaire: handleStartQuestionnaire,
       onShowReport: handleShowReport,
+      onShowAIAnalysis: handleShowAIAnalysis,
     },
     user as User,
   );

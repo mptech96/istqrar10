@@ -5,7 +5,7 @@ import { Visit } from "@/types/visit";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Play, SquarePen, Trash } from "lucide-react";
+import { Bot, Play, SquarePen, Trash } from "lucide-react";
 import VisitModel from "@/components/models/visit-model";
 import LocatingBranchAuditor from "@/components/models/locating-branch-auditor";
 import { User } from "@/types/user";
@@ -33,6 +33,7 @@ export const getColumns = (
     onDelete: (visit: Visit) => void;
     onStartQuestionnaire?: (visit: Visit) => void;
     onShowReport: (visit: Visit) => void;
+    onShowAIAnalysis: (visit: Visit) => void;
   },
   user: User,
 ): ColumnDef<Visit>[] => [
@@ -186,14 +187,27 @@ export const getColumns = (
           {user &&
             user?.role === "branch_manager" &&
             visit.status === "completed" && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlers.onShowReport(visit)}
-              >
-                {t("Show Report")}
-                <SquarePen />
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    handlers.onShowReport(visit)
+                  }
+                >
+                  {t("Show Report")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    handlers.onShowAIAnalysis(visit)
+                  }
+                >
+                  <Bot />
+                  {t("AI Analysis")}
+                </Button>
+              </>
             )}
         </div>
       );

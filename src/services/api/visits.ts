@@ -73,6 +73,18 @@ export const visitsApi = api.injectEndpoints({
       query: (id: string) => `/visits/${id}/analysis`,
       providesTags: ["VisitReport"],
     }),
+    getVisitAIAnalysis: build.query({
+      query: (id: string) => `/visits/${id}/deep-analysis/latest`,
+      providesTags: (result, error, id) => [{ type: "VisitAIAnalysis", id }],
+    }),
+    createVisitAIAnalysis: build.mutation({
+      query: ({id, data}) => ({
+        url: `/visits/${id}/deep-analysis`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: "VisitAIAnalysis", id }],
+    }),
   }),
 });
 
@@ -80,5 +92,6 @@ export const { useCreateVisitMutation, useGetVisitsQuery, useGetVisitByIdQuery,
     useStartVisitMutation, useEditVisitMutation, 
     useDeleteVisitMutation, useGetVisitQuestionsQuery,
     useAnswerQuestionnaireMutation, useUpdateVisitMutation,
-    useGetBranchVisitsQuery,useCloseVisitMutation, useGetVisitReportQuery
+    useGetBranchVisitsQuery,useCloseVisitMutation, useGetVisitReportQuery,
+    useGetVisitAIAnalysisQuery, useCreateVisitAIAnalysisMutation
      } = visitsApi;
