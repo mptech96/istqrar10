@@ -821,5 +821,20 @@
   "ai_analysis_high_risks_desc": "Risks that could significantly affect service quality or customer satisfaction.",
   "ai_analysis_compliance": "Compliance",
   "ai_analysis_compliance_desc": "Facility's compliance level with legal standards and regulations.",
-  "ai_analysis_assessment_summary": "Assessment Summary"
+  "ai_analysis_assessment_summary": "Assessment Summary",
+  "Users Management": "Users Management",
+  "Max Allowed Branches": "Max Allowed Branches",
+  "Max Allowed Users": "Max Allowed Users",
+  "Admin User Selection": "Admin User Selection",
+  "Select Existing Admin": "Select Existing Admin",
+  "Use Existing Admin": "Use Existing Admin",
+  "Create New User": "Create New User",
+  "Please select an existing admin": "Please select an existing admin",
+  "ID must be 10 digits": "ID must be 10 digits",
+  "Invalid Saudi National ID": "Invalid Saudi National ID",
+  "Enter max users": "Enter max users",
+  "Enter max branches": "Enter max branches",
+  "Max users must be at least 1": "Max users must be at least 1",
+  "Max branches must be at least 1": "Max branches must be at least 1"
+  
 }

@@ -30,6 +30,8 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useLoader } from "@/hooks/use-loader";
+import { useGetCompaniesQuery } from "@/services/api/companies";
+import { useGetBranchesQuery } from "@/services/api/branches";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -49,6 +51,8 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 
 import { Inspectors } from "@/types/inspectors";
+import { Company } from "@/types/company";
+import { Branch } from "@/types/branch";
 
 interface CreateInspectorFormProps {
   initialData?: Inspectors;
@@ -68,6 +72,8 @@ export default function CreateInspectorForm({
     useCreateInspectorMutation();
   const [updateInspector, { isLoading: isUpdating }] =
     useUpdateInspectorMutation();
+  const { data: companiesData } = useGetCompaniesQuery("");
+  const { data: branchesData } = useGetBranchesQuery("");
   const [showPassword, setShowPassword] = useState(false);
   const language = useLocale();
   const isEditMode = !!initialData;
@@ -118,6 +124,10 @@ export default function CreateInspectorForm({
               )
             : "",
           gender: initialData.gender || "",
+          company_id:
+            initialData.company_id?.toString() || "",
+          branch_id:
+            initialData.branch_id?.toString() || "",
           status: initialData.status,
           must_change_password:
             initialData.must_change_password,
@@ -137,6 +147,8 @@ export default function CreateInspectorForm({
           id_expiry: "",
           birth_date: "",
           gender: "",
+          company_id: "",
+          branch_id: "",
           status: 1,
           must_change_password: false,
         },
@@ -321,46 +333,26 @@ export default function CreateInspectorForm({
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
-              name="role"
+              name="national_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("Role")} *</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={t("Select Role")}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="auditor">
-                        {t("Auditor")}
-                      </SelectItem>
-
-                      <SelectItem value="super_admin">
-                        {t("Super Admin")}
-                      </SelectItem>
-
-                      <SelectItem value="branch_manager">
-                        {t("branch manager")}
-                      </SelectItem>
-                      <SelectItem value="company_admin">
-                        {t("company admin")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>
+                    {t("National Number")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t(
+                        "Enter national number",
+                      )}
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="department"
@@ -387,27 +379,6 @@ export default function CreateInspectorForm({
                   <FormControl>
                     <Input
                       placeholder={t("Enter position")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="national_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("National Number")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t(
-                        "Enter national number",
-                      )}
                       {...field}
                     />
                   </FormControl>
@@ -509,6 +480,123 @@ export default function CreateInspectorForm({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("Role")} *</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={t("Select Role")}
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="auditor">
+                        {t("Auditor")}
+                      </SelectItem>
+
+                      <SelectItem value="super_admin">
+                        {t("Super Admin")}
+                      </SelectItem>
+
+                      <SelectItem value="branch_manager">
+                        {t("branch manager")}
+                      </SelectItem>
+                      <SelectItem value="company_admin">
+                        {t("company admin")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {form.watch("role") === "company_admin" && (
+              <FormField
+                control={form.control}
+                name="company_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t("Select Company")}
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t(
+                              "Select Company",
+                            )}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {companiesData?.data.map(
+                          (company: Company) => (
+                            <SelectItem
+                              key={company.id}
+                              value={company.id.toString()}
+                            >
+                              {company.name}
+                            </SelectItem>
+                          ),
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {form.watch("role") === "branch_manager" && (
+              <FormField
+                control={form.control}
+                name="branch_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t("Select Branch")}
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t("Select Branch")}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {branchesData?.data.map(
+                          (branch: Branch) => (
+                            <SelectItem
+                              key={branch.id}
+                              value={branch.id.toString()}
+                            >
+                              {branch.name}
+                            </SelectItem>
+                          ),
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}

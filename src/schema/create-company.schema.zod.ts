@@ -38,26 +38,18 @@ export const createCompanySchema = (t: any, isEditMode: boolean = false) =>
     is_verified: z.boolean().optional().default(false),
     latitude: z.coerce.number().optional(),
     longitude: z.coerce.number().optional(),
+    max_allowed_branches: z.coerce.number().min(1, t("Max branches must be at least 1")),
+    max_allowed_users: z.coerce.number().min(1, t("Max users must be at least 1")),
 
-    // User Details
-    user_name: z.string().min(1, t("User name is required")),
-    user_email: z.string().email(t("Invalid user email address")),
-    user_password: isEditMode
-      ? z.string()?.regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/,
-        {
-          message: t("Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one special character '!@$%^&*#', and one number"),
-        }
-      ).optional()
-      : z.string().regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/,
-        {
-          message: t("Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one special character '!@$%^&*#', and one number"),
-        }
-      ),
-    user_password_confirmation: isEditMode
-      ? z.string().optional()
-      : z.string().min(1, t("Password confirmation is required")),
+    // User Selection
+    use_existing_user: z.boolean().default(false),
+    user_id: z.string().optional(),
+
+    // User Details (Conditional)
+    user_name: z.string().optional(),
+    user_email: z.string().optional(),
+    user_password: z.string().optional(),
+    user_password_confirmation: z.string().optional(),
     user_phone: z.string().optional(),
     user_personal_photo: z
       .any()
@@ -78,12 +70,69 @@ export const createCompanySchema = (t: any, isEditMode: boolean = false) =>
     user_birth_date: z.string().optional(),
     user_gender: z.coerce.number().optional(), 
     user_status: z.boolean().optional().default(true),
-  }).refine((data) => {
-    if (isEditMode && (!data.user_password && !data.user_password_confirmation)) {
-      return true;
+  })
+  .superRefine((data, ctx) => {
+    // If use_existing_user is TRUE, user_id is required
+    if (data.use_existing_user) {
+      if (!data.user_id || data.user_id === "new" || data.user_id === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("Please select an existing admin"),
+          path: ["user_id"],
+        });
+      }
+    } else {
+      // If use_existing_user is FALSE, then user details are required
+      if (!data.user_name || data.user_name.length < 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("User name is required"),
+          path: ["user_name"],
+        });
+      }
+      if (!data.user_email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.user_email)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("Invalid user email address"),
+          path: ["user_email"],
+        });
+      }
+      
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/;
+      
+      if (!isEditMode) {
+        if (!data.user_password || !passwordRegex.test(data.user_password)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one special character '!@$%^&*#', and one number"),
+            path: ["user_password"],
+          });
+        }
+        if (!data.user_password_confirmation || data.user_password_confirmation !== data.user_password) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("Passwords do not match"),
+            path: ["user_password_confirmation"],
+          });
+        }
+      } else {
+        // In Edit Mode, password is only required if password or confirmation is provided
+        if (data.user_password || data.user_password_confirmation) {
+          if (!data.user_password || !passwordRegex.test(data.user_password)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t("Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one special character '!@$%^&*#', and one number"),
+              path: ["user_password"],
+            });
+          }
+          if (data.user_password_confirmation !== data.user_password) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t("Passwords do not match"),
+              path: ["user_password_confirmation"],
+            });
+          }
+        }
+      }
     }
-    return data.user_password === data.user_password_confirmation;
-  }, {
-    message: t("Passwords do not match"),
-    path: ["user_password_confirmation"],
   });

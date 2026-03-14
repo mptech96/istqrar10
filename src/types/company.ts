@@ -8,6 +8,8 @@ export interface Company {
   address: string;
   latitude?: number;
   longitude?: number;
+  max_allowed_branches: number;
+  max_allowed_users: number;
   contact_person: string;
   logo: string | null;
   subscription_start: string;

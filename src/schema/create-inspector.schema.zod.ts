@@ -19,7 +19,11 @@ export const createInspectorSchema = (t: any) =>
     role: z.string().min(1, t("Role is required")),
     department: z.string().optional(),
     position: z.string().optional(),
-    national_number: z.string().optional(),
+    national_number: z.string().min(10, t("ID must be 10 digits"))
+    .max(10, t("ID must be 10 digits"))
+    .regex(/^[12]\d{9}$/, t("Invalid Saudi National ID")),
+    company_id: z.string().optional(),
+    branch_id: z.string().optional(),
     
     municipality_certificate: z
       .any()

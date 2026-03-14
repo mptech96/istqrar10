@@ -27,6 +27,7 @@ import {
   useCreateCompanyMutation,
   useUpdateCompanyMutation,
 } from "@/services/api/companies";
+import { useGetInspectorsQuery } from "@/services/api/inspectors";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useLoader } from "@/hooks/use-loader";
@@ -48,8 +49,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import { LocationPicker } from "@/components/ui/location-picker";
+import { Switch } from "@/components/ui/switch";
 
 import { Company } from "@/types/company";
+import { User } from "@/types/user";
 
 interface CreateCompanyFormProps {
   initialData?: Company;
@@ -70,6 +73,9 @@ export default function CreateCompanyForm({
     useCreateCompanyMutation();
   const [updateCompany, { isLoading: isUpdating }] =
     useUpdateCompanyMutation();
+  const { data: adminsData } = useGetInspectorsQuery(
+    "page=1&page_size=100&role=company_admin",
+  );
   const [showPassword, setShowPassword] = useState(false);
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
@@ -98,10 +104,16 @@ export default function CreateCompanyForm({
           address: initialData.address,
           latitude: initialData.latitude,
           longitude: initialData.longitude,
+          max_allowed_branches:
+            initialData.max_allowed_branches || 1,
+          max_allowed_users:
+            initialData.max_allowed_users || 1,
           contact_person: initialData.contact_person,
           subscription_start:
             initialData.subscription_start,
           subscription_end: initialData.subscription_end,
+          user_id:
+            initialData.manager?.id?.toString() || "",
           user_name: initialData.manager?.name || "",
           user_email: initialData.manager?.email || "",
           user_password: "",
@@ -127,9 +139,13 @@ export default function CreateCompanyForm({
           address: "",
           latitude: undefined,
           longitude: undefined,
+          max_allowed_branches: 1,
+          max_allowed_users: 1,
           contact_person: "",
           subscription_start: "",
           subscription_end: "",
+          use_existing_user: false,
+          user_id: "",
           user_name: "",
           user_email: "",
           user_password: "",
@@ -157,6 +173,18 @@ export default function CreateCompanyForm({
   ) {
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
+      // Ignore user details if user_id is selected (and not "new")
+      const isManualUserField =
+        key.startsWith("user_") &&
+        key !== "user_id" &&
+        key !== "use_existing_user";
+      if (values.use_existing_user && isManualUserField) {
+        return;
+      }
+
+      // Ignore use_existing_user virtual field
+      if (key === "use_existing_user") return;
+
       // Ignore empty password fields when updating
       if (
         isEditMode &&
@@ -294,55 +322,7 @@ export default function CreateCompanyForm({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("City")} *</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("Enter city")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("Address")} *</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("Enter address")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="md:col-span-2">
-              <FormItem>
-                <FormLabel>{t("Location Pin")}</FormLabel>
-                <LocationPicker
-                  initialLat={form.getValues("latitude")}
-                  initialLng={form.getValues("longitude")}
-                  onChange={(lat, lng) => {
-                    form.setValue("latitude", lat, {
-                      shouldValidate: true,
-                    });
-                    form.setValue("longitude", lng, {
-                      shouldValidate: true,
-                    });
-                  }}
-                />
-              </FormItem>
-            </div>
+
             <FormField
               control={form.control}
               name="contact_person"
@@ -381,40 +361,43 @@ export default function CreateCompanyForm({
             />
             <FormField
               control={form.control}
-              name="status"
+              name="max_allowed_branches"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md  p-4">
+                <FormItem>
+                  <FormLabel>
+                    {t("Max Allowed Branches")} *
+                  </FormLabel>
                   <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
+                    <Input
+                      type="number"
+                      placeholder={t("Enter max branches")}
+                      {...field}
                     />
                   </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>{t("Status")}</FormLabel>
-                  </div>
+                  <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
-              name="is_verified"
+              name="max_allowed_users"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md  p-4">
+                <FormItem>
+                  <FormLabel>
+                    {t("Max Allowed Users")} *
+                  </FormLabel>
                   <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
+                    <Input
+                      type="number"
+                      placeholder={t("Enter max users")}
+                      {...field}
                     />
                   </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      {t("Is Verified")}
-                    </FormLabel>
-                  </div>
+                  <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="subscription_start"
@@ -583,7 +566,73 @@ export default function CreateCompanyForm({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md  p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>{t("Status")}</FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
 
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("City")} *</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("Enter city")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("Address")} *</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("Enter address")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="md:col-span-2">
+              <FormItem>
+                <FormLabel>{t("Location Pin")}</FormLabel>
+                <LocationPicker
+                  initialLat={form.getValues("latitude")}
+                  initialLng={form.getValues("longitude")}
+                  onChange={(lat, lng) => {
+                    form.setValue("latitude", lat, {
+                      shouldValidate: true,
+                    });
+                    form.setValue("longitude", lng, {
+                      shouldValidate: true,
+                    });
+                  }}
+                />
+              </FormItem>
+            </div>
             <FormField
               control={form.control}
               name="logo"
@@ -613,248 +662,344 @@ export default function CreateCompanyForm({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="is_verified"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md  p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>
+                      {t("Is Verified")}
+                    </FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
           </div>
         </div>
 
         <Separator />
 
-        {/* User Details */}
+        {/* User Selection Toggle */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Admin User Details")}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium">
+              {t("Admin User Selection")}
+            </h3>
             <FormField
               control={form.control}
-              name="user_name"
+              name="use_existing_user"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("User Name")} *</FormLabel>
+                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
                   <FormControl>
-                    <Input
-                      placeholder={t("Enter user name")}
-                      {...field}
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="user_email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("User Email")} *</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("Enter user email")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="user_password"
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-4">
-                  <FormLabel>{t("Password")}</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={
-                          showPassword ? "text" : "password"
-                        }
-                        placeholder="p@ssw0rd"
-                        className={`${locale === "ar" ? "pl-10" : "pr-10"}`}
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowPassword(!showPassword)
-                        }
-                        className={`absolute  top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${locale === "ar" ? "left-3" : "right-3"}`}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="user_password_confirmation"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("Confirm Password")} *
+                  <FormLabel className="text-sm font-normal cursor-pointer">
+                    {t("Use Existing Admin")}
                   </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder={t("Confirm password")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="user_phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("User Phone")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("Enter user phone")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="user_birth_date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>
-                    {t("Date of Birth")}
-                  </FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-full pl-3 text-left font-normal flex items-center justify-between",
-                            !field.value &&
-                              "text-muted-foreground",
-                          )}
-                        >
-                          {field.value ? (
-                            format(
-                              new Date(field.value),
-                              "PPP",
-                            )
-                          ) : (
-                            <span>
-                              {t("Pick a date of birth")}
-                            </span>
-                          )}
-                          <CalendarIcon className=" h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={
-                          field.value
-                            ? new Date(field.value)
-                            : undefined
-                        }
-                        onSelect={(date) =>
-                          field.onChange(
-                            date
-                              ? format(date, "yyyy-MM-dd")
-                              : "",
-                          )
-                        }
-                        disabled={(date) =>
-                          date > new Date() ||
-                          date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                        captionLayout="dropdown"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="user_gender"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("Gender")}</FormLabel>
-                  <Select
-                    onValueChange={(val) =>
-                      field.onChange(Number(val))
-                    }
-                    defaultValue={field.value?.toString()}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={t("Select gender")}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="1">
-                        {t("Male")}
-                      </SelectItem>
-                      <SelectItem value="2">
-                        {t("Female")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="user_personal_photo"
-              render={({
-                field: {
-                  value: _value,
-                  onChange,
-                  ...fieldProps
-                },
-              }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("Personal Photo")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...fieldProps}
-                      type="file"
-                      accept="image/*"
-                      onChange={(event) => {
-                        onChange(
-                          event.target.files &&
-                            event.target.files[0],
-                        );
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
           </div>
+
+          {form.watch("use_existing_user") && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="user_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t("Select Existing Admin")}
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t(
+                              "Select Existing Admin",
+                            )}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {adminsData?.data?.map(
+                          (user: User) => (
+                            <SelectItem
+                              key={user.id}
+                              value={user.id.toString()}
+                            >
+                              {user.name} ({user.email})
+                            </SelectItem>
+                          ),
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
         </div>
+
+        {/* User Details */}
+        {!form.watch("use_existing_user") && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">
+              {t("Admin User Details")}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="user_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t("User Name")} *
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("Enter user name")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="user_email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t("User Email")} *
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("Enter user email")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="user_password"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-4">
+                    <FormLabel>{t("Password")}</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type={
+                            showPassword
+                              ? "text"
+                              : "password"
+                          }
+                          placeholder="p@ssw0rd"
+                          className={`${locale === "ar" ? "pl-10" : "pr-10"}`}
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowPassword(!showPassword)
+                          }
+                          className={`absolute  top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${locale === "ar" ? "left-3" : "right-3"}`}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="user_password_confirmation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t("Confirm Password")} *
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder={t("Confirm password")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="user_phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("User Phone")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("Enter user phone")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="user_birth_date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>
+                      {t("Date of Birth")}
+                    </FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full pl-3 text-left font-normal flex items-center justify-between",
+                              !field.value &&
+                                "text-muted-foreground",
+                            )}
+                          >
+                            {field.value ? (
+                              format(
+                                new Date(field.value),
+                                "PPP",
+                              )
+                            ) : (
+                              <span>
+                                {t("Pick a date of birth")}
+                              </span>
+                            )}
+                            <CalendarIcon className=" h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto p-0"
+                        align="start"
+                      >
+                        <Calendar
+                          mode="single"
+                          selected={
+                            field.value
+                              ? new Date(field.value)
+                              : undefined
+                          }
+                          onSelect={(date) =>
+                            field.onChange(
+                              date
+                                ? format(date, "yyyy-MM-dd")
+                                : "",
+                            )
+                          }
+                          disabled={(date) =>
+                            date > new Date() ||
+                            date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                          captionLayout="dropdown"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="user_gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("Gender")}</FormLabel>
+                    <Select
+                      onValueChange={(val) =>
+                        field.onChange(Number(val))
+                      }
+                      defaultValue={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t("Select gender")}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="1">
+                          {t("Male")}
+                        </SelectItem>
+                        <SelectItem value="2">
+                          {t("Female")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="user_personal_photo"
+                render={({
+                  field: {
+                    value: _value,
+                    onChange,
+                    ...fieldProps
+                  },
+                }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t("Personal Photo")}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...fieldProps}
+                        type="file"
+                        accept="image/*"
+                        onChange={(event) => {
+                          onChange(
+                            event.target.files &&
+                              event.target.files[0],
+                          );
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Submit Button */}
         <Button

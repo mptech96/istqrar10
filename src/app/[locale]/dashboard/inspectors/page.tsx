@@ -8,13 +8,13 @@ const Inspectors = () => {
     <section className="flex flex-col gap-6">
       <header className="flex justify-between items-center">
         <Header
-          title="Inspectors"
-          description="Manage inspectors"
+          title="Users"
+          description="Users Management"
         />
 
         <NewEntityButton
           url="/dashboard/inspectors/new"
-          label="New Inspector"
+          label="New User"
         />
       </header>
       <div className="flex flex-col gap-4">
