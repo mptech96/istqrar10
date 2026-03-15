@@ -141,6 +141,12 @@ export const company_admin_items: SidebarItem[] = [
     
   },
   {
+    title: "Users",
+    url: "/dashboard/inspectors",
+    icon: Users,
+    
+  },
+  {
     title: "Branches",
     url: "/dashboard/branches",
     icon: Building2,

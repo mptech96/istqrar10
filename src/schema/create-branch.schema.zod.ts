@@ -48,8 +48,8 @@ export const createBranchSchema = (t: any) =>
           !file || (file instanceof File && ACCEPTED_IMAGE_TYPES.includes(file.type)),
         t("Only jpg, jpeg, png and webp formats are supported")
       ),
-    user_birth_date: z.string().optional(),
-    user_gender: z.coerce.number().optional(),
+    user_birth_date: z.string().min(1, t("Birth date is required")),
+    user_gender: z.coerce.number().min(1, t("Gender is required")),
   }).refine((data) => data.user_password === data.user_password_confirmation, {
     message: t("Passwords do not match"),
     path: ["user_password_confirmation"],

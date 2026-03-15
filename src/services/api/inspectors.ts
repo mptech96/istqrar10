@@ -12,6 +12,21 @@ export const inspectorsApi = api.injectEndpoints({
     }),
     getInspectors: build.query({
       query: (query: string) => `/users?${query}`,
+      providesTags: ["Users"],
+    }),
+    activateUser: build.mutation({
+      query: (id) => ({
+        url: `/users/${id}/active`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Users"],
+    }),
+    deactivateUser: build.mutation({
+      query: (id) => ({
+        url: `/users/${id}/unactive`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Users"],
     }),
     updateInspector: build.mutation({
       query: ({ id, data }) => ({
@@ -24,4 +39,4 @@ export const inspectorsApi = api.injectEndpoints({
   }),
 });
 
-export const { useCreateInspectorMutation, useGetInspectorsQuery, useUpdateInspectorMutation } = inspectorsApi;
+export const { useCreateInspectorMutation, useGetInspectorsQuery, useUpdateInspectorMutation, useActivateUserMutation, useDeactivateUserMutation } = inspectorsApi;

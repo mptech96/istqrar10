@@ -847,5 +847,11 @@
   "Branch activated successfully": "Branch activated successfully",
   "Failed to activate branch": "Failed to activate branch",
   "Branch deactivated successfully": "Branch deactivated successfully",
-  "Failed to deactivate branch": "Failed to deactivate branch"
+  "Failed to deactivate branch": "Failed to deactivate branch",
+  "User activated successfully": "User activated successfully",
+  "Failed to activate user": "Failed to activate user",
+  "User deactivated successfully": "User deactivated successfully",
+  "Select Branch": "Select Branch",
+  "List of Users": "List of Users",
+  "Birth date is required": "Birth date is required"
 }

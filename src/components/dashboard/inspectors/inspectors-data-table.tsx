@@ -12,15 +12,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { motion } from "motion/react";
-import { useGetInspectorsQuery } from "@/services/api/inspectors";
+import {
+  useActivateUserMutation,
+  useDeactivateUserMutation,
+  useGetInspectorsQuery,
+} from "@/services/api/inspectors";
 import { Input } from "@/components/ui/input";
+import { useAppSelector } from "@/lib/store";
+import { User } from "@/types/user";
 
 const InspectorsDataTable = () => {
   const { start, stop } = useLoader();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const pageSize = 10;
-
+  const user = useAppSelector((state) => state.auth.user);
   const query = `page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ""}`;
 
   const t = useTranslations();
@@ -30,8 +36,32 @@ const InspectorsDataTable = () => {
     error,
   } = useGetInspectorsQuery(query);
 
+  const [activateUser, { isLoading: activateLoading }] =
+    useActivateUserMutation();
+  const [deactivateUser, { isLoading: deactivateLoading }] =
+    useDeactivateUserMutation();
+
+  const activateCompanyHandler = async (userId: number) => {
+    try {
+      const res = await activateUser(userId);
+      toast.success(t("User activated successfully"));
+    } catch (error) {
+      toast.error(t("Failed to activate user"));
+    }
+  };
+  const deactivateCompanyHandler = async (
+    userId: number,
+  ) => {
+    try {
+      const res = await deactivateUser(userId);
+      toast.success(t("User deactivated successfully"));
+    } catch (error) {
+      toast.error(t("Failed to deactivate company"));
+    }
+  };
+
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading || activateLoading || deactivateLoading) {
       start();
     } else {
       stop();
@@ -40,9 +70,24 @@ const InspectorsDataTable = () => {
     if (error) {
       toast.error(t("Failed to fetch inspectors"));
     }
-  }, [isLoading, error, start, stop, t]);
+  }, [
+    isLoading,
+    error,
+    start,
+    stop,
+    t,
+    activateLoading,
+    deactivateLoading,
+  ]);
 
-  const columns = getColumns(t);
+  const columns = getColumns(
+    t,
+    {
+      onActivate: activateCompanyHandler,
+      onDeactivate: deactivateCompanyHandler,
+    },
+    user as User,
+  );
 
   return (
     <motion.div
@@ -55,7 +100,7 @@ const InspectorsDataTable = () => {
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <CardTitle className="text-lg">
-              {t("List of Inspectors")}
+              {t("List of Users")}
             </CardTitle>
             <div className="flex w-full md:w-64">
               <Input

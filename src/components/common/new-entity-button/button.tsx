@@ -17,7 +17,8 @@ const NewEntityButton = ({
   const t = useTranslations();
   if (
     user?.role !== "super_admin" &&
-    user?.role !== "admin"
+    user?.role !== "admin" &&
+    user?.role !== "company_admin"
   )
     return null;
   return (

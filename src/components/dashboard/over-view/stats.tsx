@@ -12,13 +12,18 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useGetSuperAdminStatsQuery } from "@/services/api/stats";
+import { useAppSelector } from "@/lib/store";
 
 const OverViewStats = () => {
   const t = useTranslations();
+  const user = useAppSelector((state) => state.auth.user);
   const { data, isLoading } = useGetSuperAdminStatsQuery(
     {},
   );
   console.log(data);
+  if (user?.role !== "super_admin") {
+    return null;
+  }
   const statsConfig: StatsCardProps[] = [
     {
       title: data?.statistics?.total_companies,

@@ -989,5 +989,11 @@
   "Branch activated successfully": "تم تفعيل الفرع بنجاح",
   "Failed to activate branch": "فشل في تفعيل الفرع",
   "Branch deactivated successfully": "تم إلغاء تنشيط الفرع بنجاح",
-  "Failed to deactivate branch": "فشل في إلغاء تنشيط الفرع"
+  "Failed to deactivate branch": "فشل في إلغاء تنشيط الفرع",
+  "User activated successfully": "تم تفعيل المستخدم بنجاح",
+  "Failed to activate user": "فشل في تفعيل المستخدم",
+  "User deactivated successfully": "تم إلغاء تنشيط المستخدم بنجاح",
+  "Select Branch": "اختر الفرع",
+  "List of Users": "قائمة المستخدمين",
+  "Birth date is required": "تاريخ الميلاد مطلوب"
 }
