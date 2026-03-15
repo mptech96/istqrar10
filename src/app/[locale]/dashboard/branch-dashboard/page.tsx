@@ -1,3 +1,4 @@
+"use client";
 import BranchStats from "@/components/dashboard/branch-dashboard/branch-stats";
 import Header from "@/components/dashboard/header/header";
 import React from "react";

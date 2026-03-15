@@ -12,10 +12,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { motion } from "motion/react";
-import { useGetBranchesQuery } from "@/services/api/branches";
+import {
+  useActivateBranchMutation,
+  useDeactivateBranchMutation,
+  useGetBranchesQuery,
+} from "@/services/api/branches";
 import { Input } from "@/components/ui/input";
+import { useAppSelector } from "@/lib/store";
+import { User } from "@/types/user";
 
 const BranchesDataTable = () => {
+  const { user } = useAppSelector((state) => state.auth);
   const { start, stop } = useLoader();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -23,6 +30,15 @@ const BranchesDataTable = () => {
   const [sort, setSort] = useState("created_at");
   const [sortOrder, setSortOrder] = useState("desc");
   const [filter, setFilter] = useState("");
+
+  const [
+    activateBranch,
+    { isLoading: activateBranchLoading },
+  ] = useActivateBranchMutation();
+  const [
+    deactivateBranch,
+    { isLoading: deactivateBranchLoading },
+  ] = useDeactivateBranchMutation();
 
   const queryParams = new URLSearchParams();
   queryParams.set("page", page.toString());
@@ -41,7 +57,11 @@ const BranchesDataTable = () => {
     error,
   } = useGetBranchesQuery(query);
   useEffect(() => {
-    if (isLoading) {
+    if (
+      isLoading ||
+      activateBranchLoading ||
+      deactivateBranchLoading
+    ) {
       start();
     } else {
       stop();
@@ -50,9 +70,46 @@ const BranchesDataTable = () => {
     if (error) {
       toast.error(t("Failed to fetch branches"));
     }
-  }, [isLoading, error, start, stop, t]);
+  }, [
+    isLoading,
+    error,
+    start,
+    stop,
+    t,
+    activateBranchLoading,
+    deactivateBranchLoading,
+  ]);
 
-  const columns = getColumns(t);
+  const activateBranchHandler = async (
+    branchId: number,
+  ) => {
+    try {
+      const res = await activateBranch(branchId);
+      toast.success(t("Branch activated successfully"));
+    } catch (error) {
+      toast.error(t("Failed to activate branch"));
+    }
+  };
+
+  const deactivateBranchHandler = async (
+    branchId: number,
+  ) => {
+    try {
+      const res = await deactivateBranch(branchId);
+      toast.success(t("Branch deactivated successfully"));
+    } catch (error) {
+      toast.error(t("Failed to deactivate branch"));
+    }
+  };
+
+  const columns = getColumns(
+    t,
+    {
+      onActivate: activateBranchHandler,
+      onDeactivate: deactivateBranchHandler,
+    },
+    user as User,
+  );
   return (
     <motion.div
       initial={{ scale: 0 }}

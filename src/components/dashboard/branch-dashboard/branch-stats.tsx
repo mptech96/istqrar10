@@ -21,15 +21,25 @@ import StatsCard from "../stats-card/stats-card";
 import RatingPie from "./rating-pie";
 import VisitRadialBar from "./visit-radial-bar";
 
+import { skipToken } from "@reduxjs/toolkit/query";
+
 const BranchStats = () => {
   const t = useTranslations();
   const { user } = useAppSelector((state) => state.auth);
-  const { data: branchStats, isLoading } =
-    useGetBranchStatsQuery(String(user?.branch_id));
 
+  // Robust check: ID must be a number and not the string "undefined"
+  const branchId =
+    user?.branch_id &&
+    String(user?.branch_id) !== "undefined"
+      ? Number(user.branch_id)
+      : skipToken;
+
+  const { data: branchStats, isLoading } =
+    useGetBranchStatsQuery(branchId);
+  console.log(branchStats);
   const statsConfig: StatsCardProps[] = [
     {
-      title: "2",
+      title: branchStats?.statistics?.total_users || 0,
       subtitle: t("Total users"),
       icon: <User2 />,
       Badge: {
@@ -40,7 +50,7 @@ const BranchStats = () => {
       },
     },
     {
-      title: branchStats?.statistics?.total_visits || 5,
+      title: branchStats?.statistics?.total_visits || 0,
       subtitle: t("Completed visits"),
       icon: <CircleCheckBig />,
       Badge: {
@@ -52,7 +62,7 @@ const BranchStats = () => {
     },
     {
       title:
-        branchStats?.statistics?.open_tickets.length || 3,
+        branchStats?.statistics?.open_tickets.length || 0,
       subtitle: t("Pending tickets"),
       icon: <Clock />,
       Badge: {
@@ -63,7 +73,7 @@ const BranchStats = () => {
       },
     },
     {
-      title: branchStats?.statistics?.avg_score || 4.3,
+      title: branchStats?.statistics?.avg_score || 0,
       subtitle: t("Average visit rating"),
       icon: <Star />,
       Badge: {

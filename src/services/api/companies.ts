@@ -25,7 +25,24 @@ export const companiesApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Companies"],
     }),
+    activateCompany: build.mutation({
+      query: (companyId: number) => ({
+        url: `/companies/${companyId}/active`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Companies"],
+    }),
+    deactivateCompany: build.mutation({
+      query: (companyId: number) => ({
+        url: `/companies/${companyId}/unactive`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Companies"],
+    }),
   }),
 });
 
-export const { useCreateCompanyMutation, useGetCompaniesQuery, useGetCompanyStatisticsQuery, useUpdateCompanyMutation } = companiesApi;
+export const { useCreateCompanyMutation, useGetCompaniesQuery,
+  useGetCompanyStatisticsQuery, useUpdateCompanyMutation,
+  useActivateCompanyMutation, useDeactivateCompanyMutation
+} = companiesApi;

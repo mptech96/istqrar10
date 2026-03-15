@@ -28,6 +28,7 @@ import {
   useUpdateVisitMutation,
 } from "@/services/api/visits";
 import { useGetBranchesQuery } from "@/services/api/branches";
+import { useGetCompaniesQuery } from "@/services/api/companies";
 import { useGetChecklistsQuery } from "@/services/api/checklists";
 import { useGetInspectorsQuery } from "@/services/api/inspectors";
 import { toast } from "sonner";
@@ -55,6 +56,7 @@ import { Checklist } from "@/types/checklist";
 import { Inspectors } from "@/types/inspectors";
 import { useAppSelector } from "@/lib/store";
 import { Visit } from "@/types/visit";
+import { Company } from "@/types/company";
 
 interface CreateVisitFormProps {
   initialData?: Visit;
@@ -82,7 +84,7 @@ export default function CreateVisitForm({
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
 
-  const { data: branchesData } = useGetBranchesQuery(
+  const { data: companiesData } = useGetCompaniesQuery(
     "page=1&page_size=100",
   );
   const { data: checklistsData } = useGetChecklistsQuery(
@@ -100,6 +102,7 @@ export default function CreateVisitForm({
     >,
     defaultValues: initialData
       ? {
+          company_id: initialData.company_id,
           branch_id: initialData.branch_id,
           auditor_id: initialData.auditor_id,
           checklist_id: initialData.checklist_id,
@@ -110,6 +113,7 @@ export default function CreateVisitForm({
           internal_notes: initialData.internal_notes || "",
         }
       : {
+          company_id: undefined,
           branch_id: undefined,
           auditor_id: undefined,
           checklist_id: undefined,
@@ -119,6 +123,20 @@ export default function CreateVisitForm({
           internal_notes: "",
         },
   });
+
+  const selectedCompanyId = form.watch("company_id");
+
+  const { data: branchesData } = useGetBranchesQuery(
+    `page=1&page_size=100${selectedCompanyId ? `&company_id=${selectedCompanyId}` : ""}`,
+    { skip: !selectedCompanyId },
+  );
+
+  // Reset branch if company changes
+  useEffect(() => {
+    if (selectedCompanyId && !isEditMode) {
+      form.setValue("branch_id", undefined as unknown as number);
+    }
+  }, [selectedCompanyId, form, isEditMode]);
 
   useEffect(() => {
     if (isLoading) {
@@ -176,10 +194,10 @@ export default function CreateVisitForm({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="branch_id"
+              name="company_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("Branch")} *</FormLabel>
+                  <FormLabel>{t("Company")} *</FormLabel>
                   <Select
                     onValueChange={(val) =>
                       field.onChange(Number(val))
@@ -189,7 +207,49 @@ export default function CreateVisitForm({
                     <FormControl className="w-full">
                       <SelectTrigger>
                         <SelectValue
-                          placeholder={t("Select branch")}
+                          placeholder={t("Select company")}
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {companiesData?.data?.map(
+                        (company: Company) => (
+                          <SelectItem
+                            key={company.id}
+                            value={company.id.toString()}
+                          >
+                            {company.name}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="branch_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("Branch")} *</FormLabel>
+                  <Select
+                    onValueChange={(val) =>
+                      field.onChange(Number(val))
+                    }
+                    value={field.value?.toString()}
+                    disabled={!selectedCompanyId}
+                  >
+                    <FormControl className="w-full">
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={
+                            !selectedCompanyId
+                              ? t("Select company first")
+                              : t("Select branch")
+                          }
                         />
                       </SelectTrigger>
                     </FormControl>

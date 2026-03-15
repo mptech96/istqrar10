@@ -151,11 +151,11 @@ export const company_admin_items: SidebarItem[] = [
     icon: Telescope,
     
   },
- /*  {
+   {
     title: "Tickets",
     url: "/dashboard/tickets",
-    icon: Ticket ,
-  }, */
+    icon: Ticket,
+  },
   {
     title: "Reports",
     url: "/dashboard/reports/company",

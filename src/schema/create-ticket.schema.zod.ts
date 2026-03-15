@@ -11,9 +11,9 @@ export const createTicketSchema = (t: any) =>
     user_type: z.enum(["company", "individual"], {
       message: t("User type is required"),
     }),
-    company_id: z.coerce.number().optional(),
-    branch_id: z.coerce.number().optional(),
-    visit_id: z.coerce.number().optional(),
+    company_id: z.coerce.number().min(1, t("Company is required")),
+    branch_id: z.coerce.number().min(1, t("Branch is required")),
+    visit_id: z.coerce.number().min(1, t("Visit is required")),
     subject: z.string().min(1, t("Subject is required")),
     description: z
       .string()

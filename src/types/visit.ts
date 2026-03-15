@@ -1,5 +1,6 @@
 export type Visit = {
   id: number;
+  company_id: number;
   branch_id: number;
   auditor_id: number;
   checklist_id: number;

@@ -134,11 +134,20 @@ const mockRadialData = [
   { name: "Compliance", value: 78, fill: "#6366f1" },
 ];
 
+import { skipToken } from "@reduxjs/toolkit/query";
+
 const VisitRadialBar = () => {
   const t = useTranslations();
   const { user } = useAppSelector((state) => state.auth);
+
+  const branchId =
+    user?.branch_id &&
+    String(user?.branch_id) !== "undefined"
+      ? Number(user.branch_id)
+      : skipToken;
+
   const { data: branchStats, isLoading } =
-    useGetBranchStatsQuery(String(user?.branch_id));
+    useGetBranchStatsQuery(branchId);
 
   const [selectedLabel, setSelectedLabel] = useState<
     string | undefined
@@ -221,6 +230,7 @@ const VisitRadialBar = () => {
                   background
                   dataKey="value"
                   cornerRadius={10}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   shape={CustomSector as any}
                 />
                 <Tooltip

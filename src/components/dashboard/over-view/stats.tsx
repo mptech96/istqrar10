@@ -18,6 +18,7 @@ const OverViewStats = () => {
   const { data, isLoading } = useGetSuperAdminStatsQuery(
     {},
   );
+  console.log(data);
   const statsConfig: StatsCardProps[] = [
     {
       title: data?.statistics?.total_companies,

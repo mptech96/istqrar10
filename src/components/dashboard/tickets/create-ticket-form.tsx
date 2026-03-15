@@ -73,16 +73,6 @@ export default function CreateTicketForm({
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
 
-  const { data: companiesData } = useGetCompaniesQuery(
-    "page=1&limit=1000",
-  );
-  const { data: branchesData } = useGetBranchesQuery(
-    "page=1&page_size=1000",
-  );
-  const { data: visitsData } = useGetVisitsQuery(
-    "page=1&page_size=1000",
-  );
-
   const form = useForm<
     z.infer<ReturnType<typeof createTicketSchema>>
   >({
@@ -115,6 +105,36 @@ export default function CreateTicketForm({
           department: undefined,
         },
   });
+
+  const selectedCompanyId = form.watch("company_id");
+  const selectedBranchId = form.watch("branch_id");
+
+  const { data: companiesData } = useGetCompaniesQuery(
+    "page=1&limit=1000",
+  );
+  const { data: branchesData } = useGetBranchesQuery(
+    `page=1&page_size=1000${selectedCompanyId ? `&company_id=${selectedCompanyId}` : ""}`,
+    { skip: !selectedCompanyId },
+  );
+  const { data: visitsData } = useGetVisitsQuery(
+    `page=1&page_size=1000${selectedBranchId ? `&branch_id=${selectedBranchId}` : ""}`,
+    { skip: !selectedBranchId },
+  );
+
+  // Reset branch and visit if company changes
+  useEffect(() => {
+    if (selectedCompanyId && !isEditMode) {
+      form.setValue("branch_id", undefined as unknown as number);
+      form.setValue("visit_id", undefined as unknown as number);
+    }
+  }, [selectedCompanyId, form, isEditMode]);
+
+  // Reset visit if branch changes
+  useEffect(() => {
+    if (selectedBranchId && !isEditMode) {
+      form.setValue("visit_id", undefined as unknown as number);
+    }
+  }, [selectedBranchId, form, isEditMode]);
 
   useEffect(() => {
     if (isLoading) {
@@ -375,12 +395,17 @@ export default function CreateTicketForm({
                     onValueChange={(val) =>
                       field.onChange(Number(val))
                     }
-                    defaultValue={field.value?.toString()}
+                    value={field.value?.toString()}
+                    disabled={!selectedCompanyId}
                   >
                     <FormControl className="w-full">
                       <SelectTrigger>
                         <SelectValue
-                          placeholder={t("Select branch")}
+                          placeholder={
+                            !selectedCompanyId
+                              ? t("Select company first")
+                              : t("Select branch")
+                          }
                         />
                       </SelectTrigger>
                     </FormControl>
@@ -412,12 +437,17 @@ export default function CreateTicketForm({
                     onValueChange={(val) =>
                       field.onChange(Number(val))
                     }
-                    defaultValue={field.value?.toString()}
+                    value={field.value?.toString()}
+                    disabled={!selectedBranchId}
                   >
                     <FormControl className="w-full">
                       <SelectTrigger>
                         <SelectValue
-                          placeholder={t("Select visit")}
+                          placeholder={
+                            !selectedBranchId
+                              ? t("Select branch first")
+                              : t("Select visit")
+                          }
                         />
                       </SelectTrigger>
                     </FormControl>

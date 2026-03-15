@@ -16,8 +16,7 @@ export default function SupportButton() {
   if (
     !user ||
     user.role === "super_admin" ||
-    user.role === "admin" ||
-    user.role === "company_admin"
+    user.role === "admin"
   ) {
     return null;
   }

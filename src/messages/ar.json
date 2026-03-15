@@ -977,6 +977,17 @@
   "Enter max users": "أدخل عدد المستخدمين",
   "Enter max branches": "أدخل عدد الفروع",
   "Max users must be at least 1": "يجب أن يكون عدد المستخدمين على الأقل 1",
-  "Max branches must be at least 1": "يجب أن يكون عدد الفروع على الأقل 1"
-
+  "Max branches must be at least 1": "يجب أن يكون عدد الفروع على الأقل 1",
+  "Select company first": "يرجى اختيار الشركة أولاً",
+  "Updating visit": "تحديث الزيارة",
+  "Select branch first": "يرجى اختيار الفرع أولاً",
+  "Visit is required": "الزيارة مطلوبة",
+  "Company activated successfully": "تم تفعيل الشركة بنجاح",
+  "Failed to activate company": "فشل في تفعيل الشركة",
+  "Company deactivated successfully": "تم إلغاء تنشيط الشركة بنجاح",
+  "Failed to deactivate company": "فشل في إلغاء تنشيط الشركة",
+  "Branch activated successfully": "تم تفعيل الفرع بنجاح",
+  "Failed to activate branch": "فشل في تفعيل الفرع",
+  "Branch deactivated successfully": "تم إلغاء تنشيط الفرع بنجاح",
+  "Failed to deactivate branch": "فشل في إلغاء تنشيط الفرع"
 }

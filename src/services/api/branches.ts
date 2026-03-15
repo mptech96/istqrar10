@@ -14,7 +14,7 @@ export const branchesApi = api.injectEndpoints({
       query: (query: string) => `/branches?${query}`,
     }),
     getBranchStats:build.query({
-      query: (branchId:string) => ({
+      query: (branchId) => ({
         url: `/branches/${branchId}/statistics`,
         method: "GET",
       }),
@@ -32,7 +32,21 @@ export const branchesApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Branches"],
     }),
+    activateBranch: build.mutation({
+      query: (branchId: number) => ({
+        url: `/branches/${branchId}/active`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Branches"],
+    }),
+    deactivateBranch: build.mutation({
+      query: (branchId: number) => ({
+        url: `/branches/${branchId}/unactive`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Branches"],
+    }),
   }),
 });
 
-export const { useCreateBranchMutation, useGetBranchesQuery ,useGetBranchStatsQuery,useUpdateBranchMutation ,useGetBranchByIdQuery} = branchesApi;
+export const { useCreateBranchMutation, useGetBranchesQuery ,useGetBranchStatsQuery,useUpdateBranchMutation ,useGetBranchByIdQuery,useActivateBranchMutation,useDeactivateBranchMutation} = branchesApi;

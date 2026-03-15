@@ -4,9 +4,16 @@ import { Branch } from "@/types/branch";
 import BranchModel from "@/components/models/branch-model";
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { User } from "@/types/user";
 
 export const getColumns = (
   t: _Translator,
+  handlers: {
+    onActivate: (branchId: number) => void;
+    onDeactivate: (branchId: number) => void;
+  },
+  user: User,
 ): ColumnDef<Branch>[] => [
   {
     accessorKey: "name",
@@ -47,17 +54,33 @@ export const getColumns = (
     accessorKey: "status",
     header: t("Status"),
     cell: ({ row }) => {
-      const status = row.original.status;
+      const branch = row.original;
+      const status = !!branch.status;
       return (
-        <span
-          className={`px-2 py-1 text-xs font-medium rounded-full ${
-            status
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {status ? t("Active") : t("Inactive")}
-        </span>
+        <div className="flex items-center gap-4">
+          {(user?.role === "super_admin" ||
+            user?.role === "admin") && (
+            <Switch
+              checked={status}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  handlers.onActivate(branch.id);
+                } else {
+                  handlers.onDeactivate(branch.id);
+                }
+              }}
+            />
+          )}
+          <span
+            className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${
+              status
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            {status ? t("Active") : t("Inactive")}
+          </span>
+        </div>
       );
     },
   },

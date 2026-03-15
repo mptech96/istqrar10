@@ -2,6 +2,7 @@ import NewEntityButton from "@/components/common/new-entity-button/button";
 import Header from "@/components/dashboard/header/header";
 import InspectorsStats from "@/components/dashboard/inspectors/stats";
 import InspectorsDataTable from "@/components/dashboard/inspectors/inspectors-data-table";
+import OverViewStats from "@/components/dashboard/over-view/stats";
 
 const Inspectors = () => {
   return (
@@ -18,7 +19,7 @@ const Inspectors = () => {
         />
       </header>
       <div className="flex flex-col gap-4">
-        <InspectorsStats />
+        <OverViewStats />
         <InspectorsDataTable />
       </div>
     </section>

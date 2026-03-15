@@ -1,5 +1,9 @@
 "use client";
-import { useGetCompaniesQuery } from "@/services/api/companies";
+import {
+  useActivateCompanyMutation,
+  useDeactivateCompanyMutation,
+  useGetCompaniesQuery,
+} from "@/services/api/companies";
 import { ServerDataTable } from "@/components/dashboard/table/server-data-table";
 import { getColumns } from "../columns/companies";
 import { useTranslations } from "next-intl";
@@ -13,6 +17,8 @@ import {
 } from "@/components/ui/card";
 import { motion } from "motion/react";
 import { Input } from "@/components/ui/input";
+import { useAppSelector } from "@/lib/store";
+import { User } from "@/types/user";
 
 const CompaniesDataTable = () => {
   const { start, stop } = useLoader();
@@ -22,6 +28,15 @@ const CompaniesDataTable = () => {
   const [sort, setSort] = useState("created_at");
   const [sortOrder, setSortOrder] = useState("desc");
   const [filter, setFilter] = useState("");
+  const { user } = useAppSelector((state) => state.auth);
+  const [
+    activateCompany,
+    { isLoading: activateCompanyLoading },
+  ] = useActivateCompanyMutation();
+  const [
+    deactivateCompany,
+    { isLoading: deactivateCompanyLoading },
+  ] = useDeactivateCompanyMutation();
 
   const queryParams = new URLSearchParams();
   queryParams.set("page", page.toString());
@@ -41,7 +56,11 @@ const CompaniesDataTable = () => {
   } = useGetCompaniesQuery(query);
 
   useEffect(() => {
-    if (isLoading) {
+    if (
+      isLoading ||
+      activateCompanyLoading ||
+      deactivateCompanyLoading
+    ) {
       start();
     } else {
       stop();
@@ -51,8 +70,34 @@ const CompaniesDataTable = () => {
       toast.error(t("Failed to fetch companies"));
     }
   }, [isLoading, error, start, stop, t]);
-
-  const columns = getColumns(t);
+  const activateCompanyHandler = async (
+    companyId: number,
+  ) => {
+    try {
+      const res = await activateCompany(companyId);
+      toast.success(t("Company activated successfully"));
+    } catch (error) {
+      toast.error(t("Failed to activate company"));
+    }
+  };
+  const deactivateCompanyHandler = async (
+    companyId: number,
+  ) => {
+    try {
+      const res = await deactivateCompany(companyId);
+      toast.success(t("Company deactivated successfully"));
+    } catch (error) {
+      toast.error(t("Failed to deactivate company"));
+    }
+  };
+  const columns = getColumns(
+    t,
+    {
+      onActivate: activateCompanyHandler,
+      onDeactivate: deactivateCompanyHandler,
+    },
+    user as User,
+  );
   return (
     <motion.div
       initial={{ scale: 0 }}

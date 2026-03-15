@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export const createVisitSchema = (t: any) =>
   z.object({
+    company_id: z.coerce.number().min(1, t("Company is required")),
     branch_id: z.coerce.number().min(1, t("Branch is required")),
     auditor_id: z.coerce.number().min(1, t("Auditor is required")),
     checklist_id: z.coerce.number().min(1, t("Checklist is required")),

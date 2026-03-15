@@ -835,6 +835,17 @@
   "Enter max users": "Enter max users",
   "Enter max branches": "Enter max branches",
   "Max users must be at least 1": "Max users must be at least 1",
-  "Max branches must be at least 1": "Max branches must be at least 1"
-  
+  "Max branches must be at least 1": "Max branches must be at least 1",
+  "Select company first": "Select company first",
+  "Updating visit": "Updating visit",
+  "Select branch first": "Select branch first",
+  "Visit is required": "Visit is required",
+  "Company activated successfully": "Company activated successfully",
+  "Failed to activate company": "Failed to activate company",
+  "Company deactivated successfully": "Company deactivated successfully",
+  "Failed to deactivate company": "Failed to deactivate company",
+  "Branch activated successfully": "Branch activated successfully",
+  "Failed to activate branch": "Failed to activate branch",
+  "Branch deactivated successfully": "Branch deactivated successfully",
+  "Failed to deactivate branch": "Failed to deactivate branch"
 }
