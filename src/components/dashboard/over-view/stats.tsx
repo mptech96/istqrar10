@@ -20,7 +20,7 @@ const OverViewStats = () => {
   const { data, isLoading } = useGetSuperAdminStatsQuery(
     {},
   );
-  console.log(data);
+
   if (user?.role !== "super_admin") {
     return null;
   }

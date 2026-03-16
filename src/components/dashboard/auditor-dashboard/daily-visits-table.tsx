@@ -69,14 +69,10 @@ const DailyVisitsDataTable = () => {
       return;
     }
     setStarting(true);
-    console.log("visit", visit.id);
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          console.log("position", {
-            start_latitude: position.coords.latitude,
-            start_longitude: position.coords.longitude,
-          });
           const res = await startVisit({
             id: visit.id,
             data: {

@@ -48,7 +48,7 @@ const VisitsDataTable = () => {
     isLoading,
     error,
   } = useGetVisitsQuery(query);
-  console.log("paginatedVisits", paginatedVisits);
+
   useEffect(() => {
     if (isLoading || isStartingVisit) {
       start();
@@ -69,14 +69,10 @@ const VisitsDataTable = () => {
       );
       return;
     }
-    console.log("visit", visit.id);
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          console.log("position", {
-            start_latitude: position.coords.latitude,
-            start_longitude: position.coords.longitude,
-          });
           const res = await startVisit({
             id: visit.id,
             data: {
@@ -117,12 +113,10 @@ const VisitsDataTable = () => {
   };
   const handleEdit = (visit: Visit) => {
     // Handle edit action
-    console.log(visit);
   };
 
   const handleDelete = (visit: Visit) => {
     // Handle delete action
-    console.log(visit);
   };
   const handleShowReport = (visit: Visit) => {
     // Handle show report action

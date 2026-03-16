@@ -2,7 +2,7 @@
 import { createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 
 export const Base_URL = process.env.NEXT_PUBLIC_BASE_URL;
-console.log(Base_URL);
+
 // 1. Create a basic baseQuery that adds the token
 const baseQuery = fetchBaseQuery({
   baseUrl: Base_URL,
