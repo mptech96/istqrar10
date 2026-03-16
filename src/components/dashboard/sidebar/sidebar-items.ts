@@ -90,13 +90,13 @@ export const super_admin_items: SidebarItem[] = [
     url: "/dashboard/calendar",
     icon: Calendar,
     
-  },
-  {
-    title: "Models",
-    url: "/dashboard/models",
-    icon: Settings,
-    
   }, */
+  {
+    title: "Subscription Requests",
+    url: "/dashboard/subscription-requests",
+    icon: Inbox,
+    
+  },
   {
     title: "Settings",
     url: "/dashboard/settings",
