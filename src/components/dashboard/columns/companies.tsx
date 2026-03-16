@@ -22,6 +22,7 @@ export const getColumns = (
   handlers: {
     onActivate: (companyId: number) => void;
     onDeactivate: (companyId: number) => void;
+    onDelete?: (companyId: number) => void;
   },
   user: User,
 ): ColumnDef<Company>[] => [
@@ -155,9 +156,16 @@ export const getColumns = (
       return (
         <div className="flex items-center gap-2">
           <CompanyModel company={company} />
-          <Button variant="outline" size="icon">
-            <Trash className="h-4 w-4" />
-          </Button>
+          {user?.role === "super_admin" && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => handlers.onDelete?.(company.id)}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       );
     },

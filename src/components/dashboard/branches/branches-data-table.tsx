@@ -16,7 +16,9 @@ import {
   useActivateBranchMutation,
   useDeactivateBranchMutation,
   useGetBranchesQuery,
+  useDeleteBranchMutation,
 } from "@/services/api/branches";
+import { DeleteConfirmationDialog } from "@/components/common/delete-confirmation-dialog";
 import { Input } from "@/components/ui/input";
 import { useAppSelector } from "@/lib/store";
 import { User } from "@/types/user";
@@ -30,6 +32,11 @@ const BranchesDataTable = () => {
   const [sort, setSort] = useState("created_at");
   const [sortOrder, setSortOrder] = useState("desc");
   const [filter, setFilter] = useState("");
+  const [deleteId, setDeleteId] = useState<number | null>(
+    null,
+  );
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] =
+    useState(false);
 
   const [
     activateBranch,
@@ -39,6 +46,8 @@ const BranchesDataTable = () => {
     deactivateBranch,
     { isLoading: deactivateBranchLoading },
   ] = useDeactivateBranchMutation();
+  const [deleteBranch, { isLoading: isDeleting }] =
+    useDeleteBranchMutation();
 
   const queryParams = new URLSearchParams();
   queryParams.set("page", page.toString());
@@ -59,6 +68,7 @@ const BranchesDataTable = () => {
   useEffect(() => {
     if (
       isLoading ||
+      isDeleting ||
       activateBranchLoading ||
       deactivateBranchLoading
     ) {
@@ -66,19 +76,31 @@ const BranchesDataTable = () => {
     } else {
       stop();
     }
-
-    if (error) {
-      toast.error(t("Failed to fetch branches"));
-    }
   }, [
     isLoading,
-    error,
     start,
     stop,
-    t,
+    isDeleting,
     activateBranchLoading,
     deactivateBranchLoading,
   ]);
+
+  const handleDelete = async (id: number) => {
+    setDeleteId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteBranch(deleteId).unwrap();
+      toast.success(t("Branch deleted successfully"));
+      setIsDeleteDialogOpen(false);
+      setDeleteId(null);
+    } catch (error) {
+      toast.error(t("Failed to delete branch"));
+    }
+  };
 
   const activateBranchHandler = async (
     branchId: number,
@@ -107,6 +129,7 @@ const BranchesDataTable = () => {
     {
       onActivate: activateBranchHandler,
       onDeactivate: deactivateBranchHandler,
+      onDelete: handleDelete,
     },
     user as User,
   );
@@ -152,6 +175,12 @@ const BranchesDataTable = () => {
           />
         )}
       </Card>
+      <DeleteConfirmationDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting}
+      />
     </motion.div>
   );
 };

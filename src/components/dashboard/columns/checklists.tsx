@@ -5,9 +5,16 @@ import type { _Translator } from "next-intl";
 import { Checklist } from "@/types/checklist";
 import { Badge } from "@/components/ui/badge";
 import ChecklistModel from "@/components/models/checklist-model";
+import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react";
+import { User } from "@/types/user";
 
 export const getColumns = (
   t: _Translator,
+  handlers: {
+    onDelete?: (checklistId: number) => void;
+  },
+  user: User,
 ): ColumnDef<Checklist>[] => [
   {
     accessorKey: "name",
@@ -86,7 +93,21 @@ export const getColumns = (
     header: t("Actions"),
     cell: ({ row }) => {
       const checklist = row.original;
-      return <ChecklistModel checklist={checklist} />;
+      return (
+        <div className="flex items-center gap-2">
+          <ChecklistModel checklist={checklist} />
+          {user?.role === "super_admin" && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => handlers.onDelete?.(checklist.id)}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      );
     },
   },
 ];

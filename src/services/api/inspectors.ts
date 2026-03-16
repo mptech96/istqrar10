@@ -36,7 +36,14 @@ export const inspectorsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Users"],
     }),
+    deleteUser: build.mutation({
+      query: (id: number) => ({
+        url: `/users/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Users"],
+    }),
   }),
 });
 
-export const { useCreateInspectorMutation, useGetInspectorsQuery, useUpdateInspectorMutation, useActivateUserMutation, useDeactivateUserMutation } = inspectorsApi;
+export const { useCreateInspectorMutation, useGetInspectorsQuery, useUpdateInspectorMutation, useActivateUserMutation, useDeactivateUserMutation,useDeleteUserMutation } = inspectorsApi;

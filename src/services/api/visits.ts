@@ -34,6 +34,7 @@ export const visitsApi = api.injectEndpoints({
         url: `/visits/${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["Visits"],
     }),
     getVisitQuestions: build.query({
       query: ({ id, page = 1, per_page = 15 }: { id: number; page?: number; per_page?: number }) => ({

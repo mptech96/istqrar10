@@ -16,7 +16,9 @@ import {
   useActivateUserMutation,
   useDeactivateUserMutation,
   useGetInspectorsQuery,
+  useDeleteUserMutation,
 } from "@/services/api/inspectors";
+import { DeleteConfirmationDialog } from "@/components/common/delete-confirmation-dialog";
 import { Input } from "@/components/ui/input";
 import { useAppSelector } from "@/lib/store";
 import { User } from "@/types/user";
@@ -26,6 +28,8 @@ const InspectorsDataTable = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const pageSize = 10;
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
   const query = `page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ""}`;
 
@@ -33,19 +37,19 @@ const InspectorsDataTable = () => {
   const {
     data: paginatedInspectors,
     isLoading,
-    error,
   } = useGetInspectorsQuery(query);
 
   const [activateUser, { isLoading: activateLoading }] =
     useActivateUserMutation();
   const [deactivateUser, { isLoading: deactivateLoading }] =
     useDeactivateUserMutation();
+  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
 
   const activateCompanyHandler = async (userId: number) => {
     try {
-      const res = await activateUser(userId);
+      await activateUser(userId).unwrap();
       toast.success(t("User activated successfully"));
-    } catch (error) {
+    } catch {
       toast.error(t("Failed to activate user"));
     }
   };
@@ -53,38 +57,51 @@ const InspectorsDataTable = () => {
     userId: number,
   ) => {
     try {
-      const res = await deactivateUser(userId);
+      await deactivateUser(userId).unwrap();
       toast.success(t("User deactivated successfully"));
-    } catch (error) {
+    } catch {
       toast.error(t("Failed to deactivate company"));
     }
   };
 
   useEffect(() => {
-    if (isLoading || activateLoading || deactivateLoading) {
+    if (isLoading || activateLoading || deactivateLoading || isDeleting) {
       start();
     } else {
       stop();
     }
-
-    if (error) {
-      toast.error(t("Failed to fetch inspectors"));
-    }
   }, [
     isLoading,
-    error,
     start,
     stop,
-    t,
     activateLoading,
     deactivateLoading,
+    isDeleting,
   ]);
+
+  const handleDelete = async (id: number) => {
+    setDeleteId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteUser(deleteId).unwrap();
+      toast.success(t("User deleted successfully"));
+      setIsDeleteDialogOpen(false);
+      setDeleteId(null);
+    } catch {
+      toast.error(t("Failed to delete user"));
+    }
+  };
 
   const columns = getColumns(
     t,
     {
       onActivate: activateCompanyHandler,
       onDeactivate: deactivateCompanyHandler,
+      onDelete: handleDelete,
     },
     user as User,
   );
@@ -133,6 +150,12 @@ const InspectorsDataTable = () => {
           />
         )}
       </Card>
+      <DeleteConfirmationDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting}
+      />
     </motion.div>
   );
 };

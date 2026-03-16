@@ -8,8 +8,15 @@ import CriteriaModel from "@/components/models/criteria-model";
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
 
+import { User } from "@/types/user";
+
 export const getColumns = (
   t: _Translator,
+  handlers: {
+    onEdit: (criteria: Criteria) => void;
+    onDelete?: (criteriaId: number) => void;
+  },
+  user: User,
 ): ColumnDef<Criteria>[] => [
   {
     accessorKey: "name",
@@ -94,9 +101,18 @@ export const getColumns = (
       return (
         <div className="flex items-center gap-2">
           <CriteriaModel criteria={criteria} />
-          <Button variant="outline" size="icon">
-            <Trash className="h-4 w-4" />
-          </Button>
+          {user?.role === "super_admin" && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() =>
+                handlers.onDelete?.(criteria.id)
+              }
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       );
     },

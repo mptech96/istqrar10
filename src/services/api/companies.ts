@@ -39,10 +39,17 @@ export const companiesApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Companies"],
     }),
+    deleteCompany: build.mutation({
+      query: (companyId: number) => ({
+        url: `/companies/${companyId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Companies"],
+    }),
   }),
 });
 
 export const { useCreateCompanyMutation, useGetCompaniesQuery,
   useGetCompanyStatisticsQuery, useUpdateCompanyMutation,
-  useActivateCompanyMutation, useDeactivateCompanyMutation
+  useActivateCompanyMutation, useDeactivateCompanyMutation,useDeleteCompanyMutation
 } = companiesApi;

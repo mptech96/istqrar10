@@ -12,12 +12,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { motion } from "motion/react";
-import { useGetCriteriaQuery } from "@/services/api/criteria";
+import {
+  useGetCriteriaQuery,
+  useDeleteCriteriaMutation,
+} from "@/services/api/criteria";
+import { DeleteConfirmationDialog } from "@/components/common/delete-confirmation-dialog";
+import { useAppSelector } from "@/lib/store";
+import { User } from "@/types/user";
 
 const CriteriaDataTable = () => {
   const { start, stop } = useLoader();
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const { user } = useAppSelector((state) => state.auth);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const query = `page=${page}&page_size=${pageSize}`;
 
@@ -25,22 +34,46 @@ const CriteriaDataTable = () => {
   const {
     data: paginatedCriteria,
     isLoading,
-    error,
   } = useGetCriteriaQuery(query);
 
+  const [deleteCriteria, { isLoading: isDeleting }] =
+    useDeleteCriteriaMutation();
+
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading || isDeleting) {
       start();
     } else {
       stop();
     }
+  }, [isLoading, start, stop, isDeleting]);
 
-    if (error) {
-      toast.error(t("Failed to fetch criteria"));
+  const handleDelete = async (id: number) => {
+    setDeleteId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteCriteria(deleteId).unwrap();
+      toast.success(t("Criteria deleted successfully"));
+      setIsDeleteDialogOpen(false);
+      setDeleteId(null);
+    } catch (error) {
+      toast.error(t("Failed to delete criteria"));
     }
-  }, [isLoading, error, start, stop, t]);
+  };
 
-  const columns = getColumns(t);
+  const columns = getColumns(
+    t,
+    {
+      onEdit: () => {
+        // Handle edit
+      },
+      onDelete: handleDelete,
+    },
+    user as User,
+  );
 
   return (
     <motion.div
@@ -74,6 +107,12 @@ const CriteriaDataTable = () => {
           />
         )}
       </Card>
+      <DeleteConfirmationDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting}
+      />
     </motion.div>
   );
 };

@@ -22,6 +22,7 @@ import { Visit } from "@/types/visit";
 import { useRouter } from "@/i18n/navigation";
 import { useAppSelector } from "@/lib/store";
 import { User } from "@/types/user";
+import { DeleteConfirmationDialog } from "@/components/common/delete-confirmation-dialog";
 
 const DailyVisitsDataTable = () => {
   const { start, stop } = useLoader();
@@ -41,7 +42,10 @@ const DailyVisitsDataTable = () => {
     useStartVisitMutation();
   const [starting, setStarting] = useState(false);
   const [editVisit] = useEditVisitMutation();
-  const [deleteVisit] = useDeleteVisitMutation();
+  const [deleteVisit, { isLoading: isDeletingVisit }] =
+    useDeleteVisitMutation();
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const {
     data: paginatedVisits,
     isLoading,
@@ -119,7 +123,20 @@ const DailyVisitsDataTable = () => {
   };
 
   const handleDelete = (visit: Visit) => {
-    // Handle delete action
+    setDeleteId(visit.id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteVisit(String(deleteId)).unwrap();
+      toast.success(t("Visit deleted successfully"));
+      setIsDeleteDialogOpen(false);
+      setDeleteId(null);
+    } catch {
+      toast.error(t("Failed to delete visit"));
+    }
   };
   const handleShowAIAnalysis = (visit: Visit) => {
     // Handle show AI analysis action
@@ -173,6 +190,12 @@ const DailyVisitsDataTable = () => {
           />
         )}
       </Card>
+      <DeleteConfirmationDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        isLoading={isDeletingVisit}
+      />
     </motion.div>
   );
 };

@@ -12,6 +12,7 @@ export const getColumns = (
   handlers: {
     onActivate: (branchId: number) => void;
     onDeactivate: (branchId: number) => void;
+    onDelete?: (branchId: number) => void;
   },
   user: User,
 ): ColumnDef<Branch>[] => [
@@ -92,9 +93,16 @@ export const getColumns = (
       return (
         <div className="flex items-center gap-2">
           <BranchModel branch={branch} />
-          <Button variant="outline" size="icon">
-            <Trash className="h-4 w-4" />
-          </Button>
+          {user?.role === "super_admin" && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => handlers.onDelete?.(branch.id)}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       );
     },

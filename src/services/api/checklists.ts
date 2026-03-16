@@ -22,7 +22,14 @@ export const checklistsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Checklists"],
     }),
+    deleteChecklist: build.mutation({
+      query: (id: number) => ({
+        url: `/checklists/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Checklists"],
+    }),
   }),
 });
 
-export const { useCreateChecklistMutation, useGetChecklistsQuery, useUpdateChecklistMutation } = checklistsApi;
+export const { useCreateChecklistMutation, useGetChecklistsQuery, useUpdateChecklistMutation ,useDeleteChecklistMutation } = checklistsApi;

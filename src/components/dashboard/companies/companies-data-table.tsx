@@ -3,7 +3,9 @@ import {
   useActivateCompanyMutation,
   useDeactivateCompanyMutation,
   useGetCompaniesQuery,
+  useDeleteCompanyMutation,
 } from "@/services/api/companies";
+import { DeleteConfirmationDialog } from "@/components/common/delete-confirmation-dialog";
 import { ServerDataTable } from "@/components/dashboard/table/server-data-table";
 import { getColumns } from "../columns/companies";
 import { useTranslations } from "next-intl";
@@ -23,11 +25,16 @@ import { User } from "@/types/user";
 const CompaniesDataTable = () => {
   const { start, stop } = useLoader();
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize] = useState(10);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("created_at");
-  const [sortOrder, setSortOrder] = useState("desc");
-  const [filter, setFilter] = useState("");
+  const [sort] = useState("created_at");
+  const [sortOrder] = useState("desc");
+  const [filter] = useState("");
+  const [deleteId, setDeleteId] = useState<number | null>(
+    null,
+  );
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] =
+    useState(false);
   const { user } = useAppSelector((state) => state.auth);
   const [
     activateCompany,
@@ -37,6 +44,8 @@ const CompaniesDataTable = () => {
     deactivateCompany,
     { isLoading: deactivateCompanyLoading },
   ] = useDeactivateCompanyMutation();
+  const [deleteCompany, { isLoading: isDeleting }] =
+    useDeleteCompanyMutation();
 
   const queryParams = new URLSearchParams();
   queryParams.set("page", page.toString());
@@ -49,32 +58,50 @@ const CompaniesDataTable = () => {
   const query = queryParams.toString();
 
   const t = useTranslations();
-  const {
-    data: paginatedCompanies,
-    isLoading,
-    error,
-  } = useGetCompaniesQuery(query);
+  const { data: paginatedCompanies, isLoading } =
+    useGetCompaniesQuery(query);
 
   useEffect(() => {
     if (
       isLoading ||
       activateCompanyLoading ||
-      deactivateCompanyLoading
+      deactivateCompanyLoading ||
+      isDeleting
     ) {
       start();
     } else {
       stop();
     }
+  }, [
+    isLoading,
+    start,
+    stop,
+    activateCompanyLoading,
+    deactivateCompanyLoading,
+    isDeleting,
+  ]);
 
-    if (error) {
-      toast.error(t("Failed to fetch companies"));
+  const handleDelete = async (id: number) => {
+    setDeleteId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteCompany(deleteId).unwrap();
+      toast.success(t("Company deleted successfully"));
+      setIsDeleteDialogOpen(false);
+      setDeleteId(null);
+    } catch (error) {
+      toast.error(t("Failed to delete company"));
     }
-  }, [isLoading, error, start, stop, t]);
+  };
   const activateCompanyHandler = async (
     companyId: number,
   ) => {
     try {
-      const res = await activateCompany(companyId);
+      await activateCompany(companyId);
       toast.success(t("Company activated successfully"));
     } catch (error) {
       toast.error(t("Failed to activate company"));
@@ -84,7 +111,7 @@ const CompaniesDataTable = () => {
     companyId: number,
   ) => {
     try {
-      const res = await deactivateCompany(companyId);
+      await deactivateCompany(companyId);
       toast.success(t("Company deactivated successfully"));
     } catch (error) {
       toast.error(t("Failed to deactivate company"));
@@ -95,6 +122,7 @@ const CompaniesDataTable = () => {
     {
       onActivate: activateCompanyHandler,
       onDeactivate: deactivateCompanyHandler,
+      onDelete: handleDelete,
     },
     user as User,
   );
@@ -142,6 +170,12 @@ const CompaniesDataTable = () => {
           />
         )}
       </Card>
+      <DeleteConfirmationDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting}
+      />
     </motion.div>
   );
 };

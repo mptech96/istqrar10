@@ -22,7 +22,14 @@ export const criteriaApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Criterias"],
     }),
+    deleteCriteria: build.mutation({
+      query: (id: number) => ({
+        url: `/criterias/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Criterias"],
+    }),
   }),
 });
 
-export const { useCreateCriteriaMutation, useGetCriteriaQuery, useUpdateCriteriaMutation } = criteriaApi;
+export const { useCreateCriteriaMutation, useGetCriteriaQuery, useUpdateCriteriaMutation ,useDeleteCriteriaMutation } = criteriaApi;

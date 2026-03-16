@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { User } from "@/types/user";
+import { DeleteConfirmationDialog } from "@/components/common/delete-confirmation-dialog";
 
 const VisitsDataTable = () => {
   const user = useSelector(
@@ -34,6 +35,8 @@ const VisitsDataTable = () => {
   const [search, setSearch] = useState("");
   const pageSize = 10;
   const router = useRouter();
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const query = `page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ""}`;
 
@@ -42,7 +45,7 @@ const VisitsDataTable = () => {
   const [startVisit, { isLoading: isStartingVisit }] =
     useStartVisitMutation();
   const [editVisit] = useEditVisitMutation();
-  const [deleteVisit] = useDeleteVisitMutation();
+  const [deleteVisit, { isLoading: isDeleting }] = useDeleteVisitMutation();
   const {
     data: paginatedVisits,
     isLoading,
@@ -116,7 +119,20 @@ const VisitsDataTable = () => {
   };
 
   const handleDelete = (visit: Visit) => {
-    // Handle delete action
+    setDeleteId(visit.id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteVisit(String(deleteId)).unwrap();
+      toast.success(t("Visit deleted successfully"));
+      setIsDeleteDialogOpen(false);
+      setDeleteId(null);
+    } catch {
+      toast.error(t("Failed to delete visit"));
+    }
   };
   const handleShowReport = (visit: Visit) => {
     // Handle show report action
@@ -185,6 +201,12 @@ const VisitsDataTable = () => {
           />
         )}
       </Card>
+      <DeleteConfirmationDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting}
+      />
     </motion.div>
   );
 };

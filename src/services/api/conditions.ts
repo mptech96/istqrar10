@@ -22,7 +22,14 @@ const conditionsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Questions"],
     }),
+    deleteCondition: build.mutation({
+      query: ({ checklistId, questionId }) => ({
+        url: `/checklists/${checklistId}/questions/${questionId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Questions"],
+    }),
   }),
 });
 
-export const { useCreateConditionMutation, useGetAllConditionsQuery, useUpdateConditionMutation } = conditionsApi;
+export const { useCreateConditionMutation, useGetAllConditionsQuery, useUpdateConditionMutation ,useDeleteConditionMutation } = conditionsApi;

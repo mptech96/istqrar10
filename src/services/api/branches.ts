@@ -46,7 +46,15 @@ export const branchesApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Branches"],
     }),
+    deleteBranch: build.mutation({
+      query: (branchId: number) => ({
+        url: `/branches/${branchId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Branches"],
+    }),
   }),
 });
 
-export const { useCreateBranchMutation, useGetBranchesQuery ,useGetBranchStatsQuery,useUpdateBranchMutation ,useGetBranchByIdQuery,useActivateBranchMutation,useDeactivateBranchMutation} = branchesApi;
+export const { useCreateBranchMutation, useGetBranchesQuery ,useGetBranchStatsQuery,useUpdateBranchMutation
+   ,useGetBranchByIdQuery,useActivateBranchMutation,useDeactivateBranchMutation,useDeleteBranchMutation} = branchesApi;

@@ -12,36 +12,65 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { motion } from "motion/react";
-import { useGetChecklistsQuery } from "@/services/api/checklists";
-import { Input } from "@/components/ui/input";
+import {
+  useGetChecklistsQuery,
+  useDeleteChecklistMutation,
+} from "@/services/api/checklists";
+import { DeleteConfirmationDialog } from "@/components/common/delete-confirmation-dialog";
+import { useAppSelector } from "@/lib/store";
+import { User } from "@/types/user";
+
 const ChecklistsDataTable = () => {
   const { start, stop } = useLoader();
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
   const pageSize = 10;
+  const { user } = useAppSelector((state) => state.auth);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const query = `page=${page}&page_size=${pageSize}${search ? `&search=${search}` : ""}`;
+  const query = `page=${page}&page_size=${pageSize}`;
 
   const t = useTranslations();
   const {
     data: paginatedChecklists,
     isLoading,
-    error,
   } = useGetChecklistsQuery(query);
 
+  const [deleteChecklist, { isLoading: isDeleting }] =
+    useDeleteChecklistMutation();
+
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading || isDeleting) {
       start();
     } else {
       stop();
     }
+  }, [isLoading, start, stop, isDeleting]);
 
-    if (error) {
-      toast.error(t("Failed to fetch checklists"));
+  const handleDelete = async (id: number) => {
+    setDeleteId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteChecklist(deleteId).unwrap();
+      toast.success(t("Checklist deleted successfully"));
+      setIsDeleteDialogOpen(false);
+      setDeleteId(null);
+    } catch (error) {
+      toast.error(t("Failed to delete checklist"));
     }
-  }, [isLoading, error, start, stop, t]);
+  };
 
-  const columns = getColumns(t);
+  const columns = getColumns(
+    t,
+    {
+      onDelete: handleDelete,
+    },
+    user as User,
+  );
 
   return (
     <motion.div
@@ -52,21 +81,9 @@ const ChecklistsDataTable = () => {
     >
       <Card>
         <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <CardTitle className="text-lg">
-              {t("List of Checklists")}
-            </CardTitle>
-            <div className="flex w-full md:w-64">
-              <Input
-                placeholder={t("Search")}
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
-          </div>
+          <CardTitle className="text-lg">
+            {t("List of Checklists")}
+          </CardTitle>
         </CardHeader>
         {paginatedChecklists?.data?.length === 0 && (
           <p className="text-center text-md text-muted-foreground p-4">
@@ -87,6 +104,12 @@ const ChecklistsDataTable = () => {
           />
         )}
       </Card>
+      <DeleteConfirmationDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting}
+      />
     </motion.div>
   );
 };
