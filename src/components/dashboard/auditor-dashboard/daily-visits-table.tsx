@@ -125,7 +125,9 @@ const DailyVisitsDataTable = () => {
   const handleDelete = (visit: Visit) => {
     // Handle delete action
   };
-
+  const handleShowAIAnalysis = (visit: Visit) => {
+    // Handle show AI analysis action
+  };
   const handleShowReport = (visit: Visit) => {
     // Handle show report action
     router.push(
@@ -140,6 +142,7 @@ const DailyVisitsDataTable = () => {
       onDelete: handleDelete,
       onStartQuestionnaire: handleStartQuestionnaire,
       onShowReport: handleShowReport,
+      onShowAIAnalysis: handleShowAIAnalysis,
     },
     user as User,
   );
