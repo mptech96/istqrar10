@@ -152,26 +152,31 @@ export function VisitAnswersForm() {
   // Watch answers for progress and carousel
   const watchedAnswers = form.watch("answers");
 
-  // Validate current question before allowing Next navigation
-  const validateCurrentQuestion = (): boolean => {
-    if (!carousel.currentQuestion) return true;
-    const question = carousel.currentQuestion;
-    const answer = watchedAnswers?.[carousel.currentIndex];
-    if (
-      question.is_required &&
-      (!answer?.answer_value || answer.answer_value === "")
-    ) {
-      toast.error(
-        `${t("Answer is required")}: ${question.question_text}`,
-      );
-      return false;
+  // Validate current questions on the page before allowing Next navigation
+  const validateCurrentQuestions = (): boolean => {
+    if (carousel.currentQuestions.length === 0) return true;
+    
+    for (const question of carousel.currentQuestions) {
+      const qIndex = carousel.allQuestions.findIndex((q) => q.id === question.id);
+      if (qIndex === -1) continue;
+
+      const answer = watchedAnswers?.[qIndex];
+      if (
+        question.is_required &&
+        (!answer?.answer_value || answer.answer_value === "")
+      ) {
+        toast.error(
+          `${t("Answer is required")}: ${question.question_text}`,
+        );
+        return false;
+      }
     }
     return true;
   };
 
   // Wrapped goNext that validates before navigating
   const handleGoNext = () => {
-    if (validateCurrentQuestion()) {
+    if (validateCurrentQuestions()) {
       carousel.goNext();
     }
   };
@@ -379,8 +384,9 @@ export function VisitAnswersForm() {
           <div className="flex items-center justify-center p-12"></div>
         ) : (
           <QuestionCarousel
-            currentQuestion={carousel.currentQuestion}
-            currentIndex={carousel.currentIndex}
+            currentQuestions={carousel.currentQuestions}
+            currentPageIndex={carousel.currentPageIndex}
+            totalPages={carousel.totalPages}
             allQuestions={carousel.allQuestions}
             totalQuestions={carousel.totalQuestions}
             isLoadingMore={carousel.isLoadingMore}

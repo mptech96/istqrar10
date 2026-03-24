@@ -23,8 +23,9 @@ import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 
 interface QuestionCarouselProps {
-  currentQuestion: Question | null;
-  currentIndex: number;
+  currentQuestions: Question[];
+  currentPageIndex: number;
+  totalPages: number;
   allQuestions: Question[];
   totalQuestions: number;
   isLoadingMore: boolean;
@@ -40,8 +41,9 @@ interface QuestionCarouselProps {
 }
 
 export function QuestionCarousel({
-  currentQuestion,
-  currentIndex,
+  currentQuestions,
+  currentPageIndex,
+  totalPages,
   allQuestions,
   totalQuestions,
   isLoadingMore,
@@ -88,7 +90,7 @@ export function QuestionCarousel({
       setIsAnimating(false);
     }, 150);
     return () => clearTimeout(timer);
-  }, [currentIndex, direction]);
+  }, [currentPageIndex, direction]);
 
   // Count answered questions
   const answeredCount =
@@ -98,19 +100,24 @@ export function QuestionCarousel({
         answer?.answer_value !== "",
     ).length ?? 0;
 
-  // Check if current question is answered
-  const isCurrentAnswered =
-    watchedAnswers?.[currentIndex]?.answer_value !==
-      undefined &&
-    watchedAnswers?.[currentIndex]?.answer_value !== "";
+  // Check if current page is answered (all questions on current page)
+  const isCurrentPageAnswered = currentQuestions.every((q) => {
+    const qIndex = allQuestions.findIndex((aq) => aq.id === q.id);
+    const answer = watchedAnswers?.[qIndex];
+    return (
+      answer?.answer_value !== undefined && answer?.answer_value !== ""
+    );
+  });
 
-  if (!currentQuestion) {
+  if (currentQuestions.length === 0) {
     return (
       <Card className="p-12 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </Card>
     );
   }
+
+  const QUESTIONS_PER_PAGE = 10;
 
   return (
     <div className="space-y-4">
@@ -124,15 +131,15 @@ export function QuestionCarousel({
               </span>
               <Badge
                 variant={
-                  isCurrentAnswered
+                  isCurrentPageAnswered
                     ? "default"
                     : "secondary"
                 }
                 className="text-xs"
               >
-                {isCurrentAnswered
-                  ? t("Answered")
-                  : t("Not answered")}
+                {isCurrentPageAnswered
+                  ? t("Answers Complete")
+                  : t("Incomplete Page")}
               </Badge>
             </div>
             <div className="flex items-center gap-2">
@@ -148,51 +155,55 @@ export function QuestionCarousel({
         </CardHeader>
         <CardContent className="pt-0">
           <Progress value={progress} className="h-2" />
-          {/* Question dots/pills */}
+          {/* Page dots/pills */}
           <div className="flex flex-wrap gap-1.5 mt-3">
-            {allQuestions.map((_, idx) => {
-              const isAnswered =
-                watchedAnswers?.[idx]?.answer_value !==
-                  undefined &&
-                watchedAnswers?.[idx]?.answer_value !== "";
-              const isCurrent = idx === currentIndex;
+            {Array.from({ length: totalPages }).map((_, idx) => {
+              const startIdx = idx * QUESTIONS_PER_PAGE;
+              const endIdx = Math.min((idx + 1) * QUESTIONS_PER_PAGE, totalQuestions);
+              
+              const pageQuestions = allQuestions.slice(startIdx, endIdx);
+              const isPageComplete = pageQuestions.length > 0 && pageQuestions.every((q, pIdx) => {
+                const globalIdx = startIdx + pIdx;
+                const answer = watchedAnswers?.[globalIdx];
+                return answer?.answer_value !== undefined && answer?.answer_value !== "";
+              });
+              
+              const isCurrent = idx === currentPageIndex;
+              const isLoaded = startIdx < allQuestions.length;
+
               return (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => goTo(idx)}
+                  disabled={!isLoaded && idx > 0}
                   className={cn(
                     "w-7 h-7 rounded-full text-xs font-medium transition-all duration-200 border-2",
                     isCurrent
                       ? "border-primary bg-primary text-primary-foreground scale-110 shadow-md"
-                      : isAnswered
+                      : isPageComplete && isLoaded
                         ? "border-green-500 bg-green-500/10 text-green-700 hover:bg-green-500/20"
                         : "border-muted-foreground/20 bg-muted/50 text-muted-foreground hover:border-muted-foreground/40",
+                    !isLoaded && "opacity-50 cursor-not-allowed"
                   )}
                 >
                   {idx + 1}
                 </button>
               );
             })}
-            {/* Show remaining dots not yet loaded */}
-            {allQuestions.length < totalQuestions && (
-              <span className="flex items-center text-xs text-muted-foreground px-2">
-                +{totalQuestions - allQuestions.length}{" "}
-                {t("more")}
-              </span>
-            )}
           </div>
         </CardContent>
       </Card>
 
-      {/* Question Counter */}
+      {/* Question Range Counter */}
       <div className="flex items-center justify-between px-1">
         <span className="text-sm font-medium text-muted-foreground">
-          {t("Question")} {currentIndex + 1} /{" "}
+          {t("Questions")} {currentPageIndex * QUESTIONS_PER_PAGE + 1} -{" "}
+          {Math.min((currentPageIndex + 1) * QUESTIONS_PER_PAGE, totalQuestions)} /{" "}
           {totalQuestions}
         </span>
         <span className="text-sm text-muted-foreground">
-          {currentQuestion.type_text}
+          {t("Page")} {currentPageIndex + 1} {t("of")} {totalPages}
         </span>
       </div>
 
@@ -200,7 +211,7 @@ export function QuestionCarousel({
       <div className="relative overflow-hidden">
         <div
           className={cn(
-            "transition-all duration-200 ease-in-out",
+            "transition-all duration-200 ease-in-out space-y-8",
             !showContent &&
               direction === "next" &&
               "opacity-0 -translate-x-4",
@@ -210,12 +221,18 @@ export function QuestionCarousel({
             showContent && "opacity-100 translate-x-0",
           )}
         >
-          <QuestionField
-            key={currentQuestion.id}
-            question={currentQuestion}
-            control={control}
-            index={currentIndex}
-          />
+          {currentQuestions.map((question, idx) => {
+            const globalIndex = currentPageIndex * QUESTIONS_PER_PAGE + idx;
+            return (
+              <div key={question.id} className="pb-6 border-b last:border-0">
+                <QuestionField
+                  question={question}
+                  control={control}
+                  index={globalIndex}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -234,9 +251,9 @@ export function QuestionCarousel({
         </Button>
 
         <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-          <span>{currentIndex + 1}</span>
+          <span>{currentPageIndex + 1}</span>
           <span>/</span>
-          <span>{totalQuestions}</span>
+          <span>{totalPages}</span>
         </div>
 
         <Button
@@ -248,7 +265,7 @@ export function QuestionCarousel({
           className="flex-1 max-w-50 gap-2 cursor-pointer"
         >
           {isLoadingMore &&
-          currentIndex >= allQuestions.length - 2 ? (
+          (currentPageIndex + 1) * QUESTIONS_PER_PAGE >= allQuestions.length - 2 ? (
             <Loader2 className="h-5 w-5 animate-spin" />
           ) : (
             <>
