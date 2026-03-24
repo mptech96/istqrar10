@@ -7,10 +7,34 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/web
 export const createBranchSchema = (t: any) =>
   z.object({
     // Branch Details
-    company_id: z.coerce.number().min(1, t("Company is required")),
+    company_id: z.coerce.number({message: t("Please select a company")}).min(1, t("Company is required")),
     name: z.string().min(1, t("Branch name is required")),
     email: z.string().email(t("Invalid email address")),
-    phone: z.string().min(1, t("Phone number is required")),
+    phone: z.string().min(1, t("Phone number is required")).transform(
+      (val) => {
+        if (!val) return undefined;
+        
+        // Remove all non-digit characters
+        return val.replace(/\D/g, '');
+      }).pipe(
+      z
+        .string()
+        .refine(
+          (val) => {
+            // Accept local: 10 digits starting with 0, second digit 1-8
+            const localPattern = /^0[1-8][0-9]{8}$/;
+            // Accept international: 12 digits starting with 966
+            const intlPattern = /^966[0-9]{9}$/;
+            return localPattern.test(val) || intlPattern.test(val);
+          },
+          {
+            message:
+              t('SAUDI_PHONE_VALIDATION_ERROR'),
+          }
+        )
+        // .optional()  Allows undefined (when input was empty)
+    
+    ),
     city: z.string().min(1, t("City is required")),
     address: z.string().min(1, t("Address is required")),
     latitude: z.coerce.number().optional(),
@@ -31,7 +55,31 @@ export const createBranchSchema = (t: any) =>
         }
       ),
     user_password_confirmation: z.string().min(1, t("Password confirmation is required")),
-    user_phone: z.string().min(1, t("User phone is required")),
+    user_phone: z.string().min(1, t("User phone is required")).transform(
+      (val) => {
+        if (!val) return undefined;
+        
+        // Remove all non-digit characters
+        return val.replace(/\D/g, '');
+      }).pipe(
+      z
+        .string()
+        .refine(
+          (val) => {
+            // Accept local: 10 digits starting with 0, second digit 1-8
+            const localPattern = /^0[1-8][0-9]{8}$/;
+            // Accept international: 12 digits starting with 966
+            const intlPattern = /^966[0-9]{9}$/;
+            return localPattern.test(val) || intlPattern.test(val);
+          },
+          {
+            message:
+              t('SAUDI_PHONE_VALIDATION_ERROR'),
+          }
+        )
+        // .optional()  Allows undefined (when input was empty)
+    
+    ),
     user_personal_photo: z
       .any()
       .optional()
@@ -48,7 +96,7 @@ export const createBranchSchema = (t: any) =>
           !file || (file instanceof File && ACCEPTED_IMAGE_TYPES.includes(file.type)),
         t("Only jpg, jpeg, png and webp formats are supported")
       ),
-    user_birth_date: z.string().min(1, t("Birth date is required")),
+    user_birth_date: z.string().min(1, t("Birth date is required 18+ years")),
     user_gender: z.coerce.number().min(1, t("Gender is required")),
   }).refine((data) => data.user_password === data.user_password_confirmation, {
     message: t("Passwords do not match"),

@@ -9,7 +9,29 @@ export const createCompanySchema = (t: any, isEditMode: boolean = false) =>
     // Company Details
     name: z.string().min(1, t("Company name is required")),
     email: z.string().email(t("Invalid email address")),
-    phone: z.string().min(1, t("Phone number is required")),
+    phone: z.string()
+    .min(1, { message: t('Phone number is required') }) // ensures non-empty input
+    .transform((val) =>{
+       if (!val) return undefined;
+        
+        // Remove all non-digit characters
+        return val.replace(/\D/g, '');
+    }) // remove all non-digits
+    .pipe(
+      z.string().refine(
+        (val) => {
+          // Local: 10 digits starting with 0, second digit 1-8 (covers mobile & landline)
+          const localPattern = /^0[1-8][0-9]{8}$/;
+          // International: 12 digits starting with 966
+          const intlPattern = /^966[0-9]{9}$/;
+          return localPattern.test(val) || intlPattern.test(val);
+        },
+        {
+          message:
+            t('SAUDI_PHONE_VALIDATION_ERROR'),
+        }
+      )
+    ),
     commercial_registration: z.string().min(1, t("Commercial registration is required")),
     city: z.string().min(1, t("City is required")),
     address: z.string().min(1, t("Address is required")),
@@ -50,7 +72,31 @@ export const createCompanySchema = (t: any, isEditMode: boolean = false) =>
     user_email: z.string().optional(),
     user_password: z.string().optional(),
     user_password_confirmation: z.string().optional(),
-    user_phone: z.string().optional(),
+    user_phone: z.string().optional().transform(
+      (val) =>{
+        if (!val) return undefined;
+        
+        // Remove all non-digit characters
+        return val.replace(/\D/g, '');
+      }).pipe(
+      z
+        .string()
+        .refine(
+          (val) => {
+            // Accept local: 10 digits starting with 0, second digit 1-8
+            const localPattern = /^0[1-8][0-9]{8}$/;
+            // Accept international: 12 digits starting with 966
+            const intlPattern = /^966[0-9]{9}$/;
+            return localPattern.test(val) || intlPattern.test(val);
+          },
+          {
+            message:
+              t('SAUDI_PHONE_VALIDATION_ERROR'),
+          }
+        )
+        .optional() // Allows undefined (when input was empty)
+    
+    ),
     user_personal_photo: z
       .any()
       .optional()
@@ -68,7 +114,7 @@ export const createCompanySchema = (t: any, isEditMode: boolean = false) =>
         t("Only jpg, jpeg, png and webp formats are supported")
       ),
     user_birth_date: z.string().optional(),
-    user_gender: z.coerce.number().optional(), 
+    user_gender: z.coerce.number().min(1, t("Gender is required")), 
     user_status: z.boolean().optional().default(true),
   })
   .superRefine((data, ctx) => {

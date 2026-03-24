@@ -413,7 +413,6 @@
   "Text": "نص",
   "Number": "رقم",
   "Action": "إجراء",
-  "Status": "الحالة",
   "Option": "الخيار",
   "Value": "القيمة",
   "Points": "النقاط",
@@ -605,7 +604,7 @@
   "Public": "عام",
   "Private": "خاص",
   "Edit Setting": "تحرير الإعداد",
-  "Deleting": "حذف",
+  "Deleting": "جاري الحذف...",
   "number": "رقم",
   "string": "نص",
   "boolean": "صحيح/خطأ",
@@ -1020,7 +1019,6 @@
   "Geolocation is not supported by your browser": "تحديد الموقع الجغرافي غير مدعوم من متصفحك",
   "Are you sure?": "هل أنت متأكد؟",
   "This action cannot be undone": "لا يمكن التراجع عن هذا الإجراء وسيؤدي إلى حذف البيانات بشكل نهائي",
-  "Deleting": "جاري الحذف...",
   "Delete": "حذف",
   "Branch deleted successfully": "تم حذف الفرع بنجاح",
   "Failed to delete branch": "فشل في حذف الفرع",
@@ -1033,5 +1031,8 @@
   "Checklist deleted successfully": "تم حذف قائمة المراجعة بنجاح",
   "Failed to delete checklist": "فشل في حذف قائمة المراجعة",
   "Visit deleted successfully": "تم حذف الزيارة بنجاح",
-  "Failed to delete visit": "فشل في حذف الزيارة"
+  "Failed to delete visit": "فشل في حذف الزيارة",
+  "SAUDI_PHONE_VALIDATION_ERROR": "رقم الجوال السعودي غير صالح. استخدم 10 أرقام تبدأ بالرقم 0 (مثال: 05********) أو 12 رقمًا تبدأ بالرقم 966 (مثال: 9665********).",
+  "Please select a company": "الرجاء اختيار الشركة",
+  "Birth date is required 18+ years": "تاريخ الميلاد مطلوب 18+ سنة"
 }

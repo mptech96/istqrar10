@@ -26,10 +26,11 @@ import { useLoader } from "@/hooks/use-loader";
 import { useParams } from "next/navigation";
 import { useQuestionCarousel } from "@/hooks/use-question-carousel";
 import { QuestionCarousel } from "./question-carousel";
-
+import { useRouter } from "@/i18n/navigation";
 export function VisitAnswersForm() {
   const { start, stop } = useLoader();
   const { visitId } = useParams();
+  const router = useRouter();
   const t = useTranslations();
 
   const carousel = useQuestionCarousel(Number(visitId));
@@ -322,6 +323,7 @@ export function VisitAnswersForm() {
       toast.success(
         t("your visit has been closed successfully"),
       );
+      router.push("/dashboard/daily-visits");
     } catch (error: any) {
       toast.error(
         error?.data?.message ||
@@ -389,7 +391,7 @@ export function VisitAnswersForm() {
             hasPrev={carousel.hasPrev}
             progress={overallProgress}
             direction={carousel.direction}
-            control={form.control}
+            control={form.control as any}
             watchedAnswers={watchedAnswers}
           />
         )}

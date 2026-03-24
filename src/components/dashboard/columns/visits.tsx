@@ -140,6 +140,7 @@ export const getColumns = (
             />
           )}
           {visit.status !== "in_progress" &&
+            visit.status !== "completed" &&
             user &&
             user?.role === "auditor" && (
               <Button
@@ -185,7 +186,8 @@ export const getColumns = (
               </>
             ))}
           {user &&
-            user?.role === "branch_manager" &&
+            (user?.role === "branch_manager" ||
+              user?.role === "auditor") &&
             visit.status === "completed" && (
               <>
                 <Button
@@ -197,16 +199,19 @@ export const getColumns = (
                 >
                   {t("Show Report")}
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    handlers.onShowAIAnalysis(visit)
-                  }
-                >
-                  <Bot />
-                  {t("AI Analysis")}
-                </Button>
+                {user?.role === "branch_manager" &&
+                  visit.status === "completed" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        handlers.onShowAIAnalysis(visit)
+                      }
+                    >
+                      <Bot />
+                      {t("AI Analysis")}
+                    </Button>
+                  )}
               </>
             )}
         </div>

@@ -47,7 +47,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Company } from "@/types/company";
 
 import { Branch } from "@/types/branch";
@@ -67,6 +67,13 @@ export default function CreateBranchForm({
   const t = useTranslations();
   const router = useRouter();
   const { start, stop } = useLoader();
+  const currentYear = new Date().getFullYear();
+  // Start from Jan 1 of previous year
+  const startMonth = useMemo(
+    () => new Date(currentYear - 18, 11, 31),
+    [currentYear],
+  );
+
   const [createBranch, { isLoading: isCreating }] =
     useCreateBranchMutation();
   const [updateBranch, { isLoading: isUpdating }] =
@@ -558,10 +565,10 @@ export default function CreateBranchForm({
                           )
                         }
                         disabled={(date) =>
-                          date > new Date() ||
-                          date < new Date("1900-01-01")
+                          date > startMonth
                         }
                         initialFocus
+                        endMonth={startMonth}
                         captionLayout="dropdown"
                       />
                     </PopoverContent>

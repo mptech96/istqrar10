@@ -48,7 +48,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Inspectors } from "@/types/inspectors";
 import { Company } from "@/types/company";
@@ -68,6 +68,15 @@ export default function CreateInspectorForm({
   const t = useTranslations();
   const router = useRouter();
   const { start, stop } = useLoader();
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+  const currentDate = new Date().getDate();
+  // Start from Jan 1 of previous year
+  const startMonth = useMemo(
+    () =>
+      new Date(currentYear - 18, currentMonth, currentDate),
+    [currentYear, currentMonth, currentDate],
+  );
   const [createInspector, { isLoading: isCreating }] =
     useCreateInspectorMutation();
   const [updateInspector, { isLoading: isUpdating }] =
@@ -468,11 +477,11 @@ export default function CreateInspectorForm({
                           )
                         }
                         disabled={(date) =>
-                          date > new Date() ||
-                          date < new Date("1900-01-01")
+                          date > startMonth
                         }
                         initialFocus
                         captionLayout="dropdown"
+                        endMonth={startMonth}
                       />
                     </PopoverContent>
                   </Popover>
@@ -726,7 +735,10 @@ export default function CreateInspectorForm({
                         }
                         initialFocus
                         captionLayout="dropdown"
-                        endMonth={new Date("2100-12-31")}
+                        disabled={(date) =>
+                          date < new Date()
+                        }
+                        endMonth={new Date("2030-12-31")}
                       />
                     </PopoverContent>
                   </Popover>
@@ -820,6 +832,9 @@ export default function CreateInspectorForm({
                         }
                         initialFocus
                         captionLayout="dropdown"
+                        disabled={(date) =>
+                          date < new Date()
+                        }
                         endMonth={new Date("2100-12-31")}
                       />
                     </PopoverContent>

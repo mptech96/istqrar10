@@ -47,7 +47,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LocationPicker } from "@/components/ui/location-picker";
 import { Switch } from "@/components/ui/switch";
 
@@ -69,6 +69,33 @@ export default function CreateCompanyForm({
   const router = useRouter();
   const locale = useLocale();
   const { start, stop } = useLoader();
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+  const currentDate = new Date().getDate();
+  // Start from Jan 1 of previous year
+  const minDate = useMemo(
+    () =>
+      new Date(currentYear - 18, currentMonth, currentDate),
+    [currentYear, currentMonth, currentDate],
+  );
+
+  // Start from Jan 1 of previous year
+  const startMonth = useMemo(
+    () => new Date(currentYear - 1, 0, 1),
+    [currentYear],
+  );
+  // End at Dec 31 of next year
+  const endMonth = useMemo(
+    () => new Date(currentYear + 1, 11, 31),
+    [currentYear],
+  );
+  /* 
+  
+  const currentYear = new Date().getFullYear();
+ 
+  
+  */
+
   const [createCompany, { isLoading: isCreating }] =
     useCreateCompanyMutation();
   const [updateCompany, { isLoading: isUpdating }] =
@@ -296,8 +323,14 @@ export default function CreateCompanyForm({
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t("Enter phone number")}
+                      placeholder={
+                        locale === "ar"
+                          ? "********5 (966+) "
+                          : "(966+) 5********  "
+                      }
                       {...field}
+                      type="tel"
+                      dir={locale === "ar" ? "rtl" : "ltr"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -448,12 +481,12 @@ export default function CreateCompanyForm({
                           )
                         }
                         disabled={(date) =>
-                          date < new Date("2023-12-31")
+                          date < startMonth
                         }
                         initialFocus
                         captionLayout="dropdown"
-                        startMonth={new Date("2024-01-1")}
-                        endMonth={new Date("2100-12-31")}
+                        startMonth={startMonth}
+                        endMonth={endMonth}
                       />
                     </PopoverContent>
                   </Popover>
@@ -522,7 +555,7 @@ export default function CreateCompanyForm({
                             1,
                           )
                         }
-                        endMonth={new Date("2050-12-31")}
+                        endMonth={new Date("2040-12-31")}
                       />
                     </PopoverContent>
                   </Popover>
@@ -862,7 +895,15 @@ export default function CreateCompanyForm({
                     <FormLabel>{t("User Phone")}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t("Enter user phone")}
+                        placeholder={
+                          locale === "ar"
+                            ? "05xxxxxxxx"
+                            : "05xxxxxxxx"
+                        }
+                        type="tel"
+                        dir={
+                          locale === "ar" ? "rtl" : "ltr"
+                        }
                         {...field}
                       />
                     </FormControl>
@@ -922,11 +963,11 @@ export default function CreateCompanyForm({
                             )
                           }
                           disabled={(date) =>
-                            date > new Date() ||
-                            date < new Date("1900-01-01")
+                            date > minDate
                           }
                           initialFocus
                           captionLayout="dropdown"
+                          endMonth={minDate}
                         />
                       </PopoverContent>
                     </Popover>
