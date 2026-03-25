@@ -1,3 +1,4 @@
+"use client";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -8,33 +9,32 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import LangSwitcher from "@/components/common/lang/lang-switcher";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { LogIn, User } from "lucide-react";
 
 const NavActions = () => {
   const t = useTranslations();
+  const isMobile = useIsMobile();
+
   return (
     <NavigationMenu>
-      <NavigationMenuList
-        className={`flex gap-4 items-center `}
-      >
+      <NavigationMenuList className="flex gap-1 lg:gap-4 items-center ">
         <div className="cursor-pointer text-sm flex align-center">
-          <AnimatedThemeToggler className="text-[16px]" />
+          <AnimatedThemeToggler className="text-[12px]" />
         </div>
         <div>
           <LangSwitcher />
         </div>
         <NavigationMenuItem>
           <Link
-            href="/login" /* 
-                text-align: right;
-font-family: "Noto Kufi Arabic";
-font-size: 20px;
-font-style: normal;
-font-weight: 500;
-line-height: 45px
-            */
-            className=" inline-block w-48 cursor-pointer text-[20px] font-medium leading-11.25 text-primary-foreground text-center bg-linear-90 from-coralRed to-darkRed px-6 py-1 rounded-md  transition-colors"
+            href="/login"
+            className={`flex items-center justify-center cursor-pointer font-normal text-primary-foreground text-center bg-linear-90 from-coralRed to-darkRed rounded-md transition-all hover:brightness-110 ${
+              isMobile
+                ? "w-10 h-10 p-2"
+                : "w-36 px-2 py-1 text-[18px] leading-11.25"
+            }`}
           >
-            {t("Join Us")}
+            {isMobile ? <User size={20} /> : t("Sign In")}
           </Link>
         </NavigationMenuItem>
       </NavigationMenuList>

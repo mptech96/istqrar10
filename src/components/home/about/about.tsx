@@ -109,7 +109,7 @@ const About = () => {
               }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="absolute inset-4 bg-coralRed rounded-[40px] z-0 shadow-lg"
+              className="absolute hidden lg:block inset-4 bg-coralRed rounded-[40px] z-0 shadow-lg"
             />
 
             {/* Main Image Layer (Top Diamond) */}

@@ -114,9 +114,7 @@ export default function SignInForm() {
                 >
                   <FormControl>
                     <Input
-                      placeholder={t(
-                        "Email or Phone Number",
-                      )}
+                      placeholder={t("Email")}
                       className="h-12 bg-background border-input/60 rounded-lg focus-visible:ring-darkRed/20"
                       {...field}
                     />

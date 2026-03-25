@@ -53,7 +53,10 @@ const PricingSection = () => {
   ];
 
   return (
-    <section className="py-20 flex flex-col gap-16">
+    <section
+      id="Subscriptions"
+      className="py-20 flex flex-col gap-16"
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
