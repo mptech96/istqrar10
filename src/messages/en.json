@@ -892,5 +892,11 @@
   "Failed to delete visit": "Failed to delete visit",
   "SAUDI_PHONE_VALIDATION_ERROR": "Invalid Saudi phone number. Use 10 digits starting with 0 (e.g., 05********) or 12 digits starting with 966 (e.g., 9665********).",
   "Please select a company": "Please select a company",
-  "Birth date is required 18+ years": "Birth date is required 18+ years"  
+  "Birth date is required 18+ years": "Birth date is required 18+ years",
+  "unauthorized_title": "Access Denied",
+  "unauthorized_description": "You do not have the necessary permissions to access this page. If you believe this is an error, please contact your administrator.",
+  "unauthorized_back_home": "Back to Dashboard",
+  "not_found_title": "Page Not Found",
+  "not_found_description": "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+  "not_found_back_home": "Back to Home"
 }

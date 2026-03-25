@@ -43,25 +43,75 @@ export default function middleware(request: NextRequest) {
     
     // Determine the dashboard path based on user role
     let dashboardPath = '/dashboard';
-    const userCookie = request.cookies.get('user')?.value;
-    if (userCookie) {
-      try {
-        const user = JSON.parse(decodeURIComponent(userCookie));
-        const role = user.role;
-        if (role === 'auditor') {
-          dashboardPath = '/dashboard/auditor-dashboard';
-        } else if (role === 'company_admin') {
-          dashboardPath = '/dashboard/company-dashboard';
-        } else if (role === 'branch_manager') {
-          dashboardPath = '/dashboard/branch-dashboard';
-        }
-      } catch {
-        // Fallback to default dashboard if parsing fails
+    try {
+      const user = JSON.parse(decodeURIComponent(token));
+      const role = user.role;
+      if (role === 'auditor') {
+        dashboardPath = '/dashboard/auditor-dashboard';
+      } else if (role === 'company_admin') {
+        dashboardPath = '/dashboard/company-dashboard';
+      } else if (role === 'branch_manager') {
+        dashboardPath = '/dashboard/branch-dashboard';
       }
+    } catch {
+      // Fallback
     }
     
     // Redirect to the role-specific dashboard
     return NextResponse.redirect(new URL(`/${currentLocale}${dashboardPath}`, request.url));
+  }
+
+  // Scenario C: User IS logged in, check role-based access for protected routes
+  if (isProtectedRoute && token) {
+    try {
+      const user = JSON.parse(decodeURIComponent(token));
+      const role = user.role;
+      const currentLocale = pathname.match(new RegExp(localePattern))?.[1] || routing.defaultLocale;
+
+      // Define allowed route prefixes per role
+      const rolePermissions: Record<string, string[]> = {
+        super_admin: ['/dashboard'], // Super admin can access all dashboard routes
+        auditor: [
+          '/dashboard/auditor-dashboard',
+          '/dashboard/daily-visits',
+          '/dashboard/tickets',
+          '/dashboard/reports/auditor',
+          '/dashboard/visits', // Needed for individual visit questions/reports
+          '/dashboard/profile',
+          '/dashboard/settings',
+        ],
+        company_admin: [
+          '/dashboard/company-dashboard',
+          '/dashboard/inspectors',
+          '/dashboard/branches',
+          '/dashboard/visits',
+          '/dashboard/tickets',
+          '/dashboard/reports/company',
+          '/dashboard/profile',
+          '/dashboard/settings',
+        ],
+        branch_manager: [
+          '/dashboard/branch-dashboard',
+          '/dashboard/visits',
+          '/dashboard/tickets',
+          '/dashboard/reports/branch',
+          '/dashboard/profile',
+          '/dashboard/settings',
+        ],
+      };
+
+      const allowedPaths = rolePermissions[role] || [];
+      const isAuthorized = 
+        role === 'super_admin' || 
+        allowedPaths.some(path => pathnameWithoutLocale.startsWith(path));
+
+      if (!isAuthorized) {
+        // Redirect unauthorized users to the specialized unauthorized page instead of dashboard
+        return NextResponse.redirect(new URL(`/${currentLocale}/unauthorized`, request.url));
+      }
+    } catch {
+      // If parsing fails, allow the request to proceed (standard auth check already passed)
+    }
   }
 
   // --- LOGIC END ---

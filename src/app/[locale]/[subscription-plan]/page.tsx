@@ -7,6 +7,7 @@ import {
   getTranslations,
 } from "next-intl/server";
 import { ThemeLogo } from "@/components/ui/theme-logo";
+import { notFound } from "next/navigation";
 
 interface Props {
   params: Promise<{
@@ -19,6 +20,16 @@ const SubscriptionPlanPage = async ({ params }: Props) => {
   const { "subscription-plan": planSlug } = await params;
   const locale = await getLocale();
   const t = await getTranslations();
+
+  // Validate the slug against the valid plan title from the home page
+  // This ensures that random paths don't hit this page
+  const validTitle = t("plan_title");
+  const expectedSlug = encodeURIComponent(validTitle.toLowerCase().replace(/\s+/g, '-'));
+
+  if (decodeURIComponent(planSlug) !== decodeURIComponent(expectedSlug)) {
+    notFound();
+  }
+
   const isRTL = locale === "ar";
 
   // Convert slug back to a more readable title (e.g., "premium-plan" -> "Premium Plan")
