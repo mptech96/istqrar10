@@ -107,7 +107,7 @@ const BranchStats = () => {
       <div className="">
         <RatingPie />
       </div>
-      <VisitRadialBar />
+      {/* <VisitRadialBar /> */}
     </div>
   );
 };

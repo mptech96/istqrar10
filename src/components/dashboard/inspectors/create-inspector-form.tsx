@@ -315,11 +315,29 @@ export default function CreateInspectorForm({
                     {t("Confirm Password")} *
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder={t("Confirm password")}
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input
+                        type={
+                          showPassword ? "text" : "password"
+                        }
+                        placeholder={t("Confirm password")}
+                        className={`${language === "ar" ? "pl-10" : "pr-10"}`}
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowPassword(!showPassword)
+                        }
+                        className={`absolute  top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${language === "ar" ? "left-3" : "right-3"}`}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -1,9 +1,16 @@
 "use client";
 
 import NavLinks from "../navigation-links/nav-links";
-import NavActions from "../nav-actions/actions";
+import dynamic from "next/dynamic";
 import { ThemeLogo } from "@/components/ui/theme-logo";
 import { useIsMobile } from "@/hooks/use-mobile";
+
+const NavActions = dynamic(
+  () => import("../nav-actions/actions"),
+  {
+    loading: () => <div className="w-36" />,
+  },
+);
 
 const NavBar = () => {
   const isMobile = useIsMobile();

@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { createBranchSchema } from "@/schema/create-branch.schema.zod";
 import {
@@ -37,7 +37,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
@@ -47,7 +47,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Company } from "@/types/company";
 
 import { Branch } from "@/types/branch";
@@ -65,8 +65,10 @@ export default function CreateBranchForm({
   hideCardWrapper = false,
 }: CreateBranchFormProps) {
   const t = useTranslations();
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { start, stop } = useLoader();
+  const locale = useLocale();
   const currentYear = new Date().getFullYear();
   // Start from Jan 1 of previous year
   const startMonth = useMemo(
@@ -467,11 +469,29 @@ export default function CreateBranchForm({
                 <FormItem>
                   <FormLabel>{t("Password")} *</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder={t("Enter password")}
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input
+                        type={
+                          showPassword ? "text" : "password"
+                        }
+                        placeholder="p@ssw0rd"
+                        className={`${locale === "ar" ? "pl-10" : "pr-10"}`}
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowPassword(!showPassword)
+                        }
+                        className={`absolute  top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${locale === "ar" ? "left-3" : "right-3"}`}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -487,11 +507,29 @@ export default function CreateBranchForm({
                     {t("Confirm Password")} *
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder={t("Confirm password")}
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input
+                        type={
+                          showPassword ? "text" : "password"
+                        }
+                        placeholder={t("Confirm password")}
+                        className={`${locale === "ar" ? "pl-10" : "pr-10"}`}
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowPassword(!showPassword)
+                        }
+                        className={`absolute  top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${locale === "ar" ? "left-3" : "right-3"}`}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -521,7 +559,7 @@ export default function CreateBranchForm({
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>
-                    {t("Date of Birth")}
+                    {t("Date of Birth")} *
                   </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>

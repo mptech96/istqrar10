@@ -5,7 +5,19 @@ import { useTranslations, useLocale } from "next-intl";
 import { motion } from "motion/react";
 import SectionHeader from "../section-header/section-header";
 
-const About = () => {
+interface AboutProps {
+  aboutRef: React.RefObject<HTMLElement | null>;
+  aboutImageRef: React.RefObject<HTMLDivElement | null>;
+  isTransitioning: boolean;
+  isTransitionComplete: boolean;
+}
+
+const About = ({
+  aboutRef,
+  aboutImageRef,
+  isTransitioning,
+  isTransitionComplete,
+}: AboutProps) => {
   const t = useTranslations();
   const locale = useLocale();
   const isRTL = locale === "ar";
@@ -34,7 +46,10 @@ const About = () => {
   ];
 
   return (
-    <section className="py-12 flex flex-col gap-16 overflow-hidden">
+    <section
+      ref={aboutRef}
+      className="py-12 flex flex-col gap-16"
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -91,7 +106,7 @@ const About = () => {
         </div>
 
         {/* Middle Column: Diamond Image Layered Effect */}
-        <div className="flex justify-center order-2 px-12 py-14 ">
+        <div className="flex justify-center order-2 px-12 py-14">
           <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96">
             {/* Background Layer (Red Diamond Offset) */}
             <motion.div
@@ -112,8 +127,11 @@ const About = () => {
               className="absolute hidden lg:block inset-4 bg-coralRed rounded-[40px] z-0 shadow-lg"
             />
 
-            {/* Main Image Layer (Top Diamond) */}
+            {/* Main Image Layer (Top Diamond) - with ref for position tracking */}
             <motion.div
+              ref={
+                aboutImageRef as React.RefObject<HTMLDivElement>
+              }
               initial={{
                 opacity: 0,
                 scale: 0.9,
@@ -124,9 +142,12 @@ const About = () => {
                 scale: 1,
                 rotate: 45,
               }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.8 }}
-              className=" z-10 overflow-hidden rounded-[40px] shadow-2xl bg-white dark:bg-zinc-950"
+              className="overflow-hidden rounded-[40px] shadow-2xl bg-white dark:bg-zinc-950"
+              style={{
+                zIndex: 1,
+              }}
             >
               <div className="-rotate-45 scale-150 relative">
                 <Image
@@ -135,6 +156,7 @@ const About = () => {
                   width={350}
                   height={450}
                   priority
+                  id="about-image"
                 />
               </div>
             </motion.div>

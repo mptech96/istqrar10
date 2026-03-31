@@ -78,7 +78,11 @@ const LocatingBranchAuditor = ({
     });
     mapInstance.current = map;
 
+    let isRemoved = false;
+
     map.on("load", async () => {
+      if (isRemoved) return;
+
       // Add Branch Marker (Red)
       new maplibregl.Marker({ color: "#ef4444" })
         .setLngLat(branchLocation)
@@ -107,17 +111,26 @@ const LocatingBranchAuditor = ({
                 );
               },
             );
+
+          if (isRemoved) return;
+
           auditorLoc = [
             pos.coords.longitude,
             pos.coords.latitude,
           ];
         } catch (e) {
           console.error(e);
+          if (isRemoved) return;
           toast.error(t("Failed to get current location"));
         }
       }
 
-      if (auditorLoc && auditorLoc[0] && auditorLoc[1]) {
+      if (
+        !isRemoved &&
+        auditorLoc &&
+        auditorLoc[0] &&
+        auditorLoc[1]
+      ) {
         // Add Auditor Marker (Blue)
         new maplibregl.Marker({ color: "#3b82f6" })
           .setLngLat(auditorLoc)
@@ -162,7 +175,13 @@ const LocatingBranchAuditor = ({
               }),
             },
           );
+
+          if (isRemoved) return;
+
           const routeData = await res.json();
+
+          if (isRemoved) return;
+
           if (routeData?.features?.length > 0) {
             const geometry = routeData.features[0].geometry;
             map.addSource("route", {
@@ -190,6 +209,8 @@ const LocatingBranchAuditor = ({
           }
         } catch (error) {
           console.error("Failed to fetch route:", error);
+          if (isRemoved) return;
+
           // Fallback to straight line
           map.addSource("straight-line", {
             type: "geojson",
@@ -217,9 +238,11 @@ const LocatingBranchAuditor = ({
     });
 
     return () => {
+      isRemoved = true;
       map.remove();
       mapInstance.current = null;
     };
+
   }, [
     open,
     branchLocation,
