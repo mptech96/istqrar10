@@ -106,7 +106,7 @@ export default function CreateCompanyForm({
   const [showPassword, setShowPassword] = useState(false);
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
-
+  console.log(initialData);
   const form = useForm<
     z.infer<ReturnType<typeof createCompanySchema>>
   >({
@@ -150,7 +150,8 @@ export default function CreateCompanyForm({
             initialData.manager?.birth_date || "",
           user_status:
             Boolean(initialData.manager?.status) || true,
-          user_gender: initialData.manager?.gender || 1,
+          user_gender:
+            initialData.manager?.gender === "male" ? 1 : 2,
         }
       : {
           status: true,

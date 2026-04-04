@@ -9,6 +9,7 @@ import { Bot, Play, SquarePen, Trash } from "lucide-react";
 import VisitModel from "@/components/models/visit-model";
 import LocatingBranchAuditor from "@/components/models/locating-branch-auditor";
 import { User } from "@/types/user";
+import { VisitTimer } from "@/components/dashboard/visits/visit-timer";
 
 const getStatusVariant = (status: string) => {
   switch (status) {
@@ -119,7 +120,18 @@ export const getColumns = (
     accessorKey: "estimated_duration",
     header: t("Duration"),
     cell: ({ row }) => {
-      const duration = row.original.estimated_duration;
+      const visit = row.original;
+      const duration = visit.estimated_duration;
+      
+      if (visit.status === "in_progress" && visit.actual_start_time) {
+        return (
+          <VisitTimer 
+            actualStartTime={visit.actual_start_time} 
+            estimatedDuration={duration || 60} 
+          />
+        );
+      }
+      
       return duration ? `${duration} ${t("min")}` : "-";
     },
   },

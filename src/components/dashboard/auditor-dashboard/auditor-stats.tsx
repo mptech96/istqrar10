@@ -84,9 +84,14 @@ const AuditorStats = () => {
         averagePercentage: 0,
       }; */
     const averagePercentage =
-      pendingVisits?.reduce((acc: number, visit: Visit) => {
-        return acc + (visit.percentage || 0);
-      }, 0) / pendingVisits?.length;
+      completedVisits && completedVisits.length > 0
+        ? completedVisits.reduce(
+            (acc: number, visit: Visit) => {
+              return acc + (visit.percentage || 0);
+            },
+            0,
+          ) / completedVisits.length
+        : 0;
 
     return {
       totalVisits,
@@ -98,9 +103,11 @@ const AuditorStats = () => {
     };
   }, [data]);
 
+  const auditorStats = getAuditorStats();
+
   const statsConfig: StatsCardProps[] = [
     {
-      title: data?.meta?.total,
+      title: data?.meta?.total || 0,
       subtitle: t("Total visits"),
       icon: <Binoculars />,
       Badge: {
@@ -111,7 +118,7 @@ const AuditorStats = () => {
       },
     },
     {
-      title: getAuditorStats()?.completedVisits?.length,
+      title: auditorStats.completedVisits?.length || 0,
       subtitle: t("Completed visits"),
       icon: <CircleCheckBig />,
       Badge: {
@@ -122,7 +129,7 @@ const AuditorStats = () => {
       },
     },
     {
-      title: getAuditorStats()?.inProgressVisits?.length,
+      title: auditorStats.inProgressVisits?.length || 0,
       subtitle: t("Pending visits"),
       icon: <Clock />,
       Badge: {
@@ -133,7 +140,7 @@ const AuditorStats = () => {
       },
     },
     {
-      title: getAuditorStats()?.averagePercentage,
+      title: auditorStats.averagePercentage, // Already defaults to 0 safely
       subtitle: t("Average visit rating"),
       icon: <Star />,
       Badge: {

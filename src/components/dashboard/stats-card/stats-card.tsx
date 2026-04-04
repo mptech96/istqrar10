@@ -26,10 +26,12 @@ const StatsCard = ({
           <h4>
             <span>{icon}</span>
           </h4>
-          <Badge variant={variant} className={className}>
-            {badgeIcon}
-            {badgeTitle}
-          </Badge>
+          {badgeTitle && (
+            <Badge variant={variant} className={className}>
+              {badgeIcon}
+              {badgeTitle}
+            </Badge>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="text-2xl font-bold">

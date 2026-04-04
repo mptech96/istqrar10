@@ -1,9 +1,10 @@
 "use client";
 import StatsSection from "@/components/common/stats-section/stats";
 import { StatsCardProps } from "@/types/stats-card-props";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Calendar,
+  ChartCandlestickIcon,
   CircleCheckBig,
   Clock,
   Star,
@@ -22,68 +23,77 @@ import RatingPie from "./rating-pie";
 import VisitRadialBar from "./visit-radial-bar";
 
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useGetBranchVisitsQuery } from "@/services/api/visits";
+import { Visit } from "@/types/visit";
 
 const BranchStats = () => {
   const t = useTranslations();
   const { user } = useAppSelector((state) => state.auth);
 
   // Robust check: ID must be a number and not the string "undefined"
-  const branchId =
-    user?.branch_id &&
-    String(user?.branch_id) !== "undefined"
-      ? Number(user.branch_id)
-      : skipToken;
-
-  const { data: branchStats, isLoading } =
-    useGetBranchStatsQuery(branchId);
-
-  const statsConfig: StatsCardProps[] = [
-    {
-      title: branchStats?.statistics?.total_users || 0,
-      subtitle: t("Total users"),
-      icon: <User2 />,
-      Badge: {
+  const branchId = user?.branch_id;
+  const { data: visits, isLoading } =
+    useGetBranchVisitsQuery(String(branchId), {
+      skip: !branchId,
+    });
+  const statsConfig: StatsCardProps[] = useMemo(
+    () => [
+      {
+        title:
+          Number(
+            visits?.statistics?.average_percentage,
+          ).toFixed(2) || 0,
+        subtitle: t("degree of compliance with"),
+        icon: <Star />,
+        /*  Badge: {
         variant: "secondary",
         className: "bg-green-100 text-green-700",
         badgeTitle: "",
         badgeIcon: <User />,
+      }, */
       },
-    },
-    {
-      title: branchStats?.statistics?.total_visits || 0,
-      subtitle: t("Completed visits"),
-      icon: <CircleCheckBig />,
-      Badge: {
-        variant: "secondary",
-        className: "bg-cyan-500/10 text-cyan-700",
-        badgeTitle: "",
-        badgeIcon: <CircleCheckBig />,
+      {
+        title: visits?.statistics?.total_visits || 0,
+        subtitle: t("Total visits"),
+        icon: <CircleCheckBig />,
+        Badge: {
+          variant: "secondary",
+          className: "bg-cyan-500/10 text-cyan-700",
+          badgeTitle: "",
+          badgeIcon: <CircleCheckBig />,
+        },
       },
-    },
-    {
-      title:
-        branchStats?.statistics?.open_tickets.length || 0,
-      subtitle: t("Pending tickets"),
-      icon: <Clock />,
-      Badge: {
-        variant: "secondary",
-        className: "bg-amber-500/10 text-amber-700",
-        badgeTitle: "+2",
-        badgeIcon: <TrendingUp />,
+      {
+        title:
+          visits?.data?.filter(
+            (visit: Visit) => visit.status === "completed",
+          ).length || 0,
+        subtitle: t("Completed visits"),
+        icon: <Clock />,
+        Badge: {
+          variant: "secondary",
+          className: "bg-amber-500/10 text-amber-700",
+          badgeTitle: "+2",
+          badgeIcon: <TrendingUp />,
+        },
       },
-    },
-    {
-      title: branchStats?.statistics?.avg_score || 0,
-      subtitle: t("Average visit rating"),
-      icon: <Star />,
-      Badge: {
-        variant: "secondary",
-        className: "bg-blue-100 text-blue-700",
-        badgeTitle: "2%",
-        badgeIcon: <TrendingUp />,
+      {
+        title:
+          Number(visits?.statistics?.average_score).toFixed(
+            2,
+          ) || 0,
+        subtitle: t("Average visit rating"),
+        icon: <ChartCandlestickIcon />,
+        Badge: {
+          variant: "secondary",
+          className: "bg-blue-100 text-blue-700",
+          badgeTitle: "2%",
+          badgeIcon: <TrendingUp />,
+        },
       },
-    },
-  ];
+    ],
+    [visits, t],
+  );
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">

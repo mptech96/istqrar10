@@ -124,15 +124,24 @@ export default function CreateTicketForm({
   // Reset branch and visit if company changes
   useEffect(() => {
     if (selectedCompanyId && !isEditMode) {
-      form.setValue("branch_id", undefined as unknown as number);
-      form.setValue("visit_id", undefined as unknown as number);
+      form.setValue(
+        "branch_id",
+        undefined as unknown as number,
+      );
+      form.setValue(
+        "visit_id",
+        undefined as unknown as number,
+      );
     }
   }, [selectedCompanyId, form, isEditMode]);
 
   // Reset visit if branch changes
   useEffect(() => {
     if (selectedBranchId && !isEditMode) {
-      form.setValue("visit_id", undefined as unknown as number);
+      form.setValue(
+        "visit_id",
+        undefined as unknown as number,
+      );
     }
   }, [selectedBranchId, form, isEditMode]);
 
@@ -234,6 +243,9 @@ export default function CreateTicketForm({
                       </SelectItem>
                       <SelectItem value="individual">
                         {t("Individual")}
+                      </SelectItem>
+                      <SelectItem value="auditor">
+                        {t("Auditor")}
                       </SelectItem>
                     </SelectContent>
                   </Select>

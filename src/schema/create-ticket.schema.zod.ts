@@ -8,15 +8,15 @@ import {
 
 export const createTicketSchema = (t: any) =>
   z.object({
-    user_type: z.enum(["company", "individual"], {
+    user_type: z.enum(["company", "individual" , "auditor"], {
       message: t("User type is required"),
     }),
-    company_id: z.coerce.number().min(1, t("Company is required")),
-    branch_id: z.coerce.number().min(1, t("Branch is required")),
-    visit_id: z.coerce.number().min(1, t("Visit is required")),
+    company_id: z.coerce.number().optional(),
+    branch_id: z.coerce.number().optional(),
+    visit_id: z.coerce.number().optional(),
     subject: z.string().min(1, t("Subject is required")),
-    description: z
-      .string()
+    description: z  
+      .string() 
       .min(1, t("Description is required")),
     ticket_type: z.enum([...TICKET_TYPES], {
       message: t("Ticket type is required"),

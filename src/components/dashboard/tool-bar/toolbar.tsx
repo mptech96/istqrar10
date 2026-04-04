@@ -12,6 +12,7 @@ import {
 import NotificationBill from "@/components/dashboard/notification/notification-bill";
 import NotificationDropdownMenu from "@/components/dashboard/notification/notification-dropdown-menu";
 import { useGetNotificationsQuery } from "@/services/api/notifications";
+import { GlobalVisitTimer } from "@/components/dashboard/visits/global-visit-timer";
 
 const ToolBar = () => {
   const { data } = useGetNotificationsQuery("", {
@@ -23,7 +24,10 @@ const ToolBar = () => {
 
   return (
     <div className="flex justify-between align-center py-2 mt-2">
-      <SidebarTrigger className="flex h-full align-center" />
+      <div className="flex items-center gap-4">
+        <SidebarTrigger className="flex h-full align-center" />
+        <GlobalVisitTimer />
+      </div>
       <div className="flex gap-4 items-center">
         <div className="cursor-pointer text-sm flex items-center">
           <AnimatedThemeToggler />

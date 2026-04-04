@@ -3,7 +3,7 @@ import type { JSX } from "react"
 export type variantType = "outline" | "destructive" | "secondary" | "default" | null | undefined
 
 export type StatsCardProps = {
-    title: string,
+    title: string | number,
     subtitle: string,
     icon: JSX.Element,
     Badge?: {

@@ -120,7 +120,8 @@ export default function CreateBranchForm({
                 "yyyy-MM-dd",
               )
             : "",
-          user_gender: initialData.manager?.gender || 1,
+          user_gender:
+            initialData.manager?.gender === "male" ? 1 : 0,
           company_id: initialData.company_id,
         }
       : {

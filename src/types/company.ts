@@ -29,7 +29,7 @@ export interface User {
   email: string;
   phone: string | null;
   personal_photo: string | null;
-  gender: number;
+  gender: number | string;
   birth_date: string | null;
   status: boolean;
 }

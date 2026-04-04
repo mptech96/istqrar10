@@ -57,6 +57,7 @@ import { Inspectors } from "@/types/inspectors";
 import { useAppSelector } from "@/lib/store";
 import { Visit } from "@/types/visit";
 import { Company } from "@/types/company";
+import { TimePicker } from "@/components/ui/time-picker";
 
 interface CreateVisitFormProps {
   initialData?: Visit;
@@ -118,7 +119,7 @@ export default function CreateVisitForm({
           auditor_id: undefined,
           checklist_id: undefined,
           scheduled_date: "",
-          scheduled_time: "",
+          scheduled_time: format(new Date(), "HH:mm"),
           estimated_duration: 60,
           internal_notes: "",
         },
@@ -134,7 +135,10 @@ export default function CreateVisitForm({
   // Reset branch if company changes
   useEffect(() => {
     if (selectedCompanyId && !isEditMode) {
-      form.setValue("branch_id", undefined as unknown as number);
+      form.setValue(
+        "branch_id",
+        undefined as unknown as number,
+      );
     }
   }, [selectedCompanyId, form, isEditMode]);
 
@@ -454,10 +458,13 @@ export default function CreateVisitForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {t("Scheduled Time")} *
+                    {t("Scheduled Time")} (24h) *
                   </FormLabel>
                   <FormControl>
-                    <Input type="time" {...field} />
+                    <TimePicker
+                      value={field.value || "12:00"}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
