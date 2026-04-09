@@ -106,7 +106,6 @@ export default function CreateCompanyForm({
   const [showPassword, setShowPassword] = useState(false);
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
-  console.log(initialData);
   const form = useForm<
     z.infer<ReturnType<typeof createCompanySchema>>
   >({
@@ -242,6 +241,7 @@ export default function CreateCompanyForm({
         }).unwrap();
         toast.success(t("Company updated successfully!"));
       } else {
+        console.log(formData);
         await createCompany(formData).unwrap();
         toast.success(t("Company created successfully!"));
       }
@@ -622,7 +622,7 @@ export default function CreateCompanyForm({
               control={form.control}
               name="city"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="hidden">
                   <FormLabel>{t("City")} *</FormLabel>
                   <FormControl>
                     <Input
@@ -638,7 +638,7 @@ export default function CreateCompanyForm({
               control={form.control}
               name="address"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="hidden">
                   <FormLabel>{t("Address")} *</FormLabel>
                   <FormControl>
                     <Input
@@ -650,17 +650,47 @@ export default function CreateCompanyForm({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="latitude"
+              render={({ field }) => (
+                <FormItem className="hidden">
+                  <FormControl>
+                     <Input type="hidden" {...field} value={field.value || ""} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="longitude"
+              render={({ field }) => (
+                <FormItem className="hidden">
+                  <FormControl>
+                     <Input type="hidden" {...field} value={field.value || ""} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
             <div className="md:col-span-2">
               <FormItem>
                 <FormLabel>{t("Location Pin")}</FormLabel>
                 <LocationPicker
-                  initialLat={form.getValues("latitude")}
-                  initialLng={form.getValues("longitude")}
+                  initialLat={initialData?.latitude ?? form.getValues("latitude")}
+                  initialLng={initialData?.longitude ?? form.getValues("longitude")}
                   onChange={(lat, lng) => {
                     form.setValue("latitude", lat, {
                       shouldValidate: true,
                     });
                     form.setValue("longitude", lng, {
+                      shouldValidate: true,
+                    });
+                  }}
+                  onAddressSelect={(address, city) => {
+                    form.setValue("address", address, {
+                      shouldValidate: true,
+                    });
+                    form.setValue("city", city, {
                       shouldValidate: true,
                     });
                   }}

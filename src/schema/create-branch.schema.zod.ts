@@ -35,8 +35,8 @@ export const createBranchSchema = (t: any) =>
         // .optional()  Allows undefined (when input was empty)
     
     ),
-    city: z.string().min(1, t("City is required")),
-    address: z.string().min(1, t("Address is required")),
+    city: z.string().optional(),
+    address: z.string().optional(),
     latitude: z.coerce.number().optional(),
     longitude: z.coerce.number().optional(),
     category: z.string().min(1, t("Category is required")),

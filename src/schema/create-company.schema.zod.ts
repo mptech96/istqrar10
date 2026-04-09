@@ -33,9 +33,9 @@ export const createCompanySchema = (t: any, isEditMode: boolean = false) =>
       )
     ),
     commercial_registration: z.string().min(1, t("Commercial registration is required")),
-    city: z.string().min(1, t("City is required")),
-    address: z.string().min(1, t("Address is required")),
-    contact_person: z.string().min(1, t("Contact person is required")),
+    city: z.string().optional(),
+    address: z.string().optional(),
+    contact_person: z.string(),
     logo: z
       .any()
       .optional()

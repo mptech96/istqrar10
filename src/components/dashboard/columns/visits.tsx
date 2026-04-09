@@ -21,6 +21,8 @@ const getStatusVariant = (status: string) => {
       return "outline";
     case "cancelled":
       return "destructive";
+    case "incomplete":
+      return "destructive";
     default:
       return "outline";
   }
@@ -121,17 +123,21 @@ export const getColumns = (
     header: t("Duration"),
     cell: ({ row }) => {
       const visit = row.original;
+
       const duration = visit.estimated_duration;
-      
-      if (visit.status === "in_progress" && visit.actual_start_time) {
+      const role = user.role;
+      if (
+        visit.status === "in_progress" &&
+        role === "auditor"
+      ) {
         return (
-          <VisitTimer 
-            actualStartTime={visit.actual_start_time} 
-            estimatedDuration={duration || 60} 
+          <VisitTimer
+            actualStartTime={visit.actual_start_time}
+            estimatedDuration={duration || 60}
           />
         );
       }
-      
+
       return duration ? `${duration} ${t("min")}` : "-";
     },
   },
@@ -153,6 +159,7 @@ export const getColumns = (
           )}
           {visit.status !== "in_progress" &&
             visit.status !== "completed" &&
+            visit.status !== "incomplete" &&
             user &&
             user?.role === "auditor" && (
               <Button

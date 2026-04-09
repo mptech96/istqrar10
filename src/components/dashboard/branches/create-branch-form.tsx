@@ -310,7 +310,7 @@ export default function CreateBranchForm({
               control={form.control}
               name="city"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="hidden">
                   <FormLabel>{t("City")} *</FormLabel>
                   <FormControl>
                     <Input
@@ -327,7 +327,7 @@ export default function CreateBranchForm({
               control={form.control}
               name="address"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="hidden">
                   <FormLabel>{t("Address")} *</FormLabel>
                   <FormControl>
                     <Input
@@ -336,6 +336,28 @@ export default function CreateBranchForm({
                     />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="latitude"
+              render={({ field }) => (
+                <FormItem className="hidden">
+                  <FormControl>
+                     <Input type="hidden" {...field} value={field.value || ""} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="longitude"
+              render={({ field }) => (
+                <FormItem className="hidden">
+                  <FormControl>
+                     <Input type="hidden" {...field} value={field.value || ""} />
+                  </FormControl>
                 </FormItem>
               )}
             />
@@ -387,13 +409,21 @@ export default function CreateBranchForm({
               <FormItem>
                 <FormLabel>{t("Location Pin")}</FormLabel>
                 <LocationPicker
-                  initialLat={form.getValues("latitude")}
-                  initialLng={form.getValues("longitude")}
+                  initialLat={initialData?.latitude ?? form.getValues("latitude")}
+                  initialLng={initialData?.longitude ?? form.getValues("longitude")}
                   onChange={(lat, lng) => {
                     form.setValue("latitude", lat, {
                       shouldValidate: true,
                     });
                     form.setValue("longitude", lng, {
+                      shouldValidate: true,
+                    });
+                  }}
+                  onAddressSelect={(address, city) => {
+                    form.setValue("address", address, {
+                      shouldValidate: true,
+                    });
+                    form.setValue("city", city, {
                       shouldValidate: true,
                     });
                   }}

@@ -751,7 +751,6 @@
   "Facilities": "Facilities",
   "It is an organization founded in 2025 that is interested in and specialized in developing and improving food safety and security quality and operational solutions, We support small, medium and large enterprises to maintain the highest level of quality and food safety and to build and develop operational plans": "It is an organization founded in 2025 that is interested in and specialized in developing and improving food safety and security quality and operational solutions. We support small, medium and large enterprises to maintain the highest level of quality and food safety and to build and develop operational plans",
   "Contact us for any inquiries about quality control services": "Contact us for any inquiries about quality control services.",
-  "Locating": "Locating",
   "Sign In Now": "Sign In Now",
   "Create new account": "Create new account",
   "Forgot Password?": "Forgot Password?",
@@ -923,5 +922,7 @@
   "Earned vs Possible": "Earned vs Possible",
   "Percentage": "Percentage",
   "Level": "Level",
-  "Visit time out, please complete the visit soon": "Visit time out, please complete the visit soon"
+  "Visit time out, please complete the visit soon": "Visit time out, please complete the visit soon",
+  "Locating": "Locating...",
+  "Incomplete Page": "Incomplete Page"
 }

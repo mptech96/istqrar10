@@ -10,7 +10,7 @@
     "lint": "eslint",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "doc":"npx typedoc --out docs"
+    "doc": "npx typedoc --out docs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -26,6 +26,7 @@
     "@reduxjs/toolkit": "^2.11.2",
     "@tanstack/react-table": "^8.21.3",
     "@types/nodemailer": "^7.0.11",
+    "@vis.gl/react-google-maps": "^1.8.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cookies-next": "^6.1.1",
@@ -60,6 +61,7 @@
     "@storybook/addon-vitest": "^10.2.19",
     "@storybook/nextjs-vite": "^10.2.19",
     "@tailwindcss/postcss": "^4",
+    "@types/google.maps": "^3.58.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

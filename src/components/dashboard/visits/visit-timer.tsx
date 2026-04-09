@@ -18,51 +18,39 @@ export function VisitTimer({
   compact = false,
 }: VisitTimerProps) {
   const t = useTranslations();
-  const [remainingMs, setRemainingMs] = useState<number>(0);
+  const [remainingMs, setRemainingMs] = useState<number | null>(null);
   const toastFiredRef = useRef(false);
 
   useEffect(() => {
     // Robust date parsing (handle "YYYY-MM-DD HH:mm:ss" and add UTC intent)
     const normalizeDate = (dateStr: string) => {
-      if (!dateStr) return new Date();
+      if (!dateStr) return null;
       
-      // If it's already a Date object (not expected here based on types but for safety)
-      // or looks like a ISO string with T, new Date() is usually fine.
-      let normalized = dateStr.replace(" ", "T");
-      
-      // If the string is just "YY-MM-DD HH:mm:ss", ensure we can parse it.
-      // Many browsers fail on "2024-05-20T14:30:00" without timezone
-      // We add "Z" to assume UTC if no offset is present.
-      if (
-        !normalized.endsWith("Z") &&
-        !normalized.match(/[\+\-]\d{2}:\d{2}$/) &&
-        normalized.includes("T")
-      ) {
-        normalized += "Z";
-      }
+      // Handle local time strings from Saudi Arabia (UTC+3) 
+      // by normalizing into ISO formats the browser understands as Local.
+      const normalized = dateStr.replace(/ /g, "T").replace(/\//g, "-");
       
       const parsedDate = new Date(normalized);
-      // Fallback for cases like "2024-05-20 14:30:00" failing if the browser is strict
-      if (isNaN(parsedDate.getTime())) {
-        // Try fallback parsing for common date-only or time-only strings
-        return new Date(); 
-      }
-      return parsedDate;
+      if (!isNaN(parsedDate.getTime())) return parsedDate;
+
+      // Numeric timestamp support
+      if (/^\d+$/.test(dateStr)) return new Date(Number(dateStr));
+      
+      return null;
     };
 
     const parsedStartTime = normalizeDate(actualStartTime);
-    const startTimeMs = parsedStartTime.getTime();
+    const durationMinutes = Number(estimatedDuration) || 60;
+    const durationMs = durationMinutes * 60 * 1000;
     
-    // Safety check: if startTime is NaN, use 0
-    const safeStartTime = isNaN(startTimeMs) ? Date.now() : startTimeMs;
-    const durationMs = (Number(estimatedDuration) || 60) * 60 * 1000;
-    const endTime = safeStartTime + durationMs;
+    // Calculate the fixed end time once when the input data changes.
+    // If the start time is missing, we calculate based on a stable launch time.
+    const startTimeMs = parsedStartTime ? parsedStartTime.getTime() : Date.now();
+    const endTime = startTimeMs + durationMs;
 
     const updateTimer = () => {
-      const now = Date.now();
-      const remaining = endTime - now;
-      // Ensure we don't set NaN
-      setRemainingMs(isNaN(remaining) ? 0 : remaining);
+      const remaining = endTime - Date.now();
+      setRemainingMs(remaining);
     };
 
     updateTimer();
@@ -72,7 +60,7 @@ export function VisitTimer({
   }, [actualStartTime, estimatedDuration]);
 
   useEffect(() => {
-    if (isNaN(remainingMs)) return;
+    if (remainingMs === null || isNaN(remainingMs)) return;
     
     if (remainingMs <= 0 && !toastFiredRef.current) {
       toast.warning(
@@ -83,7 +71,7 @@ export function VisitTimer({
   }, [remainingMs, t]);
 
   // Format Elapsed Time (MM:SS or HH:MM:SS)
-  const safeRemaining = isNaN(remainingMs) ? 0 : remainingMs;
+  const safeRemaining = remainingMs === null || isNaN(remainingMs) ? 0 : remainingMs;
   const absRemaining = Math.abs(safeRemaining);
   const totalSeconds = Math.floor(absRemaining / 1000);
   const h = Math.floor(totalSeconds / 3600);
@@ -101,9 +89,10 @@ export function VisitTimer({
 
   if (isOverdue) {
     variant = "destructive"; // Time is up (Red)
-  } else if (remainingMs <= estimatedDuration * 60 * 1000 * 0.2) {
+  } else if (remainingMs !== null && remainingMs <= estimatedDuration * 60 * 1000 * 0.2) {
     variant = "secondary"; // Less than 20% remaining
   }
+
 
   if (compact) {
     return (
