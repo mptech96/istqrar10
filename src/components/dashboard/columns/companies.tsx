@@ -67,9 +67,9 @@ export const getColumns = (
       const date = row.getValue(
         "subscription_start",
       ) as string;
-      return date
-        ? format(new Date(date), "dd-MM-yyyy")
-        : "-";
+      return date;
+      /* ? format(new Date(date), "dd-MM-yyyy")
+        : "-"; */
     },
   },
   {
@@ -79,9 +79,9 @@ export const getColumns = (
       const date = row.getValue(
         "subscription_end",
       ) as string;
-      return date
-        ? format(new Date(date), "dd-MM-yyyy")
-        : "-";
+      return date;
+      /* ? format(new Date(date), "dd-MM-yyyy")
+        : "-"; */
     },
   },
   {
@@ -160,7 +160,9 @@ export const getColumns = (
             <Button
               variant="outline"
               size="icon"
-              onClick={() => handlers.onDelete?.(company.id)}
+              onClick={() =>
+                handlers.onDelete?.(company.id)
+              }
               className="text-destructive hover:text-destructive hover:bg-destructive/10"
             >
               <Trash className="h-4 w-4" />

@@ -30,8 +30,8 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={locale === "ar" ? "rtl" : "ltr"}
-      className="dark"
-      style={{ colorScheme: "dark" }}
+      className="light"
+      style={{ colorScheme: "light" }}
     >
       <body className="font-din">
         <NextIntlClientProvider messages={messages}>
