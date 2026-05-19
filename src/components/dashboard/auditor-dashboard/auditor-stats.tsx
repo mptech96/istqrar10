@@ -140,7 +140,7 @@ const AuditorStats = () => {
       },
     },
     {
-      title: auditorStats.averagePercentage, // Already defaults to 0 safely
+      title: auditorStats.averagePercentage.toFixed(2), // Already defaults to 0 safely
       subtitle: t("Average visit rating"),
       icon: <Star />,
       Badge: {

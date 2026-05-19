@@ -51,8 +51,8 @@ const AIAnalysisOverview = () => {
       toast.success(t("ai_analysis_success_start"));
       // refetch is not strictly needed here if RTK Query tag invalidation works, but keeping it ensures UI update
       await refetch();
-    } catch {
-      toast.error(t("ai_analysis_error_start"));
+    } catch (error: any) {
+      toast.error( error.data?.message || t("ai_analysis_error_start"));
     }
   };
 
@@ -77,7 +77,7 @@ const AIAnalysisOverview = () => {
   // Only show the empty state if we are absolutely sure there is no data and we aren't currently fetching it
   if (!isFetchingData && (isError || !response?.data)) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-100 gap-6 p-8 border-2 border-dashed rounded-3xl bg-slate-50/50">
+      <div className="flex flex-col items-center justify-center min-h-[85vh] mt-4 gap-6 p-8 border-2 border-dashed rounded-3xl bg-slate-50/50">
         <div className="p-4 rounded-full bg-primary/10">
           <Sparkles className="w-12 h-12 text-primary" />
         </div>

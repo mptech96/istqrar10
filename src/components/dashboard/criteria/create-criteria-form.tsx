@@ -81,7 +81,7 @@ export default function CreateCriteriaForm({
           name: initialData.name,
           description: initialData.description || "",
           category: initialData.category,
-          weight: initialData.weight,
+        
           is_active: initialData.is_active,
           sort_order: initialData.sort_order,
           ranges: initialData.ranges?.length
@@ -106,7 +106,7 @@ export default function CreateCriteriaForm({
           name: "",
           description: "",
           category: "",
-          weight: 0,
+          
           is_active: true,
           sort_order: 1,
           ranges: [
@@ -216,14 +216,16 @@ export default function CreateCriteriaForm({
             <FormField
               control={form.control}
               name="category"
+              
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-full" >
                   <FormLabel>{t("Category")} *</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    
                   >
-                    <FormControl>
+                    <FormControl className="w-full">
                       <SelectTrigger>
                         <SelectValue
                           placeholder={t("Select category")}
@@ -253,26 +255,7 @@ export default function CreateCriteriaForm({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="weight"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("Weight")} (%)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      max="100"
-                      placeholder={t("Enter weight")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            
 
             <FormField
               control={form.control}

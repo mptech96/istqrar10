@@ -81,7 +81,7 @@ export default function SignInForm() {
   }
 
   return (
-    <div className="w-full space-y-8 relative ">
+    <div className="w-full space-y-8 relative p-4 md:p-0 ">
       {/* Logo */}
       <div className="flex justify-center">
         <ThemeLogo width={120} height={100} />
@@ -165,7 +165,7 @@ export default function SignInForm() {
               />
               <div className="flex justify-start">
                 <Link
-                  href="/forgot-password"
+                  href=""
                   className="text-xs text-muted-foreground hover:text-darkRed transition-colors font-medium"
                 >
                   {t("Forgot Password?")}
@@ -183,16 +183,16 @@ export default function SignInForm() {
         </Form>
 
         {/* Divider */}
-        <div className="relative flex items-center gap-4 py-2">
+       {/*  <div className="relative flex items-center gap-4 py-2">
           <Separator className="flex-1" />
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold whitespace-nowrap">
             {t("Or continue with")}
           </span>
           <Separator className="flex-1" />
-        </div>
+        </div> */}
 
         {/* Social Sign-In Grid */}
-        <div className="grid grid-cols-4 gap-3">
+        {/* <div className="grid grid-cols-4 gap-3">
           {[
             { icon: "facebook", color: "#1877F2" },
             { icon: "x", color: "#000000" },
@@ -207,13 +207,13 @@ export default function SignInForm() {
               <SocialIcon name={social.icon} />
             </Button>
           ))}
-        </div>
+        </div> */}
 
         <div className="text-center pt-2">
           <p className="text-sm text-muted-foreground">
             {t("Don't have an account?")}{" "}
             <Link
-              href="/sign-up"
+              href="/#pricing"
               className="text-darkRed hover:underline font-bold"
             >
               {t("Create new account")}

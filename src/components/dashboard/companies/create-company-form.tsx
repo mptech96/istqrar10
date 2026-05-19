@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, safeFormatDate } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -65,6 +65,7 @@ export default function CreateCompanyForm({
   onSuccess,
   hideCardWrapper = false,
 }: CreateCompanyFormProps) {
+  console.log(initialData);
   const t = useTranslations();
   const router = useRouter();
   const locale = useLocale();
@@ -135,9 +136,8 @@ export default function CreateCompanyForm({
           max_allowed_users:
             initialData.max_allowed_users || 1,
           contact_person: initialData.contact_person,
-          subscription_start:
-            initialData.subscription_start,
-          subscription_end: initialData.subscription_end,
+          subscription_start: safeFormatDate(initialData.subscription_start),
+          subscription_end: safeFormatDate(initialData.subscription_end),
           user_id:
             initialData.manager?.id?.toString() || "",
           user_name: initialData.manager?.name || "",
@@ -452,10 +452,7 @@ export default function CreateCompanyForm({
                           )}
                         >
                           {field.value ? (
-                            format(
-                              new Date(field.value),
-                              "PPP",
-                            )
+                            safeFormatDate(field.value, "PPP")
                           ) : (
                             <span>{t("Pick a date")}</span>
                           )}
@@ -515,10 +512,7 @@ export default function CreateCompanyForm({
                           )}
                         >
                           {field.value ? (
-                            format(
-                              new Date(field.value),
-                              "PPP",
-                            )
+                            safeFormatDate(field.value, "PPP")
                           ) : (
                             <span>{t("Pick a date")}</span>
                           )}
@@ -600,7 +594,7 @@ export default function CreateCompanyForm({
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="status"
               render={({ field }) => (
@@ -616,7 +610,7 @@ export default function CreateCompanyForm({
                   </div>
                 </FormItem>
               )}
-            />
+            /> */}
 
             <FormField
               control={form.control}

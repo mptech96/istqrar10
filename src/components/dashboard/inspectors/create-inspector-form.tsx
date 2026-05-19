@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, safeFormatDate } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -108,30 +108,10 @@ export default function CreateInspectorForm({
           position: initialData.position || "",
           national_number:
             initialData.national_number || "",
-          certificate_expiry: initialData.certificate_expiry
-            ? format(
-                new Date(initialData.certificate_expiry),
-                "yyyy-MM-dd",
-              )
-            : "",
-          license_expiry: initialData.license_expiry
-            ? format(
-                new Date(initialData.license_expiry),
-                "yyyy-MM-dd",
-              )
-            : "",
-          id_expiry: initialData.id_expiry
-            ? format(
-                new Date(initialData.id_expiry),
-                "yyyy-MM-dd",
-              )
-            : "",
-          birth_date: initialData.birth_date
-            ? format(
-                new Date(initialData.birth_date),
-                "yyyy-MM-dd",
-              )
-            : "",
+          certificate_expiry: safeFormatDate(initialData.certificate_expiry),
+          license_expiry: safeFormatDate(initialData.license_expiry),
+          id_expiry: safeFormatDate(initialData.id_expiry),
+          birth_date: safeFormatDate(initialData.birth_date),
           gender: initialData.gender || "",
           company_id:
             initialData.company_id?.toString() || "",
@@ -252,262 +232,7 @@ export default function CreateInspectorForm({
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("Email")} *</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("Enter email")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-4">
-                  <FormLabel>{t("Password")}</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={
-                          showPassword ? "text" : "password"
-                        }
-                        placeholder="p@ssw0rd"
-                        className={`${language === "ar" ? "pl-10" : "pr-10"}`}
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowPassword(!showPassword)
-                        }
-                        className={`absolute  top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${language === "ar" ? "left-3" : "right-3"}`}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="password_confirmation"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("Confirm Password")} *
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={
-                          showPassword ? "text" : "password"
-                        }
-                        placeholder={t("Confirm password")}
-                        className={`${language === "ar" ? "pl-10" : "pr-10"}`}
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowPassword(!showPassword)
-                        }
-                        className={`absolute  top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${language === "ar" ? "left-3" : "right-3"}`}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("Phone")} *</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("Enter phone number")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="national_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("National Number")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t(
-                        "Enter national number",
-                      )}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="department"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("Department")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("Enter department")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="position"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("Position")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("Enter position")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("Gender")}</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={t("Select gender")}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="male">
-                        {t("Male")}
-                      </SelectItem>
-                      <SelectItem value="female">
-                        {t("Female")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="birth_date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>
-                    {t("Date of Birth")}
-                  </FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-full pl-3 text-left font-normal flex items-center justify-between",
-                            !field.value &&
-                              "text-muted-foreground",
-                          )}
-                        >
-                          {field.value ? (
-                            format(
-                              new Date(field.value),
-                              "PPP",
-                            )
-                          ) : (
-                            <span>{t("Pick a date")}</span>
-                          )}
-                          <CalendarIcon className="h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={
-                          field.value
-                            ? new Date(field.value)
-                            : undefined
-                        }
-                        onSelect={(date) =>
-                          field.onChange(
-                            date
-                              ? format(date, "yyyy-MM-dd")
-                              : "",
-                          )
-                        }
-                        disabled={(date) =>
-                          date > startMonth
-                        }
-                        initialFocus
-                        captionLayout="dropdown"
-                        endMonth={startMonth}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
+ <FormField
               control={form.control}
               name="role"
               render={({ field }) => (
@@ -517,7 +242,7 @@ export default function CreateInspectorForm({
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <FormControl>
+                    <FormControl className="w-full">
                       <SelectTrigger>
                         <SelectValue
                           placeholder={t("Select Role")}
@@ -624,8 +349,263 @@ export default function CreateInspectorForm({
                 )}
               />
             )}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("Email")} *</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("Enter email")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+<FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("Phone")} *</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("Enter phone number")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-4">
+                  <FormLabel>{t("Password")}</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type={
+                          showPassword ? "text" : "password"
+                        }
+                        placeholder="p@ssw0rd"
+                        className={`${language === "ar" ? "pl-10" : "pr-10"}`}
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowPassword(!showPassword)
+                        }
+                        className={`absolute  top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${language === "ar" ? "left-3" : "right-3"}`}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
+              control={form.control}
+              name="password_confirmation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("Confirm Password")} *
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type={
+                          showPassword ? "text" : "password"
+                        }
+                        placeholder={t("Confirm password")}
+                        className={`${language === "ar" ? "pl-10" : "pr-10"}`}
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowPassword(!showPassword)
+                        }
+                        className={`absolute  top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${language === "ar" ? "left-3" : "right-3"}`}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            
+            <FormField
+              control={form.control}
+              name="national_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("National Number")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t(
+                        "Enter national number",
+                      )}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* <FormField
+              control={form.control}
+              name="department"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("Department")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("Enter department")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="position"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("Position")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("Enter position")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
+
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("Gender")}</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={t("Select gender")}
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="male">
+                        {t("Male")}
+                      </SelectItem>
+                      <SelectItem value="female">
+                        {t("Female")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="birth_date"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>
+                    {t("Date of Birth")}
+                  </FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal flex items-center justify-between",
+                            !field.value &&
+                              "text-muted-foreground",
+                          )}
+                        >
+                          {field.value ? (
+                            format(
+                              new Date(field.value),
+                              "PPP",
+                            )
+                          ) : (
+                            <span>{t("Pick a date")}</span>
+                          )}
+                          <CalendarIcon className="h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0"
+                      align="start"
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={
+                          field.value
+                            ? new Date(field.value)
+                            : undefined
+                        }
+                        onSelect={(date) =>
+                          field.onChange(
+                            date
+                              ? format(date, "yyyy-MM-dd")
+                              : "",
+                          )
+                        }
+                        disabled={(date) =>
+                          date > startMonth
+                        }
+                        initialFocus
+                        captionLayout="dropdown"
+                        endMonth={startMonth}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+           
+
+            {/* <FormField
               control={form.control}
               name="status"
               render={({ field }) => (
@@ -656,7 +636,7 @@ export default function CreateInspectorForm({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
         </div>
 

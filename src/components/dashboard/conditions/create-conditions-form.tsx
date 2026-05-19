@@ -137,7 +137,7 @@ export function CreateConditionsForm({
               }))
             : [{ value: "", score: 0, description: "" }],
           correct_answer: initialData.correct_answer || "",
-          weight: initialData.weight,
+          
           max_score: initialData.max_score,
           passing_score: initialData.passing_score,
           is_required: initialData.is_required,
@@ -159,7 +159,7 @@ export function CreateConditionsForm({
             { value: "", score: 0, description: "" },
           ],
           correct_answer: "",
-          weight: 1,
+          
           max_score: 10,
           passing_score: 6,
           is_required: true,
@@ -572,23 +572,7 @@ export function CreateConditionsForm({
             />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="weight"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("Weight")} *</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="5"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+             
 
               <FormField
                 control={form.control}

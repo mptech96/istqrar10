@@ -15,10 +15,12 @@ export const createCriteriaSchema = (t: any) =>
     name: z.string().min(1, t("Criteria name is required")),
     description: z.string().optional(),
     category: z.string().min(1, t("Category is required")),
-    weight: z.coerce.number().min(0).max(100),
+
     is_active: z.boolean().optional().default(true),
     sort_order: z.coerce.number().optional().default(1),
     ranges: z.array(rangeSchema(t)).min(1, t("At least one range is required")),
   });
 
-export type CriteriaFormValues = z.infer<ReturnType<typeof createCriteriaSchema>>;
+export type CriteriaFormValues = z.infer<
+  ReturnType<typeof createCriteriaSchema>
+>;

@@ -6,6 +6,7 @@ import type { _Translator } from "next-intl";
 import type { Company } from "@/types/company";
 
 import { format } from "date-fns";
+import { safeFormatDate } from "@/lib/utils";
 import {
   Avatar,
   AvatarFallback,
@@ -67,9 +68,7 @@ export const getColumns = (
       const date = row.getValue(
         "subscription_start",
       ) as string;
-      return date;
-      /* ? format(new Date(date), "dd-MM-yyyy")
-        : "-"; */
+      return date ? safeFormatDate(date, "dd-MM-yyyy") : "-";
     },
   },
   {
@@ -79,9 +78,7 @@ export const getColumns = (
       const date = row.getValue(
         "subscription_end",
       ) as string;
-      return date;
-      /* ? format(new Date(date), "dd-MM-yyyy")
-        : "-"; */
+      return date ? safeFormatDate(date, "dd-MM-yyyy") : "-";
     },
   },
   {

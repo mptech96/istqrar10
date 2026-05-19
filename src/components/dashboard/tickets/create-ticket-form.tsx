@@ -288,7 +288,7 @@ export default function CreateTicketForm({
               )}
             />
 
-            <FormField
+           {/*  <FormField
               control={form.control}
               name="priority"
               render={({ field }) => (
@@ -348,7 +348,7 @@ export default function CreateTicketForm({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
         </div>
 

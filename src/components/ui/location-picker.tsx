@@ -63,53 +63,63 @@ function MapContent({
   const t = useTranslations();
 
   const geocodePosition = useCallback(
-    (lat: number, lng: number) => {
-      if (geocoder.current && onAddressSelect) {
-        geocoder.current.geocode(
-          { location: { lat, lng } },
-          (results, status) => {
-            if (
-              status === "OK" &&
-              results &&
-              results.length > 0
-            ) {
-              const formattedAddress =
-                results[0].formatted_address ||
-                `Location at ${lat}, ${lng}`;
-              let city = "";
-              const cityTypes = [
-                "locality",
-                "sublocality",
-                "administrative_area_level_2",
-                "administrative_area_level_1",
-              ];
-              for (const type of cityTypes) {
-                const comp =
-                  results[0].address_components.find((c) =>
-                    c.types.includes(type),
-                  );
-                if (comp) {
-                  city = comp.long_name;
-                  break;
-                }
-              }
-              onAddressSelect(
-                formattedAddress,
-                city || "Unknown City",
-              );
-            } else {
-              // Fallback to coordinates if Geocoder fails or denies request
-              onAddressSelect(
-                `Location at ${lat}, ${lng}`,
-                "Unknown City",
-              );
-            }
-          },
-        );
-      }
-    },
-    [onAddressSelect],
-  );
+  (lat: number, lng: number) => {
+    if (geocoder.current && onAddressSelect) {
+      geocoder.current.geocode(
+        { location: { lat, lng } },
+        (results, status) => {
+          if (status === "OK" && results?.[0]) {
+            const result = results[0];
+            const comps = result.address_components;
+
+            // Helper to extract specific types
+            const getComp = (type: string) => 
+              comps.find(c => c.types.includes(type))?.long_name || "";
+
+            // 1. Get Country
+            const country = getComp("country");
+
+            // 2. Get City (Handling different global naming conventions)
+            const city = getComp("locality") || 
+                         getComp("administrative_area_level_2") || 
+                         getComp("administrative_area_level_1");
+
+            // 3. Get Street / Address Details
+            const streetName = getComp("route");
+            const streetNumber = getComp("street_number");
+            const neighborhood = getComp("neighborhood");
+
+            // Construct a "Street Address" string
+            const streetAddress = streetNumber 
+              ? `${streetNumber} ${streetName}` 
+              : streetName || neighborhood || "Unnamed Street";
+
+            const formattedAddress = result.formatted_address;
+
+            // Pass the data back. 
+            // Note: You might want to update your onAddressSelect interface 
+            // to accept country/street separately if your parent needs them.
+            onAddressSelect(
+              formattedAddress, 
+              city || "Unknown City"
+            );
+
+            // If you want to log or use the extra data:
+            console.log({
+              street: streetAddress,
+              city,
+              country,
+              full: formattedAddress
+            });
+          } else {
+            onAddressSelect(`Location at ${lat}, ${lng}`, "Unknown City");
+          }
+        },
+      );
+    }
+  },
+  [onAddressSelect],
+);
 
   useEffect(() => {
     if (geocodingLib && !geocoder.current) {

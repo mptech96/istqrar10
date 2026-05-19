@@ -125,7 +125,7 @@ export const getColumns = (
       const visit = row.original;
 
       const duration = visit.estimated_duration;
-      const role = user.role;
+      const role = user?.role;
       if (
         visit.status === "in_progress" &&
         role === "auditor"

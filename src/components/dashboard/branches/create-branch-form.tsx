@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, safeFormatDate } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -114,12 +114,7 @@ export default function CreateBranchForm({
           user_password: "",
           user_password_confirmation: "",
           user_phone: initialData.manager?.phone || "",
-          user_birth_date: initialData.manager?.birth_date
-            ? format(
-                new Date(initialData.manager?.birth_date),
-                "yyyy-MM-dd",
-              )
-            : "",
+          user_birth_date: safeFormatDate(initialData.manager?.birth_date),
           user_gender:
             initialData.manager?.gender === "male" ? 1 : 0,
           company_id: initialData.company_id,

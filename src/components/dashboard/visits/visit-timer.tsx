@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 interface VisitTimerProps {
-  actualStartTime: string;
+  actualStartTime: string |  undefined; // Accept string or null/undefined
   estimatedDuration?: number; // In minutes
   compact?: boolean;
 }
@@ -23,7 +23,7 @@ export function VisitTimer({
 
   useEffect(() => {
     // Robust date parsing (handle "YYYY-MM-DD HH:mm:ss" and add UTC intent)
-    const normalizeDate = (dateStr: string) => {
+    const normalizeDate = (dateStr: string | undefined) => {
       if (!dateStr) return null;
       
       // Handle local time strings from Saudi Arabia (UTC+3) 
