@@ -563,7 +563,7 @@ export default function CreateCompanyForm({
               control={form.control}
               name="subscription_status"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="hidden">
                   <FormLabel>
                     {t("Subscription Status")} *
                   </FormLabel>
@@ -593,7 +593,7 @@ export default function CreateCompanyForm({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> 
             {/* <FormField
               control={form.control}
               name="status"
@@ -746,7 +746,8 @@ export default function CreateCompanyForm({
 
         {/* User Selection Toggle */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+         
+         { !isEditMode && <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium">
               {t("Admin User Selection")}
             </h3>
@@ -767,9 +768,9 @@ export default function CreateCompanyForm({
                 </FormItem>
               )}
             />
-          </div>
+          </div>}
 
-          {form.watch("use_existing_user") && (
+          {form.watch("use_existing_user") && !isEditMode && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -814,7 +815,8 @@ export default function CreateCompanyForm({
         </div>
 
         {/* User Details */}
-        {!form.watch("use_existing_user") && (
+        
+        {!form.watch("use_existing_user")&& !isEditMode && (
           <div className="space-y-4">
             <h3 className="text-lg font-medium">
               {t("Admin User Details")}
