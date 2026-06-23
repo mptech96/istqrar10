@@ -1,4 +1,11 @@
 import api from "./index";
+import { Criteria } from "@/types/criteria";
+import { PaginatedResponse } from "@/types/paginated-response";
+
+type CriteriaSelectQueryArgs = {
+  searchQuery?: string;
+  per_page?: number;
+};
 
 export const criteriaApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -12,6 +19,33 @@ export const criteriaApi = api.injectEndpoints({
     }),
     getCriteria: build.query({
       query: (query: string) => `/criterias?${query}`,
+      providesTags: ["Criterias"],
+    }),
+    getCriteriaSelect: build.infiniteQuery<
+      PaginatedResponse<Criteria>,
+      CriteriaSelectQueryArgs,
+      number
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => {
+          const { current_page, last_page } = lastPage.meta;
+
+          return current_page < last_page
+            ? current_page + 1
+            : undefined;
+        },
+      },
+      query: ({ queryArg, pageParam }) => ({
+        url: "/criterias",
+        method: "GET",
+        params: {
+          page: pageParam,
+          search: queryArg.searchQuery ?? "",
+          per_page: queryArg.per_page ?? 10,
+          page_size: queryArg.per_page ?? 10,
+        },
+      }),
       providesTags: ["Criterias"],
     }),
     updateCriteria: build.mutation({
@@ -32,4 +66,10 @@ export const criteriaApi = api.injectEndpoints({
   }),
 });
 
-export const { useCreateCriteriaMutation, useGetCriteriaQuery, useUpdateCriteriaMutation ,useDeleteCriteriaMutation } = criteriaApi;
+export const {
+  useCreateCriteriaMutation,
+  useGetCriteriaQuery,
+  useGetCriteriaSelectInfiniteQuery,
+  useUpdateCriteriaMutation,
+  useDeleteCriteriaMutation,
+} = criteriaApi;

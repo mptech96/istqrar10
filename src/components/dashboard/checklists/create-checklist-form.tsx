@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { VirtualSelect } from "@/components/virtual-select";
 import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { createChecklistSchema } from "@/schema/create-checklist.schema.zod";
@@ -28,7 +29,7 @@ import {
   useCreateChecklistMutation,
   useUpdateChecklistMutation,
 } from "@/services/api/checklists";
-import { useGetCompaniesQuery } from "@/services/api/companies";
+import { useGetCompaniesSelectInfiniteQuery } from "@/services/api/companies";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useLoader } from "@/hooks/use-loader";
@@ -65,10 +66,6 @@ export default function CreateChecklistForm({
 
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
-
-  const { data: companiesData } = useGetCompaniesQuery(
-    "page=1&page_size=100",
-  );
 
   const form = useForm<
     z.infer<ReturnType<typeof createChecklistSchema>>
@@ -221,32 +218,33 @@ export default function CreateChecklistForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("Company")} *</FormLabel>
-                  <Select
-                    onValueChange={(val) =>
-                      field.onChange(Number(val))
-                    }
-                    defaultValue={field.value?.toString()}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={t("Select company")}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {companiesData?.data?.map(
-                        (company: Company) => (
-                          <SelectItem
-                            key={company.id}
-                            value={company.id.toString()}
-                          >
+                  <FormControl>
+                    <VirtualSelect<Company>
+                      value={field.value?.toString()}
+                      selectedLabel={initialData?.company?.name}
+                      onChange={(selectedValue) =>
+                        field.onChange(Number(selectedValue))
+                      }
+                      placeholder={t("Select company")}
+                      searchPlaceholder={t("Search")}
+                      emptyMessage={t("No companies found")}
+                      useQuery={useGetCompaniesSelectInfiniteQuery}
+                      getOptionValue={(company) =>
+                        company.id.toString()
+                      }
+                      getOptionLabel={(company) => company.name}
+                      renderOption={(company) => (
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate font-medium">
                             {company.name}
-                          </SelectItem>
-                        ),
+                          </span>
+                          <span className="truncate text-xs text-muted-foreground">
+                            {company.email}
+                          </span>
+                        </div>
                       )}
-                    </SelectContent>
-                  </Select>
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

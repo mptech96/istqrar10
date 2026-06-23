@@ -1070,5 +1070,7 @@
   "Level": "المستوى",
   "Incomplete Page": "صفحة غير مكتملة",
   "Visit time out, please complete the visit soon": "انتهى وقت الزيارة، يرجى إكمال الزيارة قريباً",
-  "Visit updated successfully!": "تم تحديث الزيارة بنجاح!"
+  "Visit updated successfully!": "تم تحديث الزيارة بنجاح!",
+  "Criteria updated successfully!": "تم تحديث المعيار بنجاح!",
+  "Failed to update criteria": "فشل في تحديث المعيار"
 }

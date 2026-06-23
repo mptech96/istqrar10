@@ -33,8 +33,7 @@ const RatingPie = () => {
     // If loading or no data, return mock data
     if (
       isLoading ||
-      !visits?.data ||
-      visits?.data.length === 0
+      !visits?.data 
     ) {
       return [
         {
@@ -157,7 +156,7 @@ const RatingPie = () => {
               <div className="w-32 h-32 bg-white dark:bg-slate-950 rounded-full flex items-center justify-center shadow-inner">
                 <div className="text-center">
                   <p className="text-3xl font-extrabold text-slate-900 dark:text-white leading-none">
-                    {visits?.data?.length || 30}
+                    {visits?.data?.length || 0}
                   </p>
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-1">
                     {t("Total Visits")}

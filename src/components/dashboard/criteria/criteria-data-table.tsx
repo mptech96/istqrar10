@@ -19,6 +19,7 @@ import {
 import { DeleteConfirmationDialog } from "@/components/common/delete-confirmation-dialog";
 import { useAppSelector } from "@/lib/store";
 import { User } from "@/types/user";
+import { Input } from "@/components/ui/input";
 
 const CriteriaDataTable = () => {
   const { start, stop } = useLoader();
@@ -27,10 +28,22 @@ const CriteriaDataTable = () => {
   const { user } = useAppSelector((state) => state.auth);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const queryParams = new URLSearchParams();
+    const [search, setSearch] = useState("");
+    const [filter, setFilter] = useState("");
+    const [sort, setSort] = useState("created_at");
+    const [sortOrder, setSortOrder] = useState("desc");
+  queryParams.set("page", page.toString());
+  queryParams.set("page_size", pageSize.toString());
+  if (search) queryParams.set("search", search);
+  queryParams.set("sort", sort);
+  queryParams.set("sort_order", sortOrder);
+  if (filter) queryParams.set("filter", filter);
 
-  const query = `page=${page}&page_size=${pageSize}`;
+  const query = queryParams.toString();
 
   const t = useTranslations();
+
   const {
     data: paginatedCriteria,
     isLoading,
@@ -84,9 +97,21 @@ const CriteriaDataTable = () => {
     >
       <Card>
         <CardHeader>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <CardTitle className="text-lg">
             {t("List of Criteria")}
           </CardTitle>
+          <div className="flex w-full md:w-64">
+              <Input
+                placeholder={t("Search")}
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+          </div>
         </CardHeader>
         {paginatedCriteria?.data?.length === 0 && (
           <p className="text-center text-md text-muted-foreground p-4">

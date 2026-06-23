@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { VirtualSelect } from "@/components/virtual-select";
 import { Switch } from "@/components/ui/switch";
 import {
   Card,
@@ -39,9 +40,9 @@ import {
   useCreateConditionMutation,
   useUpdateConditionMutation,
 } from "@/services/api/conditions";
-import { useGetCriteriaQuery } from "@/services/api/criteria";
+import { useGetCriteriaSelectInfiniteQuery } from "@/services/api/criteria";
 import { Criteria } from "@/types/criteria";
-import { useGetChecklistsQuery } from "@/services/api/checklists";
+import { useGetChecklistsSelectInfiniteQuery } from "@/services/api/checklists";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useLoader } from "@/hooks/use-loader";
@@ -75,44 +76,15 @@ export function CreateConditionsForm({
 
   const router = useRouter();
   const t = useTranslations();
-  const {
-    data: paginatedChecklists,
-    isLoading: checklistIsLoading,
-    error: checklistError,
-  } = useGetChecklistsQuery("page=1&limit=1000");
-
-  const {
-    data: criteriaData,
-    isLoading: criteriaIsLoading,
-    error: criteriaError,
-  } = useGetCriteriaQuery("page=1&limit=1000");
-
   const { start, stop } = useLoader();
 
   useEffect(() => {
-    if (
-      checklistIsLoading ||
-      criteriaIsLoading ||
-      isLoading
-    ) {
+    if (isLoading) {
       start();
     } else {
       stop();
     }
-
-    if (checklistError || criteriaError) {
-      toast.error(t("Failed to fetch data"));
-    }
-  }, [
-    checklistIsLoading,
-    criteriaIsLoading,
-    isLoading,
-    checklistError,
-    criteriaError,
-    start,
-    stop,
-    t,
-  ]);
+  }, [isLoading, start, stop]);
   const form = useForm<
     z.infer<ReturnType<typeof createConditionSchema>>
   >({
@@ -269,34 +241,39 @@ export function CreateConditionsForm({
                     <FormLabel>
                       {t("Checklist")} *
                     </FormLabel>
-                    <Select
-                      onValueChange={(val) =>
-                        field.onChange(Number(val))
-                      }
-                      defaultValue={field.value?.toString()}
-                    >
-                      <FormControl className="w-full">
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={t(
-                              "Select Checklist",
-                            )}
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {paginatedChecklists?.data?.map(
-                          (checklist: Checklist) => (
-                            <SelectItem
-                              key={checklist.id}
-                              value={checklist.id.toString()}
-                            >
+                    <FormControl>
+                      <VirtualSelect<Checklist>
+                        value={field.value?.toString()}
+                        onChange={(selectedValue) =>
+                          field.onChange(Number(selectedValue))
+                        }
+                        placeholder={t("Select Checklist")}
+                        searchPlaceholder={t("Search")}
+                        emptyMessage={t("No checklists found")}
+                        useQuery={
+                          useGetChecklistsSelectInfiniteQuery
+                        }
+                        getOptionValue={(checklist) =>
+                          checklist.id.toString()
+                        }
+                        getOptionLabel={(checklist) =>
+                          checklist.name
+                        }
+                        renderOption={(checklist) => (
+                          <div className="flex min-w-0 flex-col">
+                            <span className="truncate font-medium">
                               {checklist.name}
-                            </SelectItem>
-                          ),
+                            </span>
+                            <span className="truncate text-xs text-muted-foreground">
+                              {checklist.code}
+                              {checklist.company?.name
+                                ? ` - ${checklist.company.name}`
+                                : ""}
+                            </span>
+                          </div>
                         )}
-                      </SelectContent>
-                    </Select>
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -307,34 +284,37 @@ export function CreateConditionsForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("Criteria")} *</FormLabel>
-                    <Select
-                      onValueChange={(val) =>
-                        field.onChange(Number(val))
-                      }
-                      defaultValue={field.value?.toString()}
-                    >
-                      <FormControl className="w-full">
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={t(
-                              "Select Criteria",
-                            )}
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="mt-8">
-                        {criteriaData?.data?.map(
-                          (criteria: Criteria) => (
-                            <SelectItem
-                              key={criteria.id}
-                              value={criteria.id.toString()}
-                            >
+                    <FormControl>
+                      <VirtualSelect<Criteria>
+                        value={field.value?.toString()}
+                        onChange={(selectedValue) =>
+                          field.onChange(Number(selectedValue))
+                        }
+                        placeholder={t("Select Criteria")}
+                        searchPlaceholder={t("Search")}
+                        emptyMessage={t("No criteria found")}
+                        useQuery={
+                          useGetCriteriaSelectInfiniteQuery
+                        }
+                        getOptionValue={(criteria) =>
+                          criteria.id.toString()
+                        }
+                        getOptionLabel={(criteria) =>
+                          criteria.name
+                        }
+                        renderOption={(criteria) => (
+                          <div className="flex min-w-0 flex-col">
+                            <span className="truncate font-medium">
                               {criteria.name}
-                            </SelectItem>
-                          ),
+                            </span>
+                            <span className="truncate text-xs text-muted-foreground">
+                              {criteria.category} -{" "}
+                              {criteria.weight}
+                            </span>
+                          </div>
                         )}
-                      </SelectContent>
-                    </Select>
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

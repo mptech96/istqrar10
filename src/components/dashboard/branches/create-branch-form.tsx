@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { VirtualSelect } from "@/components/virtual-select";
 import {
   Select,
   SelectContent,
@@ -27,7 +28,7 @@ import {
   useCreateBranchMutation,
   useUpdateBranchMutation,
 } from "@/services/api/branches";
-import { useGetCompaniesQuery } from "@/services/api/companies";
+import { useGetCompaniesSelectInfiniteQuery } from "@/services/api/companies";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useLoader } from "@/hooks/use-loader";
@@ -83,10 +84,6 @@ export default function CreateBranchForm({
 
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
-  // Fetch companies for selection (assuming a reasonable page size or search later)
-  const { data: companiesData } = useGetCompaniesQuery(
-    "page=1&page_size=100",
-  );
 
   const form = useForm<
     z.infer<ReturnType<typeof createBranchSchema>>
@@ -213,32 +210,32 @@ export default function CreateBranchForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("Company")} *</FormLabel>
-                  <Select
-                    onValueChange={(val) =>
-                      field.onChange(Number(val))
-                    }
-                    defaultValue={field.value?.toString()}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={t("Select Company")}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {companiesData?.data?.map(
-                        (company: Company) => (
-                          <SelectItem
-                            key={company.id}
-                            value={company.id.toString()}
-                          >
+                  <FormControl>
+                    <VirtualSelect<Company>
+                      value={field.value?.toString()}
+                      onChange={(selectedValue) =>
+                        field.onChange(Number(selectedValue))
+                      }
+                      placeholder={t("Select Company")}
+                      searchPlaceholder={t("Search")}
+                      emptyMessage={t("No companies found")}
+                      useQuery={useGetCompaniesSelectInfiniteQuery}
+                      getOptionValue={(company) =>
+                        company.id.toString()
+                      }
+                      getOptionLabel={(company) => company.name}
+                      renderOption={(company) => (
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate font-medium">
                             {company.name}
-                          </SelectItem>
-                        ),
+                          </span>
+                          <span className="truncate text-xs text-muted-foreground">
+                            {company.email}
+                          </span>
+                        </div>
                       )}
-                    </SelectContent>
-                  </Select>
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -378,7 +375,7 @@ export default function CreateBranchForm({
               control={form.control}
               name="compliance_score"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="hidden">
                   <FormLabel>
                     {t("Compliance Score")}
                   </FormLabel>
@@ -449,7 +446,7 @@ export default function CreateBranchForm({
         <Separator />
 
         {/* User Details */}
-        <div className="space-y-4">
+        {!isEditMode && <div className="space-y-4">
           <h3 className="text-lg font-medium">
             {t("Manager Details")}
           </h3>
@@ -707,7 +704,7 @@ export default function CreateBranchForm({
               )}
             />
           </div>
-        </div>
+        </div>}
 
         <Button type="submit" className="w-full">
           {isEditMode
