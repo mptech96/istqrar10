@@ -57,7 +57,7 @@ const AuditorMapContent = ({
     if (auditorPos) {
       bounds.extend(auditorPos);
     }
-    map.fitBounds(bounds, { padding: 50 });
+    map.fitBounds(bounds, /* { padding: 50 } */);
   }, [map, branchPos, auditorPos]);
 
   // Handle Routing for Admin/SuperAdmin

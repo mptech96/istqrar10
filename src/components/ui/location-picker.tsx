@@ -20,8 +20,8 @@ import { LocateFixed } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 interface LocationPickerProps {
-  initialLat?: number;
-  initialLng?: number;
+  initialLat?: string | number;
+  initialLng?: string | number;
   onChange: (lat: number, lng: number) => void;
   onAddressSelect?: (address: string, city: string) => void;
   className?: string;
