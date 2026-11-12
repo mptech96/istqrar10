@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
 import SectionHeader from "../section-header/section-header";
 import PricingCard from "./pricing-card";
+import SectionMoreLink from "../shared/section-more-link";
 
 const PricingSection = () => {
   const t = useTranslations();
@@ -78,6 +79,8 @@ const PricingSection = () => {
           />
         ))}
       </div>
+
+      <SectionMoreLink href="/subscriptions" label={t("Compare All Packages")} />
     </section>
   );
 };

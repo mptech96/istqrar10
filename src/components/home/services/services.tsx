@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
 import SectionHeader from "../section-header/section-header";
 import ServiceCard from "./service-card";
+import SectionMoreLink from "../shared/section-more-link";
 import { 
   Monitor, 
   CalendarCheck, 
@@ -51,6 +52,8 @@ const Services = () => {
           />
         ))}
       </div>
+
+      <SectionMoreLink href="/services" label={t("Explore All Services")} />
     </section>
   );
 };

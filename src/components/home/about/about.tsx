@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { motion } from "motion/react";
 import SectionHeader from "../section-header/section-header";
+import SectionMoreLink from "../shared/section-more-link";
 
 interface AboutProps {
   aboutRef: React.RefObject<HTMLElement | null>;
@@ -199,6 +200,8 @@ const About = ({
           </div>
         </div>
       </div>
+
+      <SectionMoreLink href="/about" label={t("View Full Details")} />
     </section>
   );
 };
