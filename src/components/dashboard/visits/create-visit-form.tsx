@@ -27,19 +27,26 @@ import {
   useCreateVisitMutation,
   useUpdateVisitMutation,
 } from "@/services/api/visits";
-import { useGetBranchesQuery } from "@/services/api/branches";
-import { useGetCompaniesQuery } from "@/services/api/companies";
-import { useGetChecklistsQuery } from "@/services/api/checklists";
-import { useGetInspectorsQuery } from "@/services/api/inspectors";
+import {
+  useGetBranchesQuery,
+  useGetBranchesSelectInfiniteQuery,
+} from "@/services/api/branches";
+import {
+  useGetCompaniesQuery,
+  useGetCompaniesSelectInfiniteQuery,
+} from "@/services/api/companies";
+import {
+  useGetChecklistsQuery,
+  useGetChecklistsSelectInfiniteQuery,
+} from "@/services/api/checklists";
+import {
+  useGetAuditorsSelectInfiniteQuery,
+  useGetInspectorsQuery,
+} from "@/services/api/inspectors";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useLoader } from "@/hooks/use-loader";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
@@ -58,6 +65,8 @@ import { useAppSelector } from "@/lib/store";
 import { Visit } from "@/types/visit";
 import { Company } from "@/types/company";
 import { TimePicker } from "@/components/ui/time-picker";
+import { VirtualSelect } from "@/components/virtual-select";
+import { User } from "@/types/user";
 
 interface CreateVisitFormProps {
   initialData?: Visit;
@@ -70,24 +79,18 @@ export default function CreateVisitForm({
   onSuccess,
   hideCardWrapper = false,
 }: CreateVisitFormProps) {
-  const { language } = useAppSelector(
-    (state) => state.settings,
-  );
+  const { language } = useAppSelector((state) => state.settings);
 
   const t = useTranslations();
   const router = useRouter();
   const { start, stop } = useLoader();
-  const [createVisit, { isLoading: isCreating }] =
-    useCreateVisitMutation();
-  const [updateVisit, { isLoading: isUpdating }] =
-    useUpdateVisitMutation();
+  const [createVisit, { isLoading: isCreating }] = useCreateVisitMutation();
+  const [updateVisit, { isLoading: isUpdating }] = useUpdateVisitMutation();
 
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
 
-  const { data: companiesData } = useGetCompaniesQuery(
-    "page=1&page_size=100",
-  );
+  const { data: companiesData } = useGetCompaniesQuery("page=1&page_size=100");
   const { data: checklistsData } = useGetChecklistsQuery(
     "page=1&page_size=100",
   );
@@ -95,9 +98,7 @@ export default function CreateVisitForm({
     "page=1&page_size=100&role=auditor",
   );
 
-  const form = useForm<
-    z.infer<ReturnType<typeof createVisitSchema>>
-  >({
+  const form = useForm<z.infer<ReturnType<typeof createVisitSchema>>>({
     resolver: zodResolver(createVisitSchema(t)) as Resolver<
       z.infer<ReturnType<typeof createVisitSchema>>
     >,
@@ -109,8 +110,7 @@ export default function CreateVisitForm({
           checklist_id: initialData.checklist_id,
           scheduled_date: initialData.scheduled_date,
           scheduled_time: initialData.scheduled_time,
-          estimated_duration:
-            initialData.estimated_duration || 60,
+          estimated_duration: initialData.estimated_duration || 60,
           internal_notes: initialData.internal_notes || "",
         }
       : {
@@ -135,25 +135,17 @@ export default function CreateVisitForm({
   // Reset branch if company changes
   useEffect(() => {
     if (selectedCompanyId && !isEditMode) {
-      form.setValue(
-        "branch_id",
-        undefined as unknown as number,
-      );
+      form.setValue("branch_id", undefined as unknown as number);
     }
   }, [selectedCompanyId, form, isEditMode]);
 
   useEffect(() => {
     if (isLoading) {
-      start(
-        isEditMode
-          ? t("Updating visit")
-          : t("Creating visit"),
-      );
+      start(isEditMode ? t("Updating visit") : t("Creating visit"));
     } else {
       stop();
     }
   }, [isLoading, isEditMode, start, stop, t]);
-
   async function onSubmit(
     values: z.infer<ReturnType<typeof createVisitSchema>>,
   ) {
@@ -176,9 +168,7 @@ export default function CreateVisitForm({
       }
     } catch (error) {
       toast.error(
-        isEditMode
-          ? t("Failed to update visit")
-          : t("Failed to create visit"),
+        isEditMode ? t("Failed to update visit") : t("Failed to create visit"),
       );
       console.error(error);
     }
@@ -186,132 +176,135 @@ export default function CreateVisitForm({
 
   const content = (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         {/* Visit Details */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Visit Details")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Visit Details")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="company_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("Company")} *</FormLabel>
-                  <Select
-                    onValueChange={(val) =>
-                      field.onChange(Number(val))
-                    }
-                    defaultValue={field.value?.toString()}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={t("Select company")}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {companiesData?.data?.map(
-                        (company: Company) => (
-                          <SelectItem
-                            key={company.id}
-                            value={company.id.toString()}
-                          >
+                  <FormLabel>
+                    {t("Company")} <span className="text-red-500">*</span>{" "}
+                  </FormLabel>
+                  <FormControl>
+                    <VirtualSelect<Company>
+                      value={field.value ? field.value.toString() : ""}
+                      onChange={(selectedValue) => {
+                        const nextCompanyId = selectedValue
+                          ? Number(selectedValue)
+                          : undefined;
+                        if (nextCompanyId !== field.value) {
+                          form.setValue(
+                            "branch_id",
+                            undefined as unknown as number,
+                          );
+                        }
+                        field.onChange(nextCompanyId);
+                      }}
+                      placeholder={t("Select Company")}
+                      searchPlaceholder={t("Search")}
+                      emptyMessage={t("No companies found")}
+                      useQuery={useGetCompaniesSelectInfiniteQuery}
+                      getOptionValue={(company) => company.id.toString()}
+                      getOptionLabel={(company) => company.name}
+                      renderOption={(company) => (
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate font-medium">
                             {company.name}
-                          </SelectItem>
-                        ),
+                          </span>
+                          <span className="truncate text-xs text-muted-foreground">
+                            {company.email}
+                          </span>
+                        </div>
                       )}
-                    </SelectContent>
-                  </Select>
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="branch_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("Branch")} *</FormLabel>
-                  <Select
-                    onValueChange={(val) =>
-                      field.onChange(Number(val))
-                    }
-                    value={field.value?.toString()}
-                    disabled={!selectedCompanyId}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            !selectedCompanyId
-                              ? t("Select company first")
-                              : t("Select branch")
-                          }
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {branchesData?.data?.map(
-                        (branch: Branch) => (
-                          <SelectItem
-                            key={branch.id}
-                            value={branch.id.toString()}
-                          >
+                  <FormLabel>
+                    {t("Branch")} <span className="text-red-500">*</span>{" "}
+                  </FormLabel>
+                  <FormControl>
+                    <VirtualSelect<Branch, { company_id?: number }>
+                      value={field.value ? field.value.toString() : ""}
+                      onChange={(selectedValue) =>
+                        field.onChange(
+                          selectedValue ? Number(selectedValue) : undefined,
+                        )
+                      }
+                      placeholder={
+                        selectedCompanyId
+                          ? t("Select Branch")
+                          : t("Select company first")
+                      }
+                      searchPlaceholder={t("Search")}
+                      emptyMessage={t("No branches found")}
+                      disabled={!selectedCompanyId}
+                      queryArgs={{ company_id: selectedCompanyId }}
+                      useQuery={useGetBranchesSelectInfiniteQuery}
+                      getOptionValue={(branch) => branch.id.toString()}
+                      getOptionLabel={(branch) => branch.name}
+                      renderOption={(branch) => (
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate font-medium">
                             {branch.name}
-                          </SelectItem>
-                        ),
+                          </span>
+                          <span className="truncate text-xs text-muted-foreground">
+                            {branch.email}
+                          </span>
+                        </div>
                       )}
-                    </SelectContent>
-                  </Select>
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="auditor_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("Auditor")} *</FormLabel>
-                  <Select
-                    onValueChange={(val) =>
-                      field.onChange(Number(val))
-                    }
-                    defaultValue={field.value?.toString()}
-                    dir={language === "ar" ? "rtl" : "ltr"}
-                  >
-                    <FormControl className="w-full ">
-                      <SelectTrigger
-                        dir={
-                          language === "ar" ? "rtl" : "ltr"
-                        }
-                      >
-                        <SelectValue
-                          placeholder={t("Select auditor")}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {auditorsData?.data?.map(
-                        (auditor: Inspectors) => (
-                          <SelectItem
-                            key={auditor.id}
-                            value={auditor.id.toString()}
-                          >
+                  <FormLabel>
+                    {t("Branch")} <span className="text-red-500">*</span>{" "}
+                  </FormLabel>
+                  <FormControl>
+                    <VirtualSelect<User, { role?: string }>
+                      value={field.value ? field.value.toString() : ""}
+                      onChange={(selectedValue) =>
+                        field.onChange(
+                          selectedValue ? Number(selectedValue) : undefined,
+                        )
+                      }
+                      placeholder={t("Select Auditor")}
+                      searchPlaceholder={t("Search")}
+                      emptyMessage={t("No auditors found")}
+                      queryArgs={{ role: "auditor" }}
+                      useQuery={useGetAuditorsSelectInfiniteQuery}
+                      getOptionValue={(auditor) => auditor.id.toString()}
+                      getOptionLabel={(auditor) => auditor.name}
+                      renderOption={(auditor) => (
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate font-medium">
                             {auditor.name}
-                          </SelectItem>
-                        ),
+                          </span>
+                          <span className="truncate text-xs text-muted-foreground">
+                            {auditor.email}
+                          </span>
+                        </div>
                       )}
-                    </SelectContent>
-                  </Select>
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -322,35 +315,33 @@ export default function CreateVisitForm({
               name="checklist_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("Checklist")} *</FormLabel>
-                  <Select
-                    onValueChange={(val) =>
-                      field.onChange(Number(val))
-                    }
-                    defaultValue={field.value?.toString()}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={t(
-                            "Select checklist",
-                          )}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {checklistsData?.data?.map(
-                        (checklist: Checklist) => (
-                          <SelectItem
-                            key={checklist.id}
-                            value={checklist.id.toString()}
-                          >
+                  <FormLabel>
+                    {t("Checklist")}{" "}
+                    <span className="text-red-500">*</span>{" "}
+                  </FormLabel>
+                  <FormControl>
+                    <VirtualSelect<Checklist>
+                      value={field.value ? field.value.toString() : ""}
+                      onChange={(selectedValue) =>
+                        field.onChange(
+                          selectedValue ? Number(selectedValue) : undefined,
+                        )
+                      }
+                      placeholder={t("Select Checklist")}
+                      searchPlaceholder={t("Search")}
+                      emptyMessage={t("No checklists found")}
+                      useQuery={useGetChecklistsSelectInfiniteQuery}
+                      getOptionValue={(checklist) => checklist.id.toString()}
+                      getOptionLabel={(checklist) => checklist.name}
+                      renderOption={(checklist) => (
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate font-medium">
                             {checklist.name}
-                          </SelectItem>
-                        ),
+                          </span>
+                        </div>
                       )}
-                    </SelectContent>
-                  </Select>
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -365,12 +356,7 @@ export default function CreateVisitForm({
                     {t("Estimated Duration")} ({t("min")})
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      min="1"
-                      placeholder="60"
-                      {...field}
-                    />
+                    <Input type="number" min="1" placeholder="60" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -383,18 +369,14 @@ export default function CreateVisitForm({
 
         {/* Schedule */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Schedule")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Schedule")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="scheduled_date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>
-                    {t("Scheduled Date")} *
-                  </FormLabel>
+                  <FormLabel>{t("Scheduled Date")} *</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -402,15 +384,11 @@ export default function CreateVisitForm({
                           variant={"outline"}
                           className={cn(
                             "w-full pl-3 text-left font-normal flex items-center justify-between",
-                            !field.value &&
-                              "text-muted-foreground",
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           {field.value ? (
-                            format(
-                              new Date(field.value),
-                              "PPP",
-                            )
+                            format(new Date(field.value), "PPP")
                           ) : (
                             <span>{t("Pick a date")}</span>
                           )}
@@ -418,29 +396,17 @@ export default function CreateVisitForm({
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
-                    >
+                    <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
                         selected={
-                          field.value
-                            ? new Date(field.value)
-                            : undefined
+                          field.value ? new Date(field.value) : undefined
                         }
                         onSelect={(date) =>
-                          field.onChange(
-                            date
-                              ? format(date, "yyyy-MM-dd")
-                              : "",
-                          )
+                          field.onChange(date ? format(date, "yyyy-MM-dd") : "")
                         }
                         disabled={(date) =>
-                          date <
-                          new Date(
-                            new Date().setHours(0, 0, 0, 0),
-                          )
+                          date < new Date(new Date().setHours(0, 0, 0, 0))
                         }
                         initialFocus
                         captionLayout="dropdown"
@@ -457,9 +423,7 @@ export default function CreateVisitForm({
               name="scheduled_time"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Scheduled Time")} (24h) *
-                  </FormLabel>
+                  <FormLabel>{t("Scheduled Time")} (24h) *</FormLabel>
                   <FormControl>
                     <TimePicker
                       value={field.value || "12:00"}
@@ -477,9 +441,7 @@ export default function CreateVisitForm({
 
         {/* Notes */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Notes")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Notes")}</h3>
           <FormField
             control={form.control}
             name="internal_notes"
@@ -501,9 +463,7 @@ export default function CreateVisitForm({
         </div>
 
         <Button type="submit" className="w-full">
-          {isEditMode
-            ? t("Update Visit")
-            : t("Create Visit")}
+          {isEditMode ? t("Update Visit") : t("Create Visit")}
         </Button>
       </form>
     </Form>
@@ -517,9 +477,7 @@ export default function CreateVisitForm({
     <Card className="w-full">
       <CardHeader>
         <CardTitle>
-          {isEditMode
-            ? t("Edit Visit")
-            : t("Create New Visit")}
+          {isEditMode ? t("Edit Visit") : t("Create New Visit")}
         </CardTitle>
       </CardHeader>
       <CardContent>{content}</CardContent>

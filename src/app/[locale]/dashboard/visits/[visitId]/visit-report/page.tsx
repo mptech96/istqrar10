@@ -5,10 +5,7 @@ import VisitReport from "@/components/dashboard/visits/visit-report";
 const VisitReportPage = () => {
   return (
     <section className="flex flex-col gap-4">
-      <Header
-        title="Visit Report"
-        description="Visit report"
-      />
+      <Header title="Visit Report" description="Visit report" />
       <div className="flex flex-col gap-4">
         <VisitReport />
       </div>

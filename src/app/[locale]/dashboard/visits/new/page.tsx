@@ -5,10 +5,7 @@ import React from "react";
 const NewVisit = () => {
   return (
     <section className="flex flex-col gap-6">
-      <Header
-        title="New Visit"
-        description="Schedule a new visit"
-      />
+      <Header title="New Visit" description="Schedule a new visit" />
       <CreateVisitForm />
     </section>
   );

@@ -1,5 +1,6 @@
 import NewEntityButton from "@/components/common/new-entity-button/button";
 import CompaniesDataTable from "@/components/dashboard/companies/companies-data-table";
+import CreateCompanyModel from "@/components/dashboard/companies/create-company-model";
 import CompaniesStats from "@/components/dashboard/companies/stats";
 import Header from "@/components/dashboard/header/header";
 import { Button } from "@/components/ui/button";
@@ -15,10 +16,7 @@ const Companies = () => {
           description="show all companies in the system , with reports"
         />
 
-        <NewEntityButton
-          url="/dashboard/companies/new"
-          label="Add new Facility"
-        />
+        <CreateCompanyModel />
       </header>
       <div>
         <CompaniesStats />

@@ -75,14 +75,8 @@ export const getColumns = (
       const time = row.original.scheduled_time;
       return (
         <div className="flex flex-col">
-          <span>
-            {date
-              ? format(new Date(date), "dd-MM-yyyy")
-              : "-"}
-          </span>
-          <span className="text-xs text-muted-foreground">
-            {time || ""}
-          </span>
+          <span>{date ? format(new Date(date), "dd-MM-yyyy") : "-"}</span>
+          <span className="text-xs text-muted-foreground">{time || ""}</span>
         </div>
       );
     },
@@ -126,10 +120,7 @@ export const getColumns = (
 
       const duration = visit.estimated_duration;
       const role = user?.role;
-      if (
-        visit.status === "in_progress" &&
-        role === "auditor"
-      ) {
+      if (visit.status === "in_progress" && role === "auditor") {
         return (
           <VisitTimer
             actualStartTime={visit.actual_start_time}
@@ -152,10 +143,7 @@ export const getColumns = (
           {((user && user.role === "super_admin") ||
             user?.role === "admin" ||
             user?.role === "auditor") && (
-            <LocatingBranchAuditor
-              visit={visit}
-              userRole={user.role}
-            />
+            <LocatingBranchAuditor visit={visit} userRole={user.role} />
           )}
           {visit.status !== "in_progress" &&
             visit.status !== "completed" &&
@@ -183,9 +171,7 @@ export const getColumns = (
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() =>
-                  handlers.onStartQuestionnaire?.(visit)
-                }
+                onClick={() => handlers.onStartQuestionnaire?.(visit)}
               >
                 {t("Show Questionnaire")}
                 <Play />
@@ -205,16 +191,13 @@ export const getColumns = (
               </>
             ))}
           {user &&
-            (user?.role === "branch_manager" ||
-              user?.role === "auditor") &&
+            (user?.role === "branch_manager" || user?.role === "auditor") &&
             visit.status === "completed" && (
               <>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    handlers.onShowReport(visit)
-                  }
+                  onClick={() => handlers.onShowReport(visit)}
                 >
                   {t("Show Report")}
                 </Button>
@@ -223,9 +206,7 @@ export const getColumns = (
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() =>
-                        handlers.onShowAIAnalysis(visit)
-                      }
+                      onClick={() => handlers.onShowAIAnalysis(visit)}
                     >
                       <Bot />
                       {t("AI Analysis")}

@@ -26,12 +26,7 @@ import {
   useGetInspectorReportsQuery,
 } from "@/services/api/reports";
 import CompanyReportsPrint from "@/components/dashboard/reports/print-models/company-reports-print";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Building2,
   ClipboardCheck,
@@ -53,65 +48,36 @@ const Reports = () => {
       {},
       { skip: role !== "super_admin" && role !== "admin" },
     );
-  const { data: companiesResponse } = useGetCompaniesQuery(
-    "",
-    {
-      skip: role !== "super_admin" && role !== "admin",
-    },
-  );
-  const { data: branchesResponse } = useGetBranchesQuery(
-    "",
-    {
-      skip: role !== "super_admin" && role !== "admin",
-    },
-  );
-  const { data: inspectorsResponse } =
-    useGetInspectorsQuery("", {
-      skip: role !== "super_admin" && role !== "admin",
-    });
-  const { data: categoriesResponse } = useGetCriteriaQuery(
-    "",
-    {
-      skip: role !== "super_admin" && role !== "admin",
-    },
-  );
-  const { data: checklistsResponse } =
-    useGetChecklistsQuery("page_size=1", {
-      skip: role !== "super_admin" && role !== "admin",
-    });
+  const { data: companiesResponse } = useGetCompaniesQuery("", {
+    skip: role !== "super_admin" && role !== "admin",
+  });
+  const { data: branchesResponse } = useGetBranchesQuery("", {
+    skip: role !== "super_admin" && role !== "admin",
+  });
+  const { data: inspectorsResponse } = useGetInspectorsQuery("", {
+    skip: role !== "super_admin" && role !== "admin",
+  });
+  const { data: categoriesResponse } = useGetCriteriaQuery("", {
+    skip: role !== "super_admin" && role !== "admin",
+  });
+  const { data: checklistsResponse } = useGetChecklistsQuery("page_size=1", {
+    skip: role !== "super_admin" && role !== "admin",
+  });
 
   // Company Data
-  const {
-    data: companyReportData,
-    isLoading: companyLoading,
-  } = useGetCompanyReportsQuery(
-    {},
-    { skip: role !== "company_admin" },
-  );
+  const { data: companyReportData, isLoading: companyLoading } =
+    useGetCompanyReportsQuery({}, { skip: role !== "company_admin" });
 
   // Branch Data
-  const {
-    data: branchReportData,
-    isLoading: branchLoading,
-  } = useGetBranchReportsQuery(
-    {},
-    { skip: role !== "branch_manager" },
-  );
+  const { data: branchReportData, isLoading: branchLoading } =
+    useGetBranchReportsQuery({}, { skip: role !== "branch_manager" });
 
   // Inspector Data
-  const {
-    data: inspectorReportData,
-    isLoading: inspectorLoading,
-  } = useGetInspectorReportsQuery(
-    {},
-    { skip: role !== "auditor" },
-  );
+  const { data: inspectorReportData, isLoading: inspectorLoading } =
+    useGetInspectorReportsQuery({}, { skip: role !== "auditor" });
 
   const isLoading =
-    adminLoading ||
-    companyLoading ||
-    branchLoading ||
-    inspectorLoading;
+    adminLoading || companyLoading || branchLoading || inspectorLoading;
 
   useEffect(() => {
     if (isLoading) {
@@ -131,8 +97,7 @@ const Reports = () => {
     total_branches: branchesResponse?.length || 0,
     total_users: inspectorsResponse?.length || 0,
     total_auditors: inspectorsResponse?.length || 0,
-    total_visits:
-      adminStats?.overall_statistics?.total_visits || 0,
+    total_visits: adminStats?.overall_statistics?.total_visits || 0,
     // extra fields for internal use
     total_categories: categoriesResponse?.length || 0,
     total_checklists: checklistsResponse?.length || 0,
@@ -141,19 +106,15 @@ const Reports = () => {
   const categoryCount = adminStats?.visits_by_category
     ? Object.keys(adminStats.visits_by_category).length
     : 0;
-  const totalChecklistsCount =
-    checklistsResponse?.meta?.total || 0;
+  const totalChecklistsCount = checklistsResponse?.meta?.total || 0;
 
   const topCompanies = adminStats?.top_companies;
   const latestVisits = adminStats?.latest_visits;
   const latestTickets = adminStats?.latest_tickets;
 
   if (role === "company_admin") {
-    const {
-      statistics,
-      company_info,
-      branches_performance,
-    } = companyReportData || {};
+    const { statistics, company_info, branches_performance } =
+      companyReportData || {};
     return (
       <section className="flex flex-col gap-6">
         <header className="flex justify-between items-center">
@@ -163,10 +124,7 @@ const Reports = () => {
               "View and print performance metrics for your company",
             )}
           />
-          <Button
-            onClick={() => handlePrint()}
-            className="gap-2"
-          >
+          <Button onClick={() => handlePrint()} className="gap-2">
             <Printer className="h-4 w-4" />
             {t("Print Report")}
           </Button>
@@ -238,21 +196,11 @@ const Reports = () => {
               <table className="w-full text-sm text-right border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-b">
-                    <th className="p-3 font-semibold">
-                      {t("Branch Name")}
-                    </th>
-                    <th className="p-3 font-semibold">
-                      {t("Category")}
-                    </th>
-                    <th className="p-3 font-semibold">
-                      {t("Total Visits")}
-                    </th>
-                    <th className="p-3 font-semibold">
-                      {t("Avg Score")}
-                    </th>
-                    <th className="p-3 font-semibold">
-                      {t("Last Visit")}
-                    </th>
+                    <th className="p-3 font-semibold">{t("Branch Name")}</th>
+                    <th className="p-3 font-semibold">{t("Category")}</th>
+                    <th className="p-3 font-semibold">{t("Total Visits")}</th>
+                    <th className="p-3 font-semibold">{t("Avg Score")}</th>
+                    <th className="p-3 font-semibold">{t("Last Visit")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -265,25 +213,17 @@ const Reports = () => {
                       avg_score: number;
                       last_visit_percentage: number | null;
                     }) => (
-                      <tr
-                        key={branch.id}
-                        className="hover:bg-slate-50/50"
-                      >
-                        <td className="p-3 font-medium">
-                          {branch.name}
-                        </td>
+                      <tr key={branch.id} className="hover:bg-slate-50/50">
+                        <td className="p-3 font-medium">{branch.name}</td>
                         <td className="p-3 text-slate-500">
                           {branch.category}
                         </td>
-                        <td className="p-3">
-                          {branch.total_visits}
-                        </td>
+                        <td className="p-3">{branch.total_visits}</td>
                         <td className="p-3 font-bold text-blue-600">
                           {branch.avg_score}%
                         </td>
                         <td className="p-3">
-                          {branch.last_visit_percentage !==
-                          null
+                          {branch.last_visit_percentage !== null
                             ? `${branch.last_visit_percentage}%`
                             : "-"}
                         </td>
@@ -298,10 +238,7 @@ const Reports = () => {
 
         <div className="hidden">
           {companyReportData && (
-            <CompanyReportsPrint
-              ref={printRef}
-              data={companyReportData}
-            />
+            <CompanyReportsPrint ref={printRef} data={companyReportData} />
           )}
         </div>
       </section>
@@ -315,14 +252,9 @@ const Reports = () => {
         <header className="flex justify-between items-center">
           <Header
             title={t("Branch Reports")}
-            description={t(
-              "View performance metrics for your branch",
-            )}
+            description={t("View performance metrics for your branch")}
           />
-          <Button
-            onClick={() => handlePrint()}
-            className="gap-2"
-          >
+          <Button onClick={() => handlePrint()} className="gap-2">
             <Printer className="h-4 w-4" />
             {t("Print Report")}
           </Button>
@@ -351,14 +283,9 @@ const Reports = () => {
         <header className="flex justify-between items-center">
           <Header
             title={t("Inspector Reports")}
-            description={t(
-              "View your audit performance metrics",
-            )}
+            description={t("View your audit performance metrics")}
           />
-          <Button
-            onClick={() => handlePrint()}
-            className="gap-2"
-          >
+          <Button onClick={() => handlePrint()} className="gap-2">
             <Printer className="h-4 w-4" />
             {t("Print Report")}
           </Button>
@@ -384,19 +311,13 @@ const Reports = () => {
   return (
     <section className="flex flex-col gap-6">
       <header className="flex justify-between items-center">
-        <Header
-          title={"Reports"}
-          description={"Manage reports"}
-        />
+        <Header title={"Reports"} description={"Manage reports"} />
         <div className="flex gap-2">
           <Button variant="default">
             <FileUp />
             <p>{t("Export")}</p>
           </Button>
-          <Button
-            variant="default"
-            onClick={() => handlePrint()}
-          >
+          <Button variant="default" onClick={() => handlePrint()}>
             <Printer />
             <p>{t("Print")}</p>
           </Button>
@@ -418,30 +339,14 @@ const Reports = () => {
           topCompanies={topCompanies}
           latestVisits={latestVisits}
           latestTickets={latestTickets}
-          allCompanies={
-            companiesResponse?.data ||
-            companiesResponse ||
-            []
-          }
-          allBranches={
-            branchesResponse?.data || branchesResponse || []
-          }
-          allAuditors={
-            inspectorsResponse?.data ||
-            inspectorsResponse ||
-            []
-          }
-          allUsers={
-            inspectorsResponse?.data ||
-            inspectorsResponse ||
-            []
-          }
+          allCompanies={companiesResponse?.data || companiesResponse || []}
+          allBranches={branchesResponse?.data || branchesResponse || []}
+          allAuditors={inspectorsResponse?.data || inspectorsResponse || []}
+          allUsers={inspectorsResponse?.data || inspectorsResponse || []}
           systemInfo={{
             total_questions: 0,
             total_checklists: totalChecklistsCount,
-            total_categories:
-              categoriesResponse?.meta?.total ||
-              categoryCount,
+            total_categories: categoriesResponse?.meta?.total || categoryCount,
           }}
         />
       </div>

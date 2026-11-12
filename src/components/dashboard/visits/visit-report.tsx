@@ -20,8 +20,9 @@ import CriteriaScoresList from "./criteria-scores-list";
 const VisitReport = () => {
   const params = useParams();
   const { start, stop } = useLoader();
-  const { data: visitReport, isLoading } =
-    useGetVisitReportQuery(params.visitId as string);
+  const { data: visitReport, isLoading } = useGetVisitReportQuery(
+    params.visitId as string,
+  );
   const t = useTranslations();
 
   useEffect(() => {
@@ -114,13 +115,9 @@ const VisitReport = () => {
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <div className="w-1 h-6 bg-primary rounded-full" />
-          <h3 className="text-xl font-bold">
-            {t("Criteria Breakdown")}
-          </h3>
+          <h3 className="text-xl font-bold">{t("Criteria Breakdown")}</h3>
         </div>
-        <CriteriaScoresList
-          scores={visitReport?.data?.criteria_scores || []}
-        />
+        <CriteriaScoresList scores={visitReport?.data?.criteria_scores || []} />
       </div>
     </section>
   );

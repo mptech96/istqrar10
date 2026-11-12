@@ -19,8 +19,7 @@ const ToolBar = () => {
     pollingInterval: 60000,
   });
 
-  const unreadCount =
-    data?.data?.filter((n) => !n.read_at).length || 0;
+  const unreadCount = data?.data?.filter((n) => !n.read_at).length || 0;
 
   return (
     <div className="flex justify-between align-center py-2 mt-2">
@@ -39,10 +38,7 @@ const ToolBar = () => {
               <NotificationBill unreadCount={unreadCount} />
             </div>
           </PopoverTrigger>
-          <PopoverContent
-            className="w-80 md:w-96 p-0 mr-4"
-            align="end"
-          >
+          <PopoverContent className="w-80 md:w-96 p-0 mr-4" align="end">
             <NotificationDropdownMenu />
           </PopoverContent>
         </Popover>

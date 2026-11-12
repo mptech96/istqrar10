@@ -8,15 +8,9 @@ const Visits = () => {
   return (
     <section className="flex flex-col gap-6">
       <header className="flex justify-between items-center">
-        <Header
-          title="Visits"
-          description="Manage visits"
-        />
+        <Header title="Visits" description="Manage visits" />
 
-        <NewEntityButton
-          url="/dashboard/visits/new"
-          label="New Visit"
-        />
+        <NewEntityButton url="/dashboard/visits/new" label="New Visit" />
       </header>
       <div className="flex flex-col gap-4">
         <VisitsDataTable />

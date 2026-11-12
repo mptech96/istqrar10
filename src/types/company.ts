@@ -12,8 +12,8 @@ export interface Company {
   max_allowed_users: number;
   contact_person: string;
   logo: string | null;
-  subscription_start: string;
-  subscription_end: string;
+  subscription_start: string | Date;
+  subscription_end: string | Date;
   subscription_status: "active" | "inactive" | "expired";
   category: string;
   status: boolean;

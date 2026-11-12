@@ -1,4 +1,4 @@
-import CreateCompanyForm from "@/components/dashboard/companies/create-company-form";
+import CreateCompanyModel from "@/components/dashboard/companies/create-company-model";
 import Header from "@/components/dashboard/header/header";
 
 const NewCompanyPage = () => {
@@ -8,7 +8,7 @@ const NewCompanyPage = () => {
         title="Create New Company"
         description="Add a new company to the system"
       />
-      <CreateCompanyForm />
+      <CreateCompanyModel />
     </section>
   );
 };

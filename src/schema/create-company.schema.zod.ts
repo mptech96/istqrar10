@@ -43,7 +43,7 @@ export const createCompanySchema = (t: any, isEditMode: boolean = false) =>
         .min(1, t("Commercial registration is required")),
       city: z.string().optional(),
       address: z.string().optional(),
-      contact_person: z.string(),
+      contact_person: z.string().min(3, t("Contact person is required")),
       logo: z
         .any()
         .optional()
@@ -62,12 +62,18 @@ export const createCompanySchema = (t: any, isEditMode: boolean = false) =>
             (file instanceof File && ACCEPTED_IMAGE_TYPES.includes(file.type)),
           t("Only jpg, jpeg, png and webp formats are supported"),
         ),
-      subscription_start: z
-        .string()
-        .min(1, t("Subscription start date is required")),
-      subscription_end: z
-        .string()
-        .min(1, t("Subscription end date is required")),
+      subscription_start: z.coerce
+        .date()
+        .refine(
+          (date) => !date || date >= new Date(),
+          t("start date must be today or future"),
+        ),
+      subscription_end: z.coerce
+        .date()
+        .refine(
+          (date) => !date || date > new Date(),
+          t("expiry date must be in the future"),
+        ),
       subscription_status: z
         .string()
         .min(1, t("Subscription status is required"))
@@ -219,4 +225,120 @@ export const createCompanySchema = (t: any, isEditMode: boolean = false) =>
           }
         }
       }
+
+      if (data.subscription_end < data.subscription_start) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("Expiry date must be after start date"),
+          path: ["subscription_end"],
+        });
+      }
     });
+
+export const updateCompanySchema = (t: any) =>
+  z
+    .object({
+      // Company Details
+      name: z.string().min(1, t("Company name is required")),
+      email: z.string().email(t("Invalid email address")),
+      phone: z
+        .string()
+        .min(1, { message: t("Phone number is required") }) // ensures non-empty input
+        .transform((val) => {
+          if (!val) return undefined;
+
+          // Remove all non-digit characters
+          return val.replace(/\D/g, "");
+        }) // remove all non-digits
+        .pipe(
+          z.string().refine(
+            (val) => {
+              // Local: 10 digits starting with 0, second digit 1-8 (covers mobile & landline)
+              const localPattern = /^0[1-8][0-9]{8}$/;
+              // International: 12 digits starting with 966
+              const intlPattern = /^966[0-9]{9}$/;
+              return localPattern.test(val) || intlPattern.test(val);
+            },
+            {
+              message: t("SAUDI_PHONE_VALIDATION_ERROR"),
+            },
+          ),
+        ),
+      commercial_registration: z
+        .string()
+        .min(1, t("Commercial registration is required")),
+      city: z.string().optional(),
+      address: z.string().optional(),
+      contact_person: z.string().min(3, t("Contact person is required")),
+      logo: z
+        .any()
+        .optional()
+        .refine(
+          (file) => !file || file instanceof File,
+          t("Logo must be a file"),
+        )
+        .refine(
+          (file) =>
+            !file || (file instanceof File && file.size <= MAX_FILE_SIZE),
+          t("Max file size is 2MB"),
+        )
+        .refine(
+          (file) =>
+            !file ||
+            (file instanceof File && ACCEPTED_IMAGE_TYPES.includes(file.type)),
+          t("Only jpg, jpeg, png and webp formats are supported"),
+        ),
+      subscription_start: z.coerce
+        .date()
+        .refine(
+          (date) => !date || date >= new Date(),
+          t("start date must be today or future"),
+        ),
+      subscription_end: z.coerce
+        .date()
+        .refine(
+          (date) => !date || date > new Date(),
+          t("expiry date must be in the future"),
+        ),
+      subscription_status: z
+        .string()
+        .min(1, t("Subscription status is required"))
+        .optional(),
+      category: z.string().min(1, t("Category is required")),
+      status: z.boolean().optional().default(true),
+      is_verified: z.boolean().optional().default(false),
+      latitude: z.coerce.number().optional(),
+      longitude: z.coerce.number().optional(),
+      max_allowed_branches: z.coerce
+        .number()
+        .min(1, t("Max branches must be at least 1")),
+      max_allowed_users: z.coerce
+        .number()
+        .min(1, t("Max users must be at least 1")),
+
+      // User Selection
+      use_existing_user: z.boolean().default(false),
+      user_id: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (data.subscription_end < data.subscription_start) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("Expiry date must be after start date"),
+          path: ["subscription_end"],
+        });
+      }
+    });
+
+export type CreateCompanySchema = z.infer<
+  ReturnType<typeof createCompanySchema>
+>;
+
+export type UpdateCompanySchema = z.infer<
+  ReturnType<typeof updateCompanySchema>
+>;
+
+export type CompanyFormValues = CreateCompanySchema | UpdateCompanySchema;
+
+export const getCompanySchema = (t: any, isEditMode: boolean = false) =>
+  isEditMode ? updateCompanySchema(t) : createCompanySchema(t);

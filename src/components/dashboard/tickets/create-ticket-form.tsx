@@ -21,12 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useTranslations } from "next-intl";
 import { createTicketSchema } from "@/schema/create-ticket.schema.zod";
@@ -34,22 +29,27 @@ import {
   useCreateTicketMutation,
   useUpdateTicketMutation,
 } from "@/services/api/tickets";
-import { useGetCompaniesQuery } from "@/services/api/companies";
-import { useGetBranchesQuery } from "@/services/api/branches";
-import { useGetVisitsQuery } from "@/services/api/visits";
+import {
+  useGetCompaniesQuery,
+  useGetCompaniesSelectInfiniteQuery,
+} from "@/services/api/companies";
+import {
+  useGetBranchesQuery,
+  useGetBranchesSelectInfiniteQuery,
+} from "@/services/api/branches";
+import {
+  useGetVisitsQuery,
+  useGetVisitsSelectInfiniteQuery,
+} from "@/services/api/visits";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useLoader } from "@/hooks/use-loader";
 import { useEffect } from "react";
-import {
-  Ticket,
-  TICKET_TYPES,
-  PRIORITIES,
-  DEPARTMENTS,
-} from "@/types/ticket";
+import { Ticket, TICKET_TYPES, PRIORITIES, DEPARTMENTS } from "@/types/ticket";
 import { Company } from "@/types/company";
 import { Branch } from "@/types/branch";
 import { Visit } from "@/types/visit";
+import { VirtualSelect } from "@/components/virtual-select";
 
 interface CreateTicketFormProps {
   initialData?: Ticket;
@@ -65,20 +65,14 @@ export default function CreateTicketForm({
   const t = useTranslations();
   const router = useRouter();
   const { start, stop } = useLoader();
-  const [createTicket, { isLoading: isCreating }] =
-    useCreateTicketMutation();
-  const [updateTicket, { isLoading: isUpdating }] =
-    useUpdateTicketMutation();
+  const [createTicket, { isLoading: isCreating }] = useCreateTicketMutation();
+  const [updateTicket, { isLoading: isUpdating }] = useUpdateTicketMutation();
 
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
 
-  const form = useForm<
-    z.infer<ReturnType<typeof createTicketSchema>>
-  >({
-    resolver: zodResolver(
-      createTicketSchema(t),
-    ) as Resolver<
+  const form = useForm<z.infer<ReturnType<typeof createTicketSchema>>>({
+    resolver: zodResolver(createTicketSchema(t)) as Resolver<
       z.infer<ReturnType<typeof createTicketSchema>>
     >,
     defaultValues: initialData
@@ -109,9 +103,7 @@ export default function CreateTicketForm({
   const selectedCompanyId = form.watch("company_id");
   const selectedBranchId = form.watch("branch_id");
 
-  const { data: companiesData } = useGetCompaniesQuery(
-    "page=1&limit=1000",
-  );
+  const { data: companiesData } = useGetCompaniesQuery("page=1&limit=1000");
   const { data: branchesData } = useGetBranchesQuery(
     `page=1&page_size=1000${selectedCompanyId ? `&company_id=${selectedCompanyId}` : ""}`,
     { skip: !selectedCompanyId },
@@ -124,34 +116,21 @@ export default function CreateTicketForm({
   // Reset branch and visit if company changes
   useEffect(() => {
     if (selectedCompanyId && !isEditMode) {
-      form.setValue(
-        "branch_id",
-        undefined as unknown as number,
-      );
-      form.setValue(
-        "visit_id",
-        undefined as unknown as number,
-      );
+      form.setValue("branch_id", undefined as unknown as number);
+      form.setValue("visit_id", undefined as unknown as number);
     }
   }, [selectedCompanyId, form, isEditMode]);
 
   // Reset visit if branch changes
   useEffect(() => {
     if (selectedBranchId && !isEditMode) {
-      form.setValue(
-        "visit_id",
-        undefined as unknown as number,
-      );
+      form.setValue("visit_id", undefined as unknown as number);
     }
   }, [selectedBranchId, form, isEditMode]);
 
   useEffect(() => {
     if (isLoading) {
-      start(
-        isEditMode
-          ? t("Updating ticket")
-          : t("Creating ticket"),
-      );
+      start(isEditMode ? t("Updating ticket") : t("Creating ticket"));
     } else {
       stop();
     }
@@ -164,10 +143,7 @@ export default function CreateTicketForm({
 
     Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        if (
-          key === "attachments" &&
-          value instanceof FileList
-        ) {
+        if (key === "attachments" && value instanceof FileList) {
           Array.from(value).forEach((file) => {
             formData.append("attachments[]", file);
           });
@@ -208,15 +184,10 @@ export default function CreateTicketForm({
 
   const content = (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         {/* Ticket Type & User Info */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Ticket Information")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Ticket Information")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -230,23 +201,15 @@ export default function CreateTicketForm({
                   >
                     <FormControl className="w-full">
                       <SelectTrigger>
-                        <SelectValue
-                          placeholder={t(
-                            "Select user type",
-                          )}
-                        />
+                        <SelectValue placeholder={t("Select user type")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="company">
-                        {t("Company")}
-                      </SelectItem>
+                      <SelectItem value="company">{t("Company")}</SelectItem>
                       <SelectItem value="individual">
                         {t("Individual")}
                       </SelectItem>
-                      <SelectItem value="auditor">
-                        {t("Auditor")}
-                      </SelectItem>
+                      <SelectItem value="auditor">{t("Auditor")}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -259,20 +222,14 @@ export default function CreateTicketForm({
               name="ticket_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Ticket Type")} *
-                  </FormLabel>
+                  <FormLabel>{t("Ticket Type")} *</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl className="w-full">
                       <SelectTrigger>
-                        <SelectValue
-                          placeholder={t(
-                            "Select ticket type",
-                          )}
-                        />
+                        <SelectValue placeholder={t("Select ticket type")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -288,7 +245,7 @@ export default function CreateTicketForm({
               )}
             />
 
-           {/*  <FormField
+            {/*  <FormField
               control={form.control}
               name="priority"
               render={({ field }) => (
@@ -356,84 +313,93 @@ export default function CreateTicketForm({
 
         {/* Related Entities */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Related Information")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Related Information")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormField
               control={form.control}
               name="company_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("Company")}</FormLabel>
-                  <Select
-                    onValueChange={(val) =>
-                      field.onChange(Number(val))
-                    }
-                    defaultValue={field.value?.toString()}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={t("Select company")}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {companiesData?.data?.map(
-                        (company: Company) => (
-                          <SelectItem
-                            key={company.id}
-                            value={company.id.toString()}
-                          >
+                  <FormLabel>
+                    {t("Company")} <span className="text-red-500">*</span>{" "}
+                  </FormLabel>
+                  <FormControl>
+                    <VirtualSelect<Company>
+                      value={field.value ? field.value.toString() : ""}
+                      onChange={(selectedValue) => {
+                        const nextCompanyId = selectedValue
+                          ? Number(selectedValue)
+                          : undefined;
+                        if (nextCompanyId !== field.value) {
+                          form.setValue(
+                            "branch_id",
+                            undefined as unknown as number,
+                          );
+                        }
+                        field.onChange(nextCompanyId);
+                      }}
+                      placeholder={t("Select Company")}
+                      searchPlaceholder={t("Search")}
+                      emptyMessage={t("No companies found")}
+                      useQuery={useGetCompaniesSelectInfiniteQuery}
+                      getOptionValue={(company) => company.id.toString()}
+                      getOptionLabel={(company) => company.name}
+                      renderOption={(company) => (
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate font-medium">
                             {company.name}
-                          </SelectItem>
-                        ),
+                          </span>
+                          <span className="truncate text-xs text-muted-foreground">
+                            {company.email}
+                          </span>
+                        </div>
                       )}
-                    </SelectContent>
-                  </Select>
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="branch_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("Branch")}</FormLabel>
-                  <Select
-                    onValueChange={(val) =>
-                      field.onChange(Number(val))
-                    }
-                    value={field.value?.toString()}
-                    disabled={!selectedCompanyId}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            !selectedCompanyId
-                              ? t("Select company first")
-                              : t("Select branch")
-                          }
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {branchesData?.data?.map(
-                        (branch: Branch) => (
-                          <SelectItem
-                            key={branch.id}
-                            value={branch.id.toString()}
-                          >
+                  <FormLabel>
+                    {t("Branch")} <span className="text-red-500">*</span>{" "}
+                  </FormLabel>
+                  <FormControl>
+                    <VirtualSelect<Branch, { company_id?: number }>
+                      value={field.value ? field.value.toString() : ""}
+                      onChange={(selectedValue) =>
+                        field.onChange(
+                          selectedValue ? Number(selectedValue) : undefined,
+                        )
+                      }
+                      placeholder={
+                        selectedCompanyId
+                          ? t("Select Branch")
+                          : t("Select company first")
+                      }
+                      searchPlaceholder={t("Search")}
+                      emptyMessage={t("No branches found")}
+                      disabled={!selectedCompanyId}
+                      queryArgs={{ company_id: selectedCompanyId }}
+                      useQuery={useGetBranchesSelectInfiniteQuery}
+                      getOptionValue={(branch) => branch.id.toString()}
+                      getOptionLabel={(branch) => branch.name}
+                      renderOption={(branch) => (
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate font-medium">
                             {branch.name}
-                          </SelectItem>
-                        ),
+                          </span>
+                          <span className="truncate text-xs text-muted-foreground">
+                            {branch.email}
+                          </span>
+                        </div>
                       )}
-                    </SelectContent>
-                  </Select>
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -444,40 +410,42 @@ export default function CreateTicketForm({
               name="visit_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("Visit")}</FormLabel>
-                  <Select
-                    onValueChange={(val) =>
-                      field.onChange(Number(val))
-                    }
-                    value={field.value?.toString()}
-                    disabled={!selectedBranchId}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            !selectedBranchId
-                              ? t("Select branch first")
-                              : t("Select visit")
-                          }
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {visitsData?.data?.map(
-                        (visit: Visit) => (
-                          <SelectItem
-                            key={visit.id}
-                            value={visit.id.toString()}
-                          >
-                            {visit.branch?.name ||
-                              t("Visit")}{" "}
-                            - {visit.scheduled_date}
-                          </SelectItem>
-                        ),
+                  <FormLabel>
+                    {t("Visit")} <span className="text-red-500">*</span>{" "}
+                  </FormLabel>
+                  <FormControl>
+                    <VirtualSelect<Visit, { branch_id?: number }>
+                      value={field.value ? field.value.toString() : ""}
+                      onChange={(selectedValue) => {
+                        const nextCompanyId = selectedValue
+                          ? Number(selectedValue)
+                          : undefined;
+                        if (nextCompanyId !== field.value) {
+                          form.setValue(
+                            "branch_id",
+                            undefined as unknown as number,
+                          );
+                        }
+                        field.onChange(nextCompanyId);
+                      }}
+                      placeholder={t("Select Visit")}
+                      searchPlaceholder={t("Search")}
+                      emptyMessage={t("No companies found")}
+                      useQuery={useGetVisitsSelectInfiniteQuery}
+                      getOptionValue={(visit) => visit.id.toString()}
+                      getOptionLabel={(visit) =>
+                        `visit + ${visit.scheduled_date} + ${visit.scheduled_time}`
+                      }
+                      queryArgs={{ branch_id: selectedBranchId }}
+                      renderOption={(visit) => (
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate font-medium">
+                            {`visit + ${visit.scheduled_date} + ${visit.scheduled_time}`}
+                          </span>
+                        </div>
                       )}
-                    </SelectContent>
-                  </Select>
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -489,9 +457,7 @@ export default function CreateTicketForm({
 
         {/* Subject & Description */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Details")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Details")}</h3>
           <FormField
             control={form.control}
             name="subject"
@@ -499,10 +465,7 @@ export default function CreateTicketForm({
               <FormItem>
                 <FormLabel>{t("Subject")} *</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder={t("Enter subject")}
-                    {...field}
-                  />
+                  <Input placeholder={t("Enter subject")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -517,9 +480,7 @@ export default function CreateTicketForm({
                 <FormLabel>{t("Description")} *</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder={t(
-                      "Describe your issue in detail",
-                    )}
+                    placeholder={t("Describe your issue in detail")}
                     className="resize-none"
                     rows={5}
                     {...field}
@@ -540,9 +501,7 @@ export default function CreateTicketForm({
                   <Input
                     type="file"
                     multiple
-                    onChange={(e) =>
-                      field.onChange(e.target.files)
-                    }
+                    onChange={(e) => field.onChange(e.target.files)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -552,9 +511,7 @@ export default function CreateTicketForm({
         </div>
 
         <Button type="submit" className="w-full">
-          {isEditMode
-            ? t("Update Ticket")
-            : t("Create Ticket")}
+          {isEditMode ? t("Update Ticket") : t("Create Ticket")}
         </Button>
       </form>
     </Form>
@@ -568,9 +525,7 @@ export default function CreateTicketForm({
     <Card className="w-full">
       <CardHeader>
         <CardTitle>
-          {isEditMode
-            ? t("Edit Ticket")
-            : t("Create Support Ticket")}
+          {isEditMode ? t("Edit Ticket") : t("Create Support Ticket")}
         </CardTitle>
       </CardHeader>
       <CardContent>{content}</CardContent>

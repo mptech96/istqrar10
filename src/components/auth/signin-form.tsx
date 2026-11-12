@@ -14,12 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { Separator } from "../ui/separator";
 import { useTranslations } from "next-intl";
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "@/lib/store";
+import { useAppDispatch, useAppSelector } from "@/lib/store";
 import { signinSchema } from "@/schema/signin.schema.zod";
 import { useRouter } from "@/i18n/navigation";
 import { useLoginMutation } from "@/services/api/auth";
@@ -33,15 +29,11 @@ export default function SignInForm() {
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
   const t = useTranslations();
-  const { language } = useAppSelector(
-    (state) => state.settings,
-  );
+  const { language } = useAppSelector((state) => state.settings);
 
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const form = useForm<
-    z.infer<ReturnType<typeof signinSchema>>
-  >({
+  const form = useForm<z.infer<ReturnType<typeof signinSchema>>>({
     resolver: zodResolver(signinSchema(t)) as Resolver<
       z.infer<ReturnType<typeof signinSchema>>
     >,
@@ -59,18 +51,15 @@ export default function SignInForm() {
       start(t("Signing in"));
     }
   }, [isLoading, start, t]);
-  async function onSubmit(
-    values: z.infer<typeof signinSchema>,
-  ) {
+  async function onSubmit(values: z.infer<typeof signinSchema>) {
     // Handle login logic here
     try {
       const res = await login(values).unwrap();
       if (res.success) {
         dispatch(setCredentials({ ...res.data }));
         toast.success(t("login successfully !"));
-        const dashboardUrl = getDashboardUrl(
-          res.data.user.role,
-        );
+        const dashboardUrl = getDashboardUrl(res.data.user.role);
+        console.log("dashboardUrl", res.data.user.role);
         router.push(dashboardUrl);
       }
     } catch {
@@ -88,22 +77,15 @@ export default function SignInForm() {
       </div>
 
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-darkRed">
-          {t("Sign In")}
-        </h1>
+        <h1 className="text-3xl font-bold text-darkRed">{t("Sign In")}</h1>
         <p className="text-muted-foreground text-sm">
-          {t(
-            "Enter your credentials to access your account",
-          )}
+          {t("Enter your credentials to access your account")}
         </p>
       </div>
 
       <div className="space-y-6">
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-5"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <FormField
               control={form.control}
               name="email"
@@ -135,20 +117,14 @@ export default function SignInForm() {
                     <FormControl>
                       <div className="relative">
                         <Input
-                          type={
-                            showPassword
-                              ? "text"
-                              : "password"
-                          }
+                          type={showPassword ? "text" : "password"}
                           placeholder={t("Password")}
                           className={`h-12 bg-background border-input/60 rounded-lg focus-visible:ring-darkRed/20 ${language === "ar" ? "pl-10" : "pr-10"}`}
                           {...field}
                         />
                         <button
                           type="button"
-                          onClick={() =>
-                            setShowPassword(!showPassword)
-                          }
+                          onClick={() => setShowPassword(!showPassword)}
                           className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${language === "ar" ? "left-3" : "right-3"}`}
                         >
                           {showPassword ? (
@@ -183,7 +159,7 @@ export default function SignInForm() {
         </Form>
 
         {/* Divider */}
-       {/*  <div className="relative flex items-center gap-4 py-2">
+        {/*  <div className="relative flex items-center gap-4 py-2">
           <Separator className="flex-1" />
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold whitespace-nowrap">
             {t("Or continue with")}

@@ -6,11 +6,7 @@ import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { useLoader } from "@/hooks/use-loader";
 import { toast } from "sonner";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "motion/react";
 import {
   useGetVisitsQuery,
@@ -27,9 +23,7 @@ import { User } from "@/types/user";
 import { DeleteConfirmationDialog } from "@/components/common/delete-confirmation-dialog";
 
 const VisitsDataTable = () => {
-  const user = useSelector(
-    (state: RootState) => state.auth.user,
-  );
+  const user = useSelector((state: RootState) => state.auth.user);
   const { start, stop } = useLoader();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -42,15 +36,10 @@ const VisitsDataTable = () => {
 
   const t = useTranslations();
 
-  const [startVisit, { isLoading: isStartingVisit }] =
-    useStartVisitMutation();
+  const [startVisit, { isLoading: isStartingVisit }] = useStartVisitMutation();
   const [editVisit] = useEditVisitMutation();
   const [deleteVisit, { isLoading: isDeleting }] = useDeleteVisitMutation();
-  const {
-    data: paginatedVisits,
-    isLoading,
-    error,
-  } = useGetVisitsQuery(query);
+  const { data: paginatedVisits, isLoading, error } = useGetVisitsQuery(query);
 
   useEffect(() => {
     if (isLoading || isStartingVisit) {
@@ -67,9 +56,7 @@ const VisitsDataTable = () => {
   // Handle start visit action
   const handleStartVisit = async (visit: Visit) => {
     if (!navigator.geolocation) {
-      toast.error(
-        t("Geolocation is not supported by your browser"),
-      );
+      toast.error(t("Geolocation is not supported by your browser"));
       return;
     }
 
@@ -85,34 +72,23 @@ const VisitsDataTable = () => {
           }).unwrap();
           if (res.data.status === "in_progress") {
             toast.success(t("Visit started successfully"));
-            router.push(
-              `/dashboard/visits/${visit.id}/question-list`,
-            );
+            router.push(`/dashboard/visits/${visit.id}/question-list`);
           } else {
             throw new Error(res.message);
           }
         } catch (error: any) {
-          toast.error(
-            error.data?.message ||
-              t("Failed to start visit"),
-          );
+          toast.error(error.data?.message || t("Failed to start visit"));
         }
       },
       (error) => {
         console.error("Geolocation error:", error);
-        toast.error(
-          t(
-            "Please enable location access to start the visit",
-          ),
-        );
+        toast.error(t("Please enable location access to start the visit"));
       },
       { enableHighAccuracy: true },
     );
   };
   const handleStartQuestionnaire = async (visit: Visit) => {
-    router.push(
-      `/dashboard/visits/${visit.id}/question-list`,
-    );
+    router.push(`/dashboard/visits/${visit.id}/question-list`);
   };
   const handleEdit = (visit: Visit) => {
     // Handle edit action
@@ -136,15 +112,11 @@ const VisitsDataTable = () => {
   };
   const handleShowReport = (visit: Visit) => {
     // Handle show report action
-    router.push(
-      `/dashboard/visits/${visit.id}/visit-report`,
-    );
+    router.push(`/dashboard/visits/${visit.id}/visit-report`);
   };
   const handleShowAIAnalysis = (visit: Visit) => {
     // Handle show report action
-    router.push(
-      `/dashboard/visits/${visit.id}/ai-analysis`,
-    );
+    router.push(`/dashboard/visits/${visit.id}/ai-analysis`);
   };
   const columns = getColumns(
     t,
@@ -169,9 +141,7 @@ const VisitsDataTable = () => {
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <CardTitle className="text-lg">
-              {t("List of Visits")}
-            </CardTitle>
+            <CardTitle className="text-lg">{t("List of Visits")}</CardTitle>
             <div className="flex w-full md:w-64">
               <Input
                 placeholder={t("Search")}
@@ -193,9 +163,7 @@ const VisitsDataTable = () => {
           <ServerDataTable
             columns={columns}
             data={paginatedVisits?.data || []}
-            pageCount={
-              paginatedVisits?.meta?.last_page || 1
-            }
+            pageCount={paginatedVisits?.meta?.last_page || 1}
             page={paginatedVisits?.meta?.current_page || 1}
             setPage={setPage}
           />

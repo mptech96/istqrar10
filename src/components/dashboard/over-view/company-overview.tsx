@@ -17,8 +17,7 @@ import { useGetCompanyDashboardQuery } from "@/services/api/stats";
 
 const CompanyOverview = () => {
   const t = useTranslations();
-  const { data: companyDashboard } =
-    useGetCompanyDashboardQuery({});
+  const { data: companyDashboard } = useGetCompanyDashboardQuery({});
   const statsConfig: StatsCardProps[] = [
     {
       title: companyDashboard?.statistics?.branches_count,
@@ -32,8 +31,7 @@ const CompanyOverview = () => {
       },
     },
     {
-      title:
-        companyDashboard?.statistics?.branch_managers_count,
+      title: companyDashboard?.statistics?.branch_managers_count,
       subtitle: t("Total users"),
       icon: <Users />,
       Badge: {
@@ -55,8 +53,7 @@ const CompanyOverview = () => {
       },
     },
     {
-      title:
-        companyDashboard?.statistics?.avg_company_score,
+      title: companyDashboard?.statistics?.avg_company_score,
       subtitle: t("Average rating"),
       icon: <Star />,
       Badge: {
