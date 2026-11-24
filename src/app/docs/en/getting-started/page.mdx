@@ -1,0 +1,78 @@
+# Getting Started
+
+This guide explains how to install dependencies, configure environment variables, and run the Istqrar platform locally.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have the following installed:
+
+- **Node.js**: v20 or higher (v22 recommended)
+- **pnpm**: v9 or higher (recommended package manager)
+- **Git**: For version control
+
+---
+
+## Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/reus/istqrar-app.git
+   cd istqrar-app
+   ```
+
+2. **Install project dependencies:**
+   ```bash
+   pnpm install
+   ```
+
+---
+
+## Environment Configuration
+
+Create a `.env` or `.env.local` file in the project root:
+
+```env
+# Base API Configuration
+NEXT_PUBLIC_API_URL=https://api.istqrar.example.com
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+# Cloudinary (Media & Report Attachments)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+
+# Maps Integration
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key
+
+# Email & Notifications (Optional)
+EMAIL_SERVER_HOST=smtp.example.com
+EMAIL_SERVER_PORT=587
+EMAIL_SERVER_USER=noreply@istqrar.example.com
+EMAIL_SERVER_PASSWORD=secret
+```
+
+---
+
+## Available Scripts
+
+| Script | Command | Description |
+| :--- | :--- | :--- |
+| `dev` | `pnpm dev` | Starts the Next.js development server on `http://localhost:3000` |
+| `dev:https` | `pnpm dev:https` | Starts the dev server with experimental HTTPS (using local certificates) |
+| `build` | `pnpm build` | Compiles the production build |
+| `start` | `pnpm start` | Starts the production server |
+| `lint` | `pnpm lint` | Runs ESLint analysis across the project |
+| `storybook` | `pnpm storybook` | Launches Storybook component explorer on `http://localhost:6006` |
+| `doc` | `pnpm doc` | Generates TypeDoc code documentation into `docs/` |
+
+---
+
+## Running with HTTPS
+
+Certain features such as geolocation or secure cross-domain cookies require HTTPS in development:
+
+```bash
+pnpm dev:https
+```
+
+Local certificates are located in `./certificates/localhost.pem` and `./certificates/localhost-key.pem`.

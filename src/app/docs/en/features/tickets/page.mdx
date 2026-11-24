@@ -1,0 +1,42 @@
+# Tickets & Issue Management
+
+When an audit uncovers non-compliant conditions, tickets bridge the gap between audit findings and corrective actions.
+
+---
+
+## Ticket Workflow
+
+```
+[ Visit Findings: Violation Identified ]
+                 │
+                 ▼
+          [ Ticket Opened ]
+                 │
+      ┌──────────┴──────────┐
+      ▼                     ▼
+[ Low / Medium ]      [ Critical / Urgent ]
+  (7-day SLA)           (24-hour SLA)
+      │                     │
+      └──────────┬──────────┘
+                 ▼
+       [ Remediation by Branch ]
+                 │
+                 ▼
+     [ Evidence Verification ]
+                 │
+                 ▼
+        [ Closed / Resolved ]
+```
+
+---
+
+## Attributes & Data Model
+
+| Field | Description |
+| :--- | :--- |
+| **Title & Description** | Specific description of the discovered non-compliance. |
+| **Visit Reference** | Direct link back to the originating visit and criterion. |
+| **Severity** | Categorized into `Low`, `Medium`, `High`, or `Critical`. |
+| **Assignee** | Designated branch manager or maintenance supervisor. |
+| **Resolution Evidence** | Uploaded photograph or certificate proving remediation. |
+| **Status** | `Open`, `In Progress`, `Under Review`, `Resolved`, `Closed`. |

@@ -356,6 +356,8 @@
   "Auditor is required": "المراقب مطلوب",
   "Checklist is required": "قائمة المراجعة مطلوبة",
   "Scheduled date is required": "تاريخ الجدولة مطلوب",
+  "Scheduled date must be today or future": "يجب أن يكون التاريخ المجدول اليوم أو في المستقبل",
+  "Scheduled time must be in the future for today's visits": "يجب أن يكون الوقت المجدول في المستقبل لزيارات اليوم",
   "Scheduled time is required": "وقت الجدولة مطلوب",
   "Select branch": "اختر الفرع",
   "Select auditor": "اختر المراقب",

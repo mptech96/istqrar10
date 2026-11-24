@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import nextra from "nextra";
+
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
@@ -15,4 +17,8 @@ const nextConfig: NextConfig = {
 };
 
 const withNextIntl = createNextIntlPlugin();
-export default withNextIntl(nextConfig);
+const withNextra = nextra({
+  defaultShowCopyCode: true,
+});
+
+export default withNextra(withNextIntl(nextConfig));

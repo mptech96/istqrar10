@@ -1,0 +1,197 @@
+# API Reference & Services Architecture
+
+The Istqrar frontend communicates with the backend REST API via **Redux Toolkit Query (RTK Query)** modules located in `src/services/api/`.
+
+---
+
+## Base Configuration & Authentication
+
+- **Base URL**: Configured via `NEXT_PUBLIC_BASE_URL` in `.env`.
+- **Credentials**: `credentials: "include"` sends HTTP-only session cookies with every request.
+- **Headers**: Automatically sets `Accept: application/json` and `Content-Type: application/json`.
+- **Cache Tags**: Automated cache invalidation across 20+ resource tags (`Visits`, `Companies`, `Branches`, `Tickets`, `Checklists`, `Questions`, `Criterias`, etc.).
+
+---
+
+## 1. Authentication Services (`src/services/api/auth/`)
+
+| Method | Endpoint | RTK Hook | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/auth/login` | `useLoginMutation` | Authenticates user credentials and sets session cookie. |
+| `POST` | `/auth/logout` | `useLogoutMutation` | Clears user session and invalidates authentication state. |
+
+### Code Usage Example
+
+```tsx
+import { useLoginMutation } from "@/services/api/auth";
+
+export function LoginForm() {
+  const [login, { isLoading, error }] = useLoginMutation();
+
+  const handleSignIn = async (credentials: { email: string; password: string }) => {
+    try {
+      const response = await login(credentials).unwrap();
+      console.log("Logged in successfully:", response);
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
+  };
+
+  return <button disabled={isLoading} onClick={() => handleSignIn({ email: "user@test.com", password: "123" })}>Sign In</button>;
+}
+```
+
+---
+
+## 2. Visits & Audit Endpoints (`src/services/api/visits.ts`)
+
+| Method | Endpoint | RTK Hook | Purpose |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/visits` | `useGetVisitsQuery` | List audits with search, pagination, and status filters. |
+| `GET` | `/visits` | `useGetVisitsSelectInfiniteQuery` | Infinite scroll paginated loader for select dropdowns. |
+| `GET` | `/visits/{id}` | `useGetVisitByIdQuery` | Fetch complete visit metadata, checklist, and auditor info. |
+| `POST` | `/visits` | `useCreateVisitMutation` | Schedule a new visit for a branch. |
+| `POST` | `/visits/{id}/start` | `useStartVisitMutation` | On-site check-in recording GPS `start_latitude` & `start_longitude`. |
+| `PUT` | `/visits/{id}` | `useUpdateVisitMutation` | Modify scheduled date, time, or internal notes. |
+| `DELETE` | `/visits/{id}` | `useDeleteVisitMutation` | Cancel and delete scheduled audit. |
+| `GET` | `/visits/{id}/questions` | `useGetVisitQuestionsQuery` | Retrieve paginated inspection questionnaire questions. |
+| `POST` | `/visits/{id}/answers/bulk` | `useAnswerQuestionnaireMutation` | Submit auditor responses, scores, notes, and photos. |
+| `POST` | `/visits/{id}/complete` | `useCloseVisitMutation` | Mark audit complete and trigger scoring rollup. |
+| `GET` | `/visits/{id}/analysis` | `useGetVisitReportQuery` | Summary scorecard: correct, incorrect, critical errors, percentages. |
+| `GET` | `/visits/{id}/deep-analysis/latest` | `useGetVisitAIAnalysisQuery` | Latest AI compliance analysis and risk insights. |
+| `POST` | `/visits/{id}/deep-analysis` | `useCreateVisitAIAnalysisMutation` | Trigger new AI assessment on submitted answers. |
+
+### Code Usage: On-Site Check-in & Questionnaire
+
+```tsx
+import { useStartVisitMutation, useAnswerQuestionnaireMutation } from "@/services/api/visits";
+
+export function VisitActions({ visitId }: { visitId: number }) {
+  const [startVisit, { isLoading: isStarting }] = useStartVisitMutation();
+  const [submitAnswers] = useAnswerQuestionnaireMutation();
+
+  const handleStartAudit = async (coords: { latitude: string; longitude: string }) => {
+    // Record auditor's real GPS position at the branch
+    await startVisit({
+      id: visitId,
+      data: {
+        start_latitude: coords.latitude,
+        start_longitude: coords.longitude,
+      },
+    }).unwrap();
+  };
+
+  const handleSaveAnswers = async (answers: Array<{ question_id: number; answer: string; notes?: string }>) => {
+    await submitAnswers({
+      visitId,
+      data: { answers },
+    }).unwrap();
+  };
+
+  return <button onClick={() => handleStartAudit({ latitude: "24.7136", longitude: "46.6753" })}>Start Audit</button>;
+}
+```
+
+---
+
+## 3. Companies & Branches Services (`companies.ts`, `branches.ts`)
+
+### Companies
+
+| Method | Endpoint | RTK Hook | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/companies` | `useGetCompaniesQuery` | Retrieve companies with search, pagination, and sorting. |
+| `POST` | `/companies` | `useCreateCompanyMutation` | Register new corporate entity and default admin user. |
+| `GET` | `/companies/{id}/statistics` | `useGetCompanyStatisticsQuery` | Overall compliance index and branch performance count. |
+| `PUT` | `/companies/{id}` | `useUpdateCompanyMutation` | Update CR number, address, contact details, or logo. |
+| `PATCH` | `/companies/{id}/active` | `useActivateCompanyMutation` | Activate company subscription. |
+| `PATCH` | `/companies/{id}/unactive` | `useDeactivateCompanyMutation` | Deactivate company access. |
+| `DELETE` | `/companies/{id}` | `useDeleteCompanyMutation` | Remove company record. |
+
+### Branches
+
+| Method | Endpoint | RTK Hook | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/branches` | `useGetBranchesQuery` | Filter branches by `company_id` and query string. |
+| `GET` | `/branches/{id}` | `useGetBranchByIdQuery` | Fetch branch details, manager contact, and map coordinates. |
+| `POST` | `/branches` | `useCreateBranchMutation` | Add a physical branch with GPS coordinates. |
+| `GET` | `/branches/{id}/statistics` | `useGetBranchStatsQuery` | Branch audit history and average compliance rating. |
+| `PUT` | `/branches/{id}` | `useUpdateBranchMutation` | Edit branch address, manager, or coordinates. |
+| `DELETE` | `/branches/{id}` | `useDeleteBranchMutation` | Archive/delete branch. |
+
+---
+
+## 4. Reports API (`src/services/api/reports.ts`)
+
+| Method | Endpoint | RTK Hook | Target Role |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/reports/company-admin` | `useGetCompanyReportsQuery` | Company Admin |
+| `GET` | `/reports/branch-manager` | `useGetBranchReportsQuery` | Branch Manager |
+| `GET` | `/reports/auditor` | `useGetInspectorReportsQuery` | Field Auditor |
+
+### Code Usage Example
+
+```tsx
+import { useGetCompanyReportsQuery } from "@/services/api/reports";
+
+export function CompanyReportOverview() {
+  const { data, isLoading } = useGetCompanyReportsQuery({});
+
+  if (isLoading) return <div>Loading report...</div>;
+
+  const { company_info, statistics, branches_performance } = data || {};
+
+  return (
+    <div>
+      <h2>{company_info?.name} Compliance Overview</h2>
+      <p>Average Score: {statistics?.avg_score}%</p>
+      <p>Total Completed Audits: {statistics?.completed_visits}</p>
+    </div>
+  );
+}
+```
+
+---
+
+## 5. Tickets & Issue Resolution (`src/services/api/tickets.ts`)
+
+| Method | Endpoint | RTK Hook | Purpose |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/tickets` | `useGetAllTicketsQuery` | Fetch non-compliance tickets with status/severity filters. |
+| `GET` | `/tickets/{id}` | `useGetTicketByIdQuery` | View violation details, originating question, and evidence. |
+| `POST` | `/tickets` | `useCreateTicketMutation` | Manually or automatically create a corrective ticket. |
+| `POST` | `/tickets/{id}/assign` | `useAssignTicketMutation` | Delegate ticket to a branch manager or team lead. |
+| `POST` | `/tickets/{id}/solve` | `useSolveTicketMutation` | Branch submits remediation proof and notes. |
+| `POST` | `/tickets/{id}/close` | `useCloseTicketMutation` | Auditor verifies remediation and closes the ticket. |
+| `GET` | `/tickets/statistics/overview` | `useGetTicketsStatsQuery` | Metric counts: Open, In Progress, Solved, Overdue. |
+
+---
+
+## 6. Checklists, Criteria & Inspectors
+
+### Checklists & Criteria
+- **`checklistsApi`**: `useCreateChecklistMutation`, `useGetChecklistsQuery`, `useUpdateChecklistMutation`, `useDeleteChecklistMutation`.
+- **`criteriaApi`**: `useCreateCriteriaMutation`, `useGetCriteriaQuery`, `useUpdateCriteriaMutation`, `useDeleteCriteriaMutation`.
+
+### Inspectors & Users (`src/services/api/inspectors.ts`)
+- **`useGetInspectorsQuery`**: Query all registered inspectors and system users.
+- **`useGetAuditorsSelectInfiniteQuery`**: Infinite scroll list of certified auditors for assigning to visits.
+- **`useCreateInspectorMutation`**: Provision a new auditor profile with credentials.
+- **`useActivateUserMutation` / `useDeactivateUserMutation`**: Toggle inspector operational status.
+
+---
+
+## 7. Next.js Public Route Handlers
+
+### `POST /api/contact`
+Receives public inbound lead submissions from the website contact page and dispatches emails via Nodemailer:
+
+```json
+{
+  "name": "Sarah Al-Ghamdi",
+  "email": "sarah@retailgroup.sa",
+  "phone": "+966551234567",
+  "company": "Retail Group",
+  "message": "Inquiry regarding multi-branch inspection package."
+}
+```

@@ -2,12 +2,11 @@ import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import HomeContent from "@/components/home/home-content/home-content";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
+export async function generateMetadata(props: {
+  params?: Promise<{ locale?: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const resolvedParams = await props?.params;
+  const locale = resolvedParams?.locale || "ar";
   const t = await getTranslations({
     locale,
     namespace: "",

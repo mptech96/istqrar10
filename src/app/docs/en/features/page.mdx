@@ -1,0 +1,33 @@
+# Features & Modules Overview
+
+Istqrar is divided into specialized modules tailored to each operational role in the auditing lifecycle.
+
+---
+
+## Module Index
+
+### [Visits & Audits](/docs/features/visits)
+The central workflow engine of the platform. Covers visit scheduling, dynamic questionnaire execution, evidence uploads, AI-driven observations, and automated report generation.
+
+### [Companies & Branches](/docs/features/companies-and-branches)
+Multi-tenant organizational structure allowing companies to register branches, assign physical locations, and delegate inspectors.
+
+### [Checklists & Criteria](/docs/features/checklists-and-criteria)
+Flexible compliance framework for structuring audits with sections, scoring criteria, and conditional branching rules.
+
+### [Tickets & Issues](/docs/features/tickets)
+Corrective action tracking system generated from visit non-compliance items, with assignment, severity levels, and resolution status.
+
+---
+
+## Role-to-Feature Matrix
+
+| Feature | Super Admin | Auditor | Company Admin | Branch Manager |
+| :--- | :---: | :---: | :---: | :---: |
+| **Manage Companies** | ✅ Full | ❌ None | ❌ None | ❌ None |
+| **Manage Branches** | ✅ Full | ❌ None | ✅ Own | ❌ View Only |
+| **Manage Checklists & Criteria** | ✅ Full | ❌ View | ❌ View | ❌ None |
+| **Execute Field Visits** | ❌ None | ✅ Assigned | ❌ View | ❌ View |
+| **AI Visit Analysis** | ✅ View | ✅ View | ✅ View | ✅ View |
+| **Issue Corrective Tickets** | ✅ Full | ✅ Create | ✅ Manage | ✅ Resolve |
+| **Generate Audit Reports** | ✅ Full | ✅ Own | ✅ Company | ✅ Branch |

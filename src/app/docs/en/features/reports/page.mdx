@@ -1,0 +1,73 @@
+# Reports & Analytics System
+
+Istqrar features a multi-tiered reporting architecture providing tailored views for field auditors, branch managers, corporate executives, and regulatory supervisors.
+
+---
+
+## 1. The Four Platform Report Types
+
+```mermaid
+flowchart TD
+    subgraph Reports["Reporting Ecosystem"]
+        VR["1. Visit Report<br/>(/dashboard/visits/[id]/visit-report)"]
+        AR["2. Auditor Report<br/>(/dashboard/reports/auditor)"]
+        CR["3. Company Report<br/>(/dashboard/reports/company)"]
+        BR["4. Branch Report<br/>(/dashboard/reports/branch)"]
+    end
+
+    Auditor["Auditor Role"] --> VR & AR
+    BranchManager["Branch Manager"] --> VR & BR
+    CompanyAdmin["Company Admin"] --> CR & BR & VR
+    SuperAdmin["Super Admin"] --> Reports
+```
+
+---
+
+## 2. Report Specifications & Metrics
+
+| Report Type | Primary Target Audience | Core Metrics & Components Included |
+| :--- | :--- | :--- |
+| **Visit Report** | Auditor, Branch Manager, Admin | • Executive Scorecard (`StatsCardProps`): Total questions, Correct, Incorrect, Critical Errors.<br/>• Circular Score Gauge (`ScorePercentage`).<br/>• Criteria breakdown bars (`CriteriaScoresList`).<br/>• Photographic evidence attachments.<br/>• Printable single-page or multi-page PDF via `react-to-print`. |
+| **Auditor Report** | Field Auditor, Inspection Lead | • Total completed vs scheduled visits.<br/>• Monthly audit volume trend (`visits_by_month`).<br/>• Average score index awarded by this auditor.<br/>• Recent verified corrections log.<br/>• Upcoming inspection calendar. |
+| **Company Report** | Corporate Executive, Quality Director | • Aggregated corporate compliance index.<br/>• Branch performance ranking table (Top vs Low performers).<br/>• Cross-branch violation heatmaps.<br/>• Active vs expired branch subscription statuses. |
+| **Branch Report** | Branch Manager, Operations Lead | • Longitudinal score trend over consecutive quarters.<br/>• Recurring failure criteria.<br/>• Open vs resolved corrective action tickets.<br/>• Inspector notes and re-inspection logs. |
+
+---
+
+## 3. Report Generation & Print Pipeline
+
+The following sequence details how visit audit data is fetched, rendered into interactive cards, and formatted for paper or digital PDF export:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as User / Manager
+    participant Browser as Browser Client
+    participant RTK as RTK Query (useGetVisitReportQuery)
+    participant API as Backend Server
+    participant Print as react-to-print (useReactToPrint)
+
+    User->>Browser: Navigates to Visit Report (/dashboard/visits/[id]/visit-report)
+    Browser->>RTK: Dispatches query with visitId
+    RTK->>API: GET /api/v1/visits/{visitId}/report
+    API-->>RTK: 200 OK with VisitReportData JSON
+    RTK-->>Browser: Populates component state
+
+    Browser->>Browser: Renders StatsCard (Questions, Errors, Correct)
+    Browser->>Browser: Renders ScorePercentage circular gauge
+    Browser->>Browser: Renders CriteriaScoresList with progress bars
+
+    User->>Browser: Clicks 'Print / Export PDF' button
+    Browser->>Print: Invokes handlePrint() targeting printRef
+    Print->>Print: Injects @media print stylesheet & prepares paper layout
+    Print->>User: Opens browser native print & PDF save dialog
+```
+
+---
+
+## 4. Key UI Components in Reporting
+
+- **`StatsCard`** (`src/components/dashboard/stats-card/`): Standardized summary widgets featuring Lucide icons, status pill badges, and numeric counts.
+- **`ScorePercentage`** (`src/components/dashboard/visits/score-percentage.tsx`): Radial progress meter displaying percentage, categorical grade, and color-coded status.
+- **`CriteriaScoresList`** (`src/components/dashboard/visits/criteria-scores-list.tsx`): Accordion of compliance criteria showing earned vs possible points with color bars.
+- **`CompanyReportsPrint`** (`src/components/dashboard/reports/print-models/`): Dedicated high-resolution layout optimized for A4 page breaks, letterheads, and executive summaries.

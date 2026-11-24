@@ -1,0 +1,78 @@
+# البدء والتثبيت
+
+يوضح هذا الدليل كيفية تثبيت بيئة العمل، وضبط متغيرات البيئة، وتشغيل منصة استقرار محلياً للتطوير.
+
+---
+
+## المتطلبات الأساسية
+
+تأكد من توفر الأدوات التالية على جهازك:
+
+- **Node.js**: الإصدار 20 أو أحدث (يُفضل الإصدار 22).
+- **pnpm**: الإصدار 9 أو أحدث (مدير الحزم المعتمد للمشروع).
+- **Git**: لإدارة النسخ والتحكم بالمستودع.
+
+---
+
+## خطوات التثبيت
+
+1. **استنساخ المستودع (Clone):**
+   ```bash
+   git clone https://github.com/reus/istqrar-app.git
+   cd istqrar-app
+   ```
+
+2. **تثبيت حزم المشروع:**
+   ```bash
+   pnpm install
+   ```
+
+---
+
+## ضبط متغيرات البيئة
+
+قم بإنشاء ملف باسم `.env` أو `.env.local` في المجلد الرئيسي للمشروع:
+
+```env
+# رابط واجهة برمجة التطبيقات الأساسية (API)
+NEXT_PUBLIC_API_URL=https://api.istqrar.example.com
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+# خدمة Cloudinary (لرفع وحفظ صور وتقارير الزيارات)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+
+# خرائط جوجل وماب ليبر
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key
+
+# إعدادات البريد الإلكتروني (Nodemailer)
+EMAIL_SERVER_HOST=smtp.example.com
+EMAIL_SERVER_PORT=587
+EMAIL_SERVER_USER=noreply@istqrar.example.com
+EMAIL_SERVER_PASSWORD=secret
+```
+
+---
+
+## الأوامر المتاحة في المشروع
+
+| الأمر | طريقة التشغيل | الوصف |
+| :--- | :--- | :--- |
+| `dev` | `pnpm dev` | تشغيل خادم التطوير على `http://localhost:3000` |
+| `dev:https` | `pnpm dev:https` | تشغيل خادم التطوير مع بروتوكول HTTPS المحلي والشهادات الرقمية |
+| `build` | `pnpm build` | بناء وتجهيز التطبيق والتوثيق للإنتاج |
+| `start` | `pnpm start` | تشغيل خادم الإنتاج بعد البناء |
+| `lint` | `pnpm lint` | فحص الكود البرمجي عبر ESLint |
+| `storybook` | `pnpm storybook` | تشغيل بيئة Storybook لاستعراض مكونات الواجهة على المنفذ `6006` |
+| `doc` | `pnpm doc` | توليد توثيق الشيفرة المصدرية تلقائياً عبر TypeDoc |
+
+---
+
+## التشغيل عبر بروتوكول HTTPS
+
+بعض ميزات المنصة مثل تحديد الموقع الجغرافي الدقيق وملفات تعريف الارتباط المشتركة (Cross-domain cookies) تتطلب بروتوكول HTTPS محلياً:
+
+```bash
+pnpm dev:https
+```
+
+توجد الشهادات المحلية مسبقاً داخل مجلد `./certificates/`.

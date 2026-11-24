@@ -1,0 +1,49 @@
+# Istqrar Platform Overview
+
+Welcome to the **Istqrar** engineering documentation.
+
+Istqrar is a modern enterprise compliance, inspection, and quality auditing platform designed to streamline operations across organizations, branches, and field auditors.
+
+---
+
+## Key Highlights
+
+- **Next.js 16 (App Router)**: Powered by React 19 and React Compiler for optimal rendering and client performance.
+- **Bi-directional Internationalization**: Seamless Arabic (RTL) and English (LTR) localization using `next-intl`.
+- **Role-Based Access Control (RBAC)**: Fine-grained access for `super_admin`, `auditor`, `company_admin`, and `branch_manager`.
+- **Intelligent Audit Workflows**: Dynamic checklists, conditions, criteria evaluation, and AI-assisted analysis for visit reports.
+- **Extensible Architecture**: Built with Redux Toolkit for centralized state, Tailwind CSS v4, and Radix UI primitives.
+
+---
+
+## Platform Hierarchy
+
+```
+Organization / Super Admin
+ └── Companies (Tenants)
+      └── Branches
+           ├── Audits & Scheduled Visits
+           │    ├── Dynamic Questionnaires & Criteria
+           │    ├── AI-assisted Report Analysis
+           │    └── Corrective Tickets & Action Items
+           └── Assigned Inspectors & Managers
+```
+
+---
+
+## Role-Based Architecture
+
+| Role | Access Scope | Key Capabilities |
+| :--- | :--- | :--- |
+| **Super Admin** | Platform-wide | Manages global settings, companies, subscription tiers, and system metrics. |
+| **Auditor** | Assigned Audits | Conducts field visits, responds to questionnaires, records observations, and submits audit reports. |
+| **Company Admin** | Company-wide | Oversees branches, assigns inspectors, monitors compliance analytics, and tracks tickets. |
+| **Branch Manager** | Branch-level | Reviews visit outcomes, monitors assigned branch reports, and resolves corrective tickets. |
+
+---
+
+## Next Steps
+
+- Check out [Getting Started](/docs/getting-started) to set up your local development environment.
+- Explore the [Architecture & Stack](/docs/architecture) guide to understand state management, routing, and localization.
+- Learn about the core modules in [Features & Modules](/docs/features).

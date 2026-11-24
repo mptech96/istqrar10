@@ -1,0 +1,70 @@
+# Architecture & Technical Stack
+
+Istqrar leverages modern frontend patterns built around Next.js 16 App Router, React 19, and full bi-directional internationalization.
+
+---
+
+## Core Technologies
+
+```
+┌────────────────────────────────────────────────────────┐
+│                      Next.js 16                        │
+│         (App Router + React 19 + React Compiler)       │
+├──────────────────────────┬─────────────────────────────┤
+│  Localization & Theming  │       State & Data          │
+│  • next-intl (AR & EN)   │       • Redux Toolkit       │
+│  • RTL / LTR switching   │       • RTK Query / Axios   │
+│  • Tailwind CSS v4       │       • TanStack Table v8   │
+├──────────────────────────┴─────────────────────────────┤
+│                    UI & Components                     │
+│  • Radix UI Primitives   • Lucide React                │
+│  • Motion (Framer)       • Sonner Toasts               │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Directory Structure
+
+```
+istqrar-app/
+├── src/
+│   ├── app/
+│   │   ├── [locale]/           # Localized application routes
+│   │   │   ├── (public)/       # Landing, about, services, subscriptions
+│   │   │   ├── dashboard/      # Role-based protected dashboards
+│   │   │   ├── login/          # Authentication entry
+│   │   │   └── layout.tsx      # Root localized layout (RTL/LTR + providers)
+│   │   ├── docs/               # Nextra documentation system
+│   │   │   ├── layout.tsx      # Nextra theme shell & pageMap
+│   │   │   └── **/*.mdx        # Documentation content
+│   │   └── api/                # Next.js API route handlers
+│   ├── components/             # Reusable UI & domain components
+│   ├── features/               # Domain feature slices & controllers
+│   ├── hooks/                  # Custom React hooks
+│   ├── i18n/                   # Routing configuration & locale definitions
+│   ├── messages/               # Translation JSON files (ar.json, en.json)
+│   ├── providers/              # Redux, Direction, and Theme providers
+│   ├── services/               # API clients and HTTP abstractions
+│   └── proxy.ts                # Route protection & localization proxy
+├── mdx-components.js           # Theme component bindings for Nextra
+└── next.config.ts              # Composed Nextra + next-intl config
+```
+
+---
+
+## Routing & Localization Strategy
+
+1. **Locale Prefixing**: Routes under `[locale]` receive either `ar` or `en` (e.g. `/ar/dashboard`, `/en/dashboard`).
+2. **Direction Control**: The `DirectionProvider` in `src/app/[locale]/layout.tsx` dynamically sets `dir="rtl"` for Arabic and `dir="ltr"` for English, loading the `DIN Next LT Arabic` font family.
+3. **Docs Isolation**: The documentation system lives at `/docs` outside of `[locale]`. The middleware in `src/proxy.ts` automatically ignores `/docs` to prevent accidental redirection loops.
+
+---
+
+## State Management
+
+Global client state is managed via **Redux Toolkit**:
+
+- **Store Provider**: Wrapped inside `src/providers/store-providers.tsx`.
+- **Role & Auth State**: Managed through dedicated slices with authentication tokens persisted via secure cookies.
+- **Table Virtualization**: Powered by `@tanstack/react-virtual` and `@tanstack/react-table` for fluid rendering of extensive inspection datasets.

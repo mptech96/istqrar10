@@ -65,13 +65,23 @@ export const createCompanySchema = (t: any, isEditMode: boolean = false) =>
       subscription_start: z.coerce
         .date()
         .refine(
-          (date) => !date || date >= new Date(),
+          (date) => {
+            if (!date) return true;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return date >= today;
+          },
           t("start date must be today or future"),
         ),
       subscription_end: z.coerce
         .date()
         .refine(
-          (date) => !date || date > new Date(),
+          (date) => {
+            if (!date) return true;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return date > today;
+          },
           t("expiry date must be in the future"),
         ),
       subscription_status: z
@@ -291,13 +301,23 @@ export const updateCompanySchema = (t: any) =>
       subscription_start: z.coerce
         .date()
         .refine(
-          (date) => !date || date >= new Date(),
+          (date) => {
+            if (!date) return true;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return date >= today;
+          },
           t("start date must be today or future"),
         ),
       subscription_end: z.coerce
         .date()
         .refine(
-          (date) => !date || date > new Date(),
+          (date) => {
+            if (!date) return true;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return date > today;
+          },
           t("expiry date must be in the future"),
         ),
       subscription_status: z

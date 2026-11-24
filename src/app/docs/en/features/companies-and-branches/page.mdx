@@ -1,0 +1,30 @@
+# Companies & Branches Management
+
+The multi-tenant architecture organizes inspection entities into hierarchical companies and localized branches.
+
+---
+
+## Structure
+
+```
+Company (e.g. Al-Amal Retail Group)
+ ├── Commercial Registration (CR) & Tax Details
+ ├── Assigned Company Admins
+ └── Branches
+      ├── Riyadh Main Branch (Branch Manager, Geolocation)
+      ├── Jeddah North Branch (Branch Manager, Geolocation)
+      └── Dammam Distribution Center
+```
+
+---
+
+## Key Capabilities
+
+### Company Administration
+- **Company Profile**: Legal business names in Arabic & English, registration numbers, subscription tier.
+- **Inspectors Assignment**: Allocates licensed auditors to specific company domains.
+- **Aggregated Analytics**: Tracks safety & quality scores across all operational units.
+
+### Branch Management
+- **Geolocation & Mapping**: Integrated with `@vis.gl/react-google-maps` and `maplibre-gl` for pinpoint branch navigation.
+- **Branch Dashboard**: Specific view for branch managers showing upcoming scheduled visits and open corrective tickets.

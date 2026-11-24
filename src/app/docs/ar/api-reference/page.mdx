@@ -1,0 +1,193 @@
+# مرجع واجهات برمجة التطبيقات (API) والخدمات
+
+تتواصل واجهة منصة استقرار مع خادم النظام عبر حزمة خدمات مبنية على مكتبة **Redux Toolkit Query (RTK Query)** والموجودة ضمن المجلد `src/services/api/`.
+
+---
+
+## الإعدادات الأساسية والمصادقة
+
+- **الرابط الأساسي (Base URL)**: يُضبط عبر المتغير `NEXT_PUBLIC_BASE_URL` في ملف البيئة `.env`.
+- **إدارة الجلسات**: `credentials: "include"` لإرسال ملفات تعريف الارتباط الآمنة (HttpOnly Cookies) تلقائياً مع كل طلب.
+- **الترويسات (Headers)**: إرسال ترويسات `Accept: application/json` و `Content-Type: application/json` افتراضياً.
+- **إدارة الذاكرة المؤقتة (Cache Tags)**: تحديث تلقائي للبيانات عبر أكثر من 20 وسم كاش (`Visits`, `Companies`, `Branches`, `Tickets`, `Checklists`, `Questions`, `Criterias`, إلخ).
+
+---
+
+## 1. خدمات المصادقة وتسجيل الدخول (`src/services/api/auth/`)
+
+| الطريقة | نقطة النهاية (Endpoint) | خطاف RTK Query | الوصف |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/auth/login` | `useLoginMutation` | التحقق من بيانات الدخول وتعيين ملف تعريف الارتباط (Cookie). |
+| `POST` | `/auth/logout` | `useLogoutMutation` | إنهاء الجلسة ومسح بيانات المصادقة. |
+
+### مثال برمجي على الاستخدام
+
+```tsx
+import { useLoginMutation } from "@/services/api/auth";
+
+export function LoginForm() {
+  const [login, { isLoading }] = useLoginMutation();
+
+  const handleSignIn = async (credentials: { email: string; password: string }) => {
+    try {
+      const response = await login(credentials).unwrap();
+      console.log("تم تسجيل الدخول بنجاح:", response);
+    } catch (err) {
+      console.error("فشل تسجيل الدخول:", err);
+    }
+  };
+
+  return <button disabled={isLoading} onClick={() => handleSignIn({ email: "user@test.com", password: "123" })}>دخول</button>;
+}
+```
+
+---
+
+## 2. خدمات الزيارات الميدانية والتدقيق (`src/services/api/visits.ts`)
+
+| الطريقة | نقطة النهاية | خطاف RTK Query | الغرض التشغيلي |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/visits` | `useGetVisitsQuery` | جلب الزيارات مع دعم البحث والترقيم والتصفية بحسب الحالة. |
+| `GET` | `/visits` | `useGetVisitsSelectInfiniteQuery` | جلب الزيارات بتمرير غير محدود لقوائم الاختيار (Select). |
+| `GET` | `/visits/{id}` | `useGetVisitByIdQuery` | جلب تفاصيل الزيارة الكاملة مع بيانات الفرع وقائمة التحقق. |
+| `POST` | `/visits` | `useCreateVisitMutation` | جدولة زيارة تفتيشية جديدة للفرع. |
+| `POST` | `/visits/{id}/start` | `useStartVisitMutation` | بدء الزيارة ميدانياً وتوثيق إحداثيات GPS (`start_latitude` و `start_longitude`). |
+| `PUT` | `/visits/{id}` | `useUpdateVisitMutation` | تعديل موعد أو تفاصيل الزيارة المجدولة. |
+| `DELETE` | `/visits/{id}` | `useDeleteVisitMutation` | إلغاء وحذف الزيارة المجدولة. |
+| `GET` | `/visits/{id}/questions` | `useGetVisitQuestionsQuery` | جلب أسئلة نموذج التفتيش المخصصة للزيارة. |
+| `POST` | `/visits/{id}/answers/bulk` | `useAnswerQuestionnaireMutation` | إرسال إجابات المدقق ودرجات الأسئلة والصور التوثيقية دفعة واحدة. |
+| `POST` | `/visits/{id}/complete` | `useCloseVisitMutation` | إنهاء واعتماد الزيارة واحتساب النتيجة والدرجات تلقائياً. |
+| `GET` | `/visits/{id}/analysis` | `useGetVisitReportQuery` | بيانات ملخص التقرير (الأسئلة الصحيحة، الأخطاء، والنسبة). |
+| `GET` | `/visits/{id}/deep-analysis/latest` | `useGetVisitAIAnalysisQuery` | استرجاع أحدث تقرير صادر عن الذكاء الاصطناعي للزيارة. |
+| `POST` | `/visits/{id}/deep-analysis` | `useCreateVisitAIAnalysisMutation` | طلب تحليل ذكاء اصطناعي جديد على نتائج الزيارة. |
+
+### مثال برمجي: بدء الزيارة وإرسال الإجابات
+
+```tsx
+import { useStartVisitMutation, useAnswerQuestionnaireMutation } from "@/services/api/visits";
+
+export function VisitActions({ visitId }: { visitId: number }) {
+  const [startVisit] = useStartVisitMutation();
+  const [submitAnswers] = useAnswerQuestionnaireMutation();
+
+  const handleStartAudit = async (coords: { latitude: string; longitude: string }) => {
+    // توثيق موقع المفتش الفعلي عند الفرع
+    await startVisit({
+      id: visitId,
+      data: {
+        start_latitude: coords.latitude,
+        start_longitude: coords.longitude,
+      },
+    }).unwrap();
+  };
+
+  const handleSaveAnswers = async (answers: Array<{ question_id: number; answer: string; notes?: string }>) => {
+    await submitAnswers({
+      visitId,
+      data: { answers },
+    }).unwrap();
+  };
+
+  return <button onClick={() => handleStartAudit({ latitude: "24.7136", longitude: "46.6753" })}>بدء التفتيش</button>;
+}
+```
+
+---
+
+## 3. خدمات الشركات والفروع (`companies.ts`, `branches.ts`)
+
+### الشركات (Companies)
+| الطريقة | نقطة النهاية | خطاف RTK Query | الوصف |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/companies` | `useGetCompaniesQuery` | استعراض الشركات مع دعم الترقيم والبحث. |
+| `POST` | `/companies` | `useCreateCompanyMutation` | إضافة شركة جديدة مع حساب المدير التابع لها. |
+| `GET` | `/companies/{id}/statistics` | `useGetCompanyStatisticsQuery` | مؤشرات أداء الشركة وعدد فروعها ونسب الامتثال. |
+| `PUT` | `/companies/{id}` | `useUpdateCompanyMutation` | تحديث بيانات السجل التجاري والعنوان والشعار. |
+| `PATCH` | `/companies/{id}/active` | `useActivateCompanyMutation` | تفعيل اشتراك الشركة. |
+| `PATCH` | `/companies/{id}/unactive` | `useDeactivateCompanyMutation` | إيقاف حساب الشركة. |
+| `DELETE` | `/companies/{id}` | `useDeleteCompanyMutation` | حذف الشركة من المنصة. |
+
+### الفروع (Branches)
+| الطريقة | نقطة النهاية | خطاف RTK Query | الوصف |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/branches` | `useGetBranchesQuery` | جلب الفروع التابعة لشركة معينة. |
+| `GET` | `/branches/{id}` | `useGetBranchByIdQuery` | تفاصيل الفرع، المدير المسؤول، وإحداثيات الموقع على الخريطة. |
+| `POST` | `/branches` | `useCreateBranchMutation` | تسجيل فرع جديد وربط موقعه الجغرافي بالخرائط. |
+| `GET` | `/branches/{id}/statistics` | `useGetBranchStatsQuery` | إحصائيات الفرع ومتوسط درجات التفتيش السابقة. |
+| `PUT` | `/branches/{id}` | `useUpdateBranchMutation` | تعديل موقع أو مدير أو بيانات الفرع. |
+| `DELETE` | `/branches/{id}` | `useDeleteBranchMutation` | حذف الفرع. |
+
+---
+
+## 4. خدمات التقارير الإدارية (`src/services/api/reports.ts`)
+
+| الطريقة | نقطة النهاية | خطاف RTK Query | الدور المستفيد |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/reports/company-admin` | `useGetCompanyReportsQuery` | مسؤول الشركة (Company Admin) |
+| `GET` | `/reports/branch-manager` | `useGetBranchReportsQuery` | مدير الفرع (Branch Manager) |
+| `GET` | `/reports/auditor` | `useGetInspectorReportsQuery` | المدقق الميداني (Auditor) |
+
+### مثال برمجي على الاستخدام
+
+```tsx
+import { useGetCompanyReportsQuery } from "@/services/api/reports";
+
+export function CompanyReportOverview() {
+  const { data, isLoading } = useGetCompanyReportsQuery({});
+
+  if (isLoading) return <div>جاري تحميل التقرير...</div>;
+
+  const { company_info, statistics } = data || {};
+
+  return (
+    <div>
+      <h2>تقرير امتثال {company_info?.name}</h2>
+      <p>متوسط درجات الفروع: {statistics?.avg_score}%</p>
+      <p>عدد الزيارات المكتملة: {statistics?.completed_visits}</p>
+    </div>
+  );
+}
+```
+
+---
+
+## 5. خدمات التذاكر والملاحظات (`src/services/api/tickets.ts`)
+
+| الطريقة | نقطة النهاية | خطاف RTK Query | الغرض التشغيلي |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/tickets` | `useGetAllTicketsQuery` | استعراض تذاكر المخالفات مع فلترة مستوى الخطورة والحالة. |
+| `GET` | `/tickets/{id}` | `useGetTicketByIdQuery` | قراءة تفاصيل التذكرة والمعيار المخالف والأدلة المصورة. |
+| `POST` | `/tickets` | `useCreateTicketMutation` | إنشاء تذكرة تصحيحية جديدة. |
+| `POST` | `/tickets/{id}/assign` | `useAssignTicketMutation` | إسناد التذكرة لمدير الفرع أو مشرف الصيانة. |
+| `POST` | `/tickets/{id}/solve` | `useSolveTicketMutation` | إرسال إثبات المعالجة وإغلاق الملاحظة من قبل الفرع. |
+| `POST` | `/tickets/{id}/close` | `useCloseTicketMutation` | اعتماد المعالجة وإغلاق التذكرة نهائياً من قبل المفتش. |
+| `GET` | `/tickets/statistics/overview` | `useGetTicketsStatsQuery` | إحصائيات التذاكر (جديدة، قيد المعالجة، محلولة، متأخرة). |
+
+---
+
+## 6. خدمات القوائم، المعايير، والمفتشين
+
+- **نماذج التدقيق (`checklistsApi`)**: تتيح `useCreateChecklistMutation`، `useGetChecklistsQuery`، `useUpdateChecklistMutation`، و `useDeleteChecklistMutation`.
+- **معايير التقييم (`criteriaApi`)**: تتيح `useCreateCriteriaMutation`، `useGetCriteriaQuery`، `useUpdateCriteriaMutation`، و `useDeleteCriteriaMutation`.
+- **إدارة المفتشين (`inspectorsApi`)**:
+  - `useGetInspectorsQuery`: جلب قائمة المفتشين ومستخدمي النظام.
+  - `useGetAuditorsSelectInfiniteQuery`: قائمة المفتشين المعتمدين لإسناد الزيارات عبر التمرير اللانهائي.
+  - `useCreateInspectorMutation`: إضافة مفتش جديد للمنصة.
+  - `useActivateUserMutation` / `useDeactivateUserMutation`: تفعيل أو تجميد حساب المفتش.
+
+---
+
+## 7. واجهات Route Handlers العامة المدمجة في Next.js
+
+### `POST /api/contact`
+تستقبل الرسائل من صفحة التواصل العامة وتوجه إشعاراً بريدياً فورياً للإدارة عبر Nodemailer:
+
+```json
+{
+  "name": "سارة الغامدي",
+  "email": "sarah@retailgroup.sa",
+  "phone": "+966551234567",
+  "company": "مجموعة التجزئة",
+  "message": "استفسار بخصوص باقة التفتيش على 10 فروع تجارية."
+}
+```

@@ -6,12 +6,11 @@ import Contact from "@/components/home/contact-us/contact";
 import SectionHeader from "@/components/home/section-header/section-header";
 import { ClipboardCheck, Headphones, PackageCheck } from "lucide-react";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
+export async function generateMetadata(props: {
+  params?: Promise<{ locale?: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const resolvedParams = await props?.params;
+  const locale = resolvedParams?.locale || "ar";
   const t = await getTranslations({ locale, namespace: "" });
 
   return {

@@ -1,0 +1,62 @@
+# التقارير ولوحات التحليلات
+
+توفر منصة استقرار منظومة تقارير متكاملة تدعم كافة المستويات الإدارية من المفتش الميداني إلى الإدارة العليا.
+
+---
+
+## 1. أنواع التقارير الأربعة في المنصة
+
+```mermaid
+flowchart TD
+    subgraph Reports["منظومة التقارير"]
+        VR["1. تقرير الزيارة الفردي<br/>(/dashboard/visits/[id]/visit-report)"]
+        AR["2. تقرير أداء المدقق<br/>(/dashboard/reports/auditor)"]
+        CR["3. تقرير أداء الشركة<br/>(/dashboard/reports/company)"]
+        BR["4. تقرير أداء الفرع<br/>(/dashboard/reports/branch)"]
+    end
+
+    Auditor["المدقق الميداني"] --> VR & AR
+    BranchManager["مدير الفرع"] --> VR & BR
+    CompanyAdmin["مسؤول الشركة"] --> CR & BR & VR
+    SuperAdmin["المشرف العام"] --> Reports
+```
+
+---
+
+## 2. مواصفات ومؤشرات كل تقرير
+
+| نوع التقرير | الفئة المستفيدة | المؤشرات والمكونات الرئيسية |
+| :--- | :--- | :--- |
+| **تقرير الزيارة (Visit Report)** | المفتش، مدير الفرع، مسؤول الشركة | • بطاقات الملخص التنفيذي: إجمالي الأسئلة، الصحيحة، الخاطئة، والأخطاء الحرجة.<br/>• مؤشر النسبة الدائري (`ScorePercentage`).<br/>• درجات أقسام المعايير مع أشرطة التقدم (`CriteriaScoresList`).<br/>• معرض صور الأدلة والمخالفات.<br/>• دعم التصدير والطباعة الرسمية عبر `react-to-print`. |
+| **تقرير المدقق (Auditor Report)** | المفتش ورؤساء فرق التدقيق | • إجمالي الزيارات المكتملة مقابل المجدولة.<br/>• وتيرة الزيارات الشهرية ومتوسط الدرجات (`visits_by_month`).<br/>• متوسط مؤشر التقييم الممنوح من المدقق.<br/>• سجل التصحيحات المعتمدة مؤخراً. |
+| **تقرير الشركة (Company Report)** | إدارة الجودة والمدير التنفيذي | • المؤشر التراكمي لامتثال الشركة ككل.<br/>• جدول ترتيب الفروع (الأعلى امتثالاً والأكثر خطورة).<br/>• تحليل المخالفات المتكررة بين الفروع.<br/>• إحصائيات الفروع النشطة والاشتراكات. |
+| **تقرير الفرع (Branch Report)** | مدير الفرع ومسؤول التشغيل | • منحنى تغير درجات الفرع عبر الزيارات المتعاقبة.<br/>• المعايير المتكررة في عدم المطابقة.<br/>• حالة التذاكر التصحيحية المفتوحة والمغلقة. |
+
+---
+
+## 3. مسار توليد وطباعة التقارير
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as المستخدم / المدير
+    participant Browser as واجهة المتصفح
+    participant RTK as استعلام RTK Query (useGetVisitReportQuery)
+    participant API as خادم النظام (Backend)
+    participant Print as مكتبة الطباعة react-to-print
+
+    User->>Browser: الدخول إلى صفحة التقرير (/dashboard/visits/[id]/visit-report)
+    Browser->>RTK: إرسال الطلب مع معرّف الزيارة visitId
+    RTK->>API: طلب GET /api/v1/visits/{visitId}/report
+    API-->>RTK: استجابة 200 OK مع بيانات VisitReportData JSON
+    RTK-->>Browser: تحديث حالة الواجهة بالبيانات
+
+    Browser->>Browser: رسم بطاقات الإحصائيات (StatsCard)
+    Browser->>Browser: رسم المؤشر الدائري لنسبة الزيارة (ScorePercentage)
+    Browser->>Browser: رسم درجات المعايير وأشرطة الألوان (CriteriaScoresList)
+
+    User->>Browser: النقر على زر 'طباعة التقرير / تصدير PDF'
+    Browser->>Print: تشغيل handlePrint() المربوط بـ printRef
+    Print->>Print: تجهيز وتنسيق ورقة A4 وتطبيق أنماط الطباعة @media print
+    Print->>User: فتح نافذة الطباعة وحفظ ملف PDF في المتصفح
+```

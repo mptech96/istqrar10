@@ -1,0 +1,81 @@
+# Visits & Audit Operations
+
+Visits represent the operational core of the Istqrar platform. Auditors conduct on-site or remote inspections, verify physical branch conditions against checklists, capture photo evidence, and compute objective compliance scores.
+
+---
+
+## 1. Visit Lifecycle State Machine
+
+Each visit transitions through distinct operational phases from initial scheduling to post-audit remediation.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Scheduled: Admin/System creates visit
+    Scheduled --> InProgress: Auditor arrives & verifies GPS location
+    InProgress --> Evaluating: Auditor answers questions & uploads evidence
+    Evaluating --> AIAnalysis: Automated risk & compliance review
+    AIAnalysis --> Completed: Score computed & report generated
+    InProgress --> Cancelled: Visit cancelled or postponed
+    Scheduled --> Cancelled: Cancelled before execution
+    Completed --> Remediation: Open corrective tickets assigned to Branch
+    Remediation --> [*]: All tickets resolved & approved
+```
+
+---
+
+## 2. Geolocation & Audit Execution Flow
+
+To guarantee physical presence at the audited branch, the system performs a geographic distance calculation before unlocking the questionnaire.
+
+```mermaid
+flowchart TD
+    A["Auditor Opens Visit (/dashboard/visits/[id])"] --> B["Capture Current Device GPS (latitude, longitude)"]
+    B --> C["Fetch Branch Target Coordinates (branch.latitude, branch.longitude)"]
+    C --> D{"Within Allowed Radius? (e.g. 150m)"}
+    D -- "No" --> E["Alert: Auditor must be on-site to start audit"]
+    D -- "Yes" --> F["Record actual_start_time & start coordinates"]
+    F --> G["Unlock Questionnaire Sections (/question-list)"]
+    G --> H["Evaluate Criteria & Record Answers"]
+    H --> I{"Critical Error or Non-Compliance?"}
+    I -- "Yes" --> J["Mandatory photo proof & explanatory notes"]
+    I -- "No" --> K["Save Answer & Auto-compute Score"]
+    J --> K
+    K --> L["Submit Audit Visit"]
+    L --> M["Record actual_end_time & calculate duration"]
+    M --> N["Generate Visit Report & Trigger AI Analysis"]
+```
+
+---
+
+## 3. Data Model & Field Reference
+
+The visit object (`Visit`) contains audit metadata, timing metrics, location data, and aggregated scoring results:
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `number` | Unique visit identifier. |
+| `company_id` | `number` | Foreign key referencing the parent company. |
+| `branch_id` | `number` | Target branch where the audit takes place. |
+| `auditor_id` | `number` | Licensed inspector assigned to the audit. |
+| `checklist_id` | `number` | Assigned checklist template. |
+| `scheduled_date` | `string` | Planned inspection date (`YYYY-MM-DD`). |
+| `scheduled_time` | `string` | Planned inspection start time (`HH:mm`). |
+| `actual_start_time` | `string?` | Exact timestamp when auditor initiated the visit on-site. |
+| `actual_end_time` | `string?` | Exact timestamp when the visit was submitted. |
+| `status` | `string` | `scheduled`, `in_progress`, `completed`, `cancelled`. |
+| `total_score` | `number?` | Total points earned by the branch. |
+| `max_possible_score`| `number?` | Maximum points achievable for the active questions. |
+| `percentage` | `number?` | Final score percentage: `(total_score / max_possible_score) * 100`. |
+| `category` | `string?` | Performance classification tier (e.g. `excellent`, `good`, `poor`). |
+| `start_latitude` | `string?` | Auditor GPS latitude upon beginning the questionnaire. |
+| `start_longitude` | `string?` | Auditor GPS longitude upon beginning the questionnaire. |
+
+---
+
+## 4. AI-Powered Visit Analysis
+
+Once a visit is completed, the system feeds the questionnaire results and auditor notes into the AI Analysis pipeline (`/dashboard/visits/[visitId]/ai-analysis`):
+
+1. **Anomaly & Pattern Detection**: Correlates answers across different sections to identify contradictions (e.g., cold room reported functional, but dairy products recorded above permissible temperature).
+2. **Severity Classification**: Ranks issues into Low, Medium, High, and Critical.
+3. **Corrective Recommendations**: Formulates action plans tailored to the specific Saudi regulatory standards.

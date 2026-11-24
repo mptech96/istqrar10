@@ -15,12 +15,12 @@ export function generateStaticParams() {
   );
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string; slug: string }>;
+export async function generateMetadata(props: {
+  params?: Promise<{ locale?: string; slug?: string }>;
 }): Promise<Metadata> {
-  const { locale, slug } = await params;
+  const resolvedParams = await props?.params;
+  const locale = resolvedParams?.locale || "ar";
+  const slug = resolvedParams?.slug || "";
   const service = SERVICES_DATA.find((item) => item.slug === slug);
   const t = await getTranslations({ locale, namespace: "" });
 

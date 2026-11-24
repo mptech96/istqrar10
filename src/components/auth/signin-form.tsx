@@ -153,7 +153,7 @@ export default function SignInForm() {
               type="submit"
               className="w-full h-12 cursor-pointer bg-darkRed hover:bg-darkRed/90 text-white font-bold text-lg rounded-lg transition-all duration-300 shadow-lg shadow-darkRed/20"
             >
-              {t("Sign In Now")}
+              {t("Sign In")}
             </Button>
           </form>
         </Form>

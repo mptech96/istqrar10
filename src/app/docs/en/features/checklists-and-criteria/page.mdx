@@ -1,0 +1,28 @@
+# Checklists & Criteria
+
+Checklists define the standardization criteria against which inspections are measured.
+
+---
+
+## Checklist Data Hierarchy
+
+```
+Checklist Template
+ ├── General Metadata (Target Sector, Minimum Passing Score)
+ └── Criteria Sections
+      ├── Fire & Life Safety
+      │    ├── Criteria 1: Fire extinguishers inspected within 6 months
+      │    │    └── Condition: Must be mounted between 1.0m - 1.5m
+      │    └── Criteria 2: Emergency exits illuminated & unblocked
+      └── Food Hygiene & Storage
+           ├── Criteria 1: Cold storage temperature <= 4°C
+           └── Criteria 2: Food handlers possess valid health certificates
+```
+
+---
+
+## Criteria & Conditions Engine
+
+- **Weighting & Scoring**: Each criterion can be assigned a numerical weight contributing to section and overall visit scores.
+- **Conditional Logic**: Dynamic display rules show or hide sub-criteria based on parent answers (e.g., if "Deep fryer present" is YES, trigger oil temperature verification).
+- **Mandatory Requirements**: Flags non-negotiable items that cause automatic visit failure regardless of score if violated.

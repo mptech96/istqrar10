@@ -342,11 +342,12 @@ export default function CreateCompanyForm<
                             !field.value && "text-muted-foreground",
                           )}
                         >
-                          {field.value ? (
-                            safeFormatDate(field.value, "PPP")
-                          ) : (
-                            <span>{t("Pick a date")}</span>
-                          )}
+                          <span>
+                            {field.value
+                              ? format(new Date(field.value), "yyyy-MM-dd")
+                              : t("Pick a date")}
+                          </span>
+
                           <CalendarIcon className=" h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
@@ -360,7 +361,11 @@ export default function CreateCompanyForm<
                         onSelect={(date) =>
                           field.onChange(date ? format(date, "yyyy-MM-dd") : "")
                         }
-                        disabled={(date) => date < startMonth}
+                        disabled={(date) => {
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          return date < today;
+                        }}
                         initialFocus
                         captionLayout="dropdown"
                         startMonth={startMonth}
@@ -388,11 +393,12 @@ export default function CreateCompanyForm<
                             !field.value && "text-muted-foreground",
                           )}
                         >
-                          {field.value ? (
-                            safeFormatDate(field.value, "PPP")
-                          ) : (
-                            <span>{t("Pick a date")}</span>
-                          )}
+                          <span>
+                            {field.value
+                              ? format(new Date(field.value), "yyyy-MM-dd")
+                              : t("Pick a date")}
+                          </span>
+
                           <CalendarIcon className=" h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
@@ -407,7 +413,9 @@ export default function CreateCompanyForm<
                           field.onChange(date ? format(date, "yyyy-MM-dd") : "")
                         }
                         disabled={(date) => {
-                          return date < new Date();
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          return date < today;
                         }}
                         initialFocus
                         captionLayout="dropdown"

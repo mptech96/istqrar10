@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import StoreProvider from "@/providers/store-providers";
 import ThemeWatcher from "@/providers/theme-watcher";
-import "../globals.css";
 import { routing } from "@/i18n/routing";
 import LocaleSync from "@/providers/local-sync";
 import { Toaster } from "sonner";
@@ -19,44 +18,34 @@ export default async function LocaleLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale?: string }>;
 }) {
   // In Next.js 16+, params is a Promise and must be awaited
-  const { locale } = await params;
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || "ar";
   // Middleware handles locale validation, so we can safely proceed
   const messages = await getMessages();
 
   return (
-    <html
-      lang={locale}
-      dir={locale === "ar" ? "rtl" : "ltr"}
-      className="light"
-      style={{ colorScheme: "light" }}
-    >
-      <body className="font-din">
-        <NextIntlClientProvider messages={messages}>
-          <StoreProvider>
-            <DirectionProvider
-              dir={locale === "ar" ? "rtl" : "ltr"}
-            >
-              <LocaleSync />
-              <ThemeWatcher />
-              <Toaster
-                position={
-                  locale === "ar"
-                    ? "bottom-left"
-                    : "bottom-right"
-                }
-                richColors
-              />
-              <Loader />
-              {/* <LocaleSync /> */}
-
-              {children}
-            </DirectionProvider>
-          </StoreProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages}>
+      <StoreProvider>
+        <DirectionProvider
+          dir={locale === "ar" ? "rtl" : "ltr"}
+        >
+          <LocaleSync />
+          <ThemeWatcher />
+          <Toaster
+            position={
+              locale === "ar"
+                ? "bottom-left"
+                : "bottom-right"
+            }
+            richColors
+          />
+          <Loader />
+          {children}
+        </DirectionProvider>
+      </StoreProvider>
+    </NextIntlClientProvider>
   );
 }

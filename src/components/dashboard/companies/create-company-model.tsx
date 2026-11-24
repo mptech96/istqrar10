@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState } from "react";
 import {
@@ -9,16 +10,11 @@ import {
   DialogTrigger,
 } from "../../ui/dialog";
 import { Button } from "../../ui/button";
-import { Edit } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Company } from "@/types/company";
 import CreateCompanyForm from "./create-company-form";
 import { createCompanySchema } from "@/schema/create-company.schema.zod";
 import z from "zod";
-import {
-  useCreateCompanyMutation,
-  useUpdateCompanyMutation,
-} from "@/services/api/companies";
+import { useCreateCompanyMutation } from "@/services/api/companies";
 import { toast } from "sonner";
 import { useLoader } from "@/hooks/use-loader";
 
@@ -63,8 +59,8 @@ const CreateCompanyModel = () => {
       start();
       const res = await createCompany(formData).unwrap();
       toast.success(t("Company created successfully!"));
-    } catch (error) {
-      toast.error(t("Failed to update company."));
+    } catch (error: any) {
+      toast.error(error.message || t("Failed to create company."));
     } finally {
       stop();
     }

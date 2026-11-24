@@ -6,12 +6,11 @@ import PackagesComparisonTable from "@/components/home/pricing/packages-comparis
 import SubscriptionFaqSection from "@/components/home/pricing/subscription-faq-section";
 import CtaBanner from "@/components/home/shared/cta-banner";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
+export async function generateMetadata(props: {
+  params?: Promise<{ locale?: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const resolvedParams = await props?.params;
+  const locale = resolvedParams?.locale || "ar";
   const t = await getTranslations({ locale, namespace: "" });
 
   return {

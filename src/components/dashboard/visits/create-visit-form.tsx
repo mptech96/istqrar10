@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useForm, type Resolver } from "react-hook-form";
@@ -48,7 +49,7 @@ import { useRouter } from "next/navigation";
 import { useLoader } from "@/hooks/use-loader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -90,14 +91,6 @@ export default function CreateVisitForm({
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
 
-  const { data: companiesData } = useGetCompaniesQuery("page=1&page_size=100");
-  const { data: checklistsData } = useGetChecklistsQuery(
-    "page=1&page_size=100",
-  );
-  const { data: auditorsData } = useGetInspectorsQuery(
-    "page=1&page_size=100&role=auditor",
-  );
-
   const form = useForm<z.infer<ReturnType<typeof createVisitSchema>>>({
     resolver: zodResolver(createVisitSchema(t)) as Resolver<
       z.infer<ReturnType<typeof createVisitSchema>>
@@ -126,11 +119,15 @@ export default function CreateVisitForm({
   });
 
   const selectedCompanyId = form.watch("company_id");
+  const scheduledDate = form.watch("scheduled_date");
+  const scheduledTime = form.watch("scheduled_time");
 
-  const { data: branchesData } = useGetBranchesQuery(
-    `page=1&page_size=100${selectedCompanyId ? `&company_id=${selectedCompanyId}` : ""}`,
-    { skip: !selectedCompanyId },
-  );
+  // Re-validate time when date or time changes so that "future hour" rule triggers immediately
+  useEffect(() => {
+    if (scheduledDate) {
+      form.trigger("scheduled_time");
+    }
+  }, [scheduledDate, scheduledTime, form]);
 
   // Reset branch if company changes
   useEffect(() => {
@@ -166,11 +163,8 @@ export default function CreateVisitForm({
       } else {
         router.push("/dashboard/visits");
       }
-    } catch (error) {
-      toast.error(
-        isEditMode ? t("Failed to update visit") : t("Failed to create visit"),
-      );
-      console.error(error);
+    } catch (error: any) {
+      toast.error(error.message || t("Failed to create visit"));
     }
   }
 
@@ -276,7 +270,7 @@ export default function CreateVisitForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {t("Branch")} <span className="text-red-500">*</span>{" "}
+                    {t("Auditor")} <span className="text-red-500">*</span>{" "}
                   </FormLabel>
                   <FormControl>
                     <VirtualSelect<User, { role?: string }>
@@ -320,7 +314,7 @@ export default function CreateVisitForm({
                     <span className="text-red-500">*</span>{" "}
                   </FormLabel>
                   <FormControl>
-                    <VirtualSelect<Checklist>
+                    <VirtualSelect<Checklist, { company_id?: number }>
                       value={field.value ? field.value.toString() : ""}
                       onChange={(selectedValue) =>
                         field.onChange(
@@ -331,6 +325,7 @@ export default function CreateVisitForm({
                       searchPlaceholder={t("Search")}
                       emptyMessage={t("No checklists found")}
                       useQuery={useGetChecklistsSelectInfiniteQuery}
+                      queryArgs={{ company_id: selectedCompanyId }}
                       getOptionValue={(checklist) => checklist.id.toString()}
                       getOptionLabel={(checklist) => checklist.name}
                       renderOption={(checklist) => (

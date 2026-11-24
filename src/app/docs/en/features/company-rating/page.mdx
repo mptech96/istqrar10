@@ -1,0 +1,115 @@
+# Company Rating & Compliance Scoring
+
+The Istqrar rating system converts hundreds of individual inspection observations into clear, actionable executive ratings and compliance grades.
+
+---
+
+## 1. Compliance Score Rollup Hierarchy
+
+The scoring engine aggregates data hierarchically from individual questions up to the corporate enterprise rating:
+
+```mermaid
+flowchart TD
+    subgraph L1["Level 1: Question Answers"]
+        Q1["Question 1 (Weight: 2.0)"]
+        Q2["Question 2 (Weight: 1.0)"]
+        Q3["Question 3 (Weight: 3.0)"]
+    end
+
+    subgraph L2["Level 2: Criteria Scores"]
+        C1["Criterion A: Food Safety Score"]
+        C2["Criterion B: Fire & Life Safety Score"]
+    end
+
+    subgraph L3["Level 3: Visit Total"]
+        V["Visit Audit Score (0% - 100%)"]
+    end
+
+    subgraph L4["Level 4: Branch Performance"]
+        B1["Branch 1 Average Score"]
+        B2["Branch 2 Average Score"]
+    end
+
+    subgraph L5["Level 5: Company Rating"]
+        COR["Company Overall Compliance Rating & Grade"]
+    end
+
+    Q1 & Q2 --> C1
+    Q3 --> C2
+    C1 & C2 --> V
+    V --> B1
+    B1 & B2 --> COR
+```
+
+---
+
+## 2. Mathematical Formulas
+
+### Criterion Score Percentage
+
+Each criterion aggregates all associated questions:
+
+```
+Criterion Score % = [Σ (Earned Score_i × Weight_i) ÷ Σ (Max Score_i × Weight_i)] × 100
+```
+
+Where:
+- `Earned Score_i` is points achieved on question *i*.
+- `Weight_i` is the relative importance multiplier of question *i*.
+
+### Overall Visit Score
+
+```
+Visit Score % = (Σ Earned Criterion Points ÷ Σ Possible Criterion Points) × 100
+```
+
+### Company Portfolio Rating
+
+The overall company rating aggregates performance across all active branches over a selected time interval:
+
+```
+Company Overall Score = (Σ Branch Scores) ÷ (Total Audited Branches M)
+```
+
+Where $M$ is the total number of branches with completed audits.
+
+---
+
+## 3. Rating Tiers & Grade Scale
+
+Istqrar applies standardized classification tiers to categorize audit outcomes:
+
+```mermaid
+flowchart LR
+    subgraph Tiers["Compliance Rating Tiers"]
+        GA["Grade A: 90% - 100%<br/>(Excellent / ممتاز)"]
+        GB["Grade B: 75% - 89%<br/>(Good / جيد)"]
+        GC["Grade C: 60% - 74%<br/>(Acceptable / مقبول)"]
+        GD["Grade D: < 60% or Critical Error<br/>(High Risk / عالي الخطورة)"]
+    end
+
+    GA --- GB --- GC --- GD
+```
+
+| Grade | Score Range | Color Code | Action Required |
+| :--- | :--- | :--- | :--- |
+| **Grade A** | 90.0% – 100% | Green (`#16a34a`) | Optimal compliance. Maintain standard quarterly audit schedule. |
+| **Grade B** | 75.0% – 89.9% | Blue (`#2563eb`) | Minor observations. Resolve non-critical tickets within 14 days. |
+| **Grade C** | 60.0% – 74.9% | Amber (`#d97706`) | Moderate compliance risk. Mandatory follow-up audit within 30 days. |
+| **Grade D** | Below 60% OR $\ge 1$ Critical Error | Red (`#dc2626`) | High risk. Immediate executive escalation; re-inspection required within 48 hours. |
+
+---
+
+## 4. The Critical Error Override Rule
+
+A core safety feature of the Istqrar rating engine is the **Critical Error Override**:
+
+```mermaid
+flowchart TD
+    Calc["Compute Raw Percentage Score"] --> Chk{"Any Critical Errors Recorded? (critical_errors > 0)"}
+    Chk -- "No" --> GradeByScore["Assign Grade Based on Score Tiers (A, B, C, or D)"]
+    Chk -- "Yes" --> Override["Override Grade: Maximum Grade Capped at D (High Risk)"]
+    Override --> Alert["Trigger Urgent Incident Notification to Company Admin"]
+```
+
+> **Rule**: Even if a facility scores 94% on general cleanliness and documentation, if a critical life safety item fails (e.g. fire exit locked from inside or spoiled food in active service), the visit is automatically overridden with a **Critical Risk** status.

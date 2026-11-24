@@ -339,6 +339,8 @@
   "Auditor is required": "Auditor is required",
   "Checklist is required": "Checklist is required",
   "Scheduled date is required": "Scheduled date is required",
+  "Scheduled date must be today or future": "Scheduled date must be today or future",
+  "Scheduled time must be in the future for today's visits": "Scheduled time must be in the future for today's visits",
   "Scheduled time is required": "Scheduled time is required",
   "Select branch": "Select branch",
   "Select auditor": "Select auditor",
