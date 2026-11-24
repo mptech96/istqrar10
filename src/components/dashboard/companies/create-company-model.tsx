@@ -60,7 +60,7 @@ const CreateCompanyModel = () => {
       const res = await createCompany(formData).unwrap();
       toast.success(t("Company created successfully!"));
     } catch (error: any) {
-      toast.error(error.message || t("Failed to create company."));
+      toast.error(error.data.message || t("Failed to create company."));
     } finally {
       stop();
     }

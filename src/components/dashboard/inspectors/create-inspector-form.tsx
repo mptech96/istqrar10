@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useForm, type Resolver } from "react-hook-form";
@@ -41,12 +42,7 @@ import {
 import { CalendarIcon, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
 import { cn, safeFormatDate } from "@/lib/utils";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useMemo, useState } from "react";
 
@@ -73,8 +69,7 @@ export default function CreateInspectorForm({
   const currentDate = new Date().getDate();
   // Start from Jan 1 of previous year
   const startMonth = useMemo(
-    () =>
-      new Date(currentYear - 18, currentMonth, currentDate),
+    () => new Date(currentYear - 18, currentMonth, currentDate),
     [currentYear, currentMonth, currentDate],
   );
   const [createInspector, { isLoading: isCreating }] =
@@ -88,12 +83,8 @@ export default function CreateInspectorForm({
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
 
-  const form = useForm<
-    z.infer<ReturnType<typeof createInspectorSchema>>
-  >({
-    resolver: zodResolver(
-      createInspectorSchema(t),
-    ) as Resolver<
+  const form = useForm<z.infer<ReturnType<typeof createInspectorSchema>>>({
+    resolver: zodResolver(createInspectorSchema(t)) as Resolver<
       z.infer<ReturnType<typeof createInspectorSchema>>
     >,
     defaultValues: initialData
@@ -106,20 +97,16 @@ export default function CreateInspectorForm({
           role: initialData.role,
           department: initialData.department || "",
           position: initialData.position || "",
-          national_number:
-            initialData.national_number || "",
+          national_number: initialData.national_number || "",
           certificate_expiry: safeFormatDate(initialData.certificate_expiry),
           license_expiry: safeFormatDate(initialData.license_expiry),
           id_expiry: safeFormatDate(initialData.id_expiry),
           birth_date: safeFormatDate(initialData.birth_date),
           gender: initialData.gender || "",
-          company_id:
-            initialData.company_id?.toString() || "",
-          branch_id:
-            initialData.branch_id?.toString() || "",
+          company_id: initialData.company_id?.toString() || "",
+          branch_id: initialData.branch_id?.toString() || "",
           status: initialData.status,
-          must_change_password:
-            initialData.must_change_password,
+          must_change_password: initialData.must_change_password,
         }
       : {
           name: "",
@@ -145,28 +132,18 @@ export default function CreateInspectorForm({
 
   useEffect(() => {
     if (isLoading) {
-      start(
-        isEditMode
-          ? t("Updating user")
-          : t("Creating user"),
-      );
+      start(isEditMode ? t("Updating user") : t("Creating user"));
     } else {
       stop();
     }
   }, [isLoading, isEditMode, start, stop, t]);
 
   async function onSubmit(
-    values: z.infer<
-      ReturnType<typeof createInspectorSchema>
-    >,
+    values: z.infer<ReturnType<typeof createInspectorSchema>>,
   ) {
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
-      if (
-        value !== undefined &&
-        value !== null &&
-        value !== ""
-      ) {
+      if (value !== undefined && value !== null && value !== "") {
         if (typeof value === "boolean") {
           formData.append(key, value ? "1" : "0");
         } else if (typeof value === "number") {
@@ -194,27 +171,18 @@ export default function CreateInspectorForm({
       } else {
         router.push("/dashboard/inspectors");
       }
-    } catch (error) {
-      toast.error(
-        isEditMode
-          ? t("Failed to update user")
-          : t("Failed to create user"),
-      );
+    } catch (error: any) {
+      toast.error(error.data.message || t("Failed to create user"));
       console.error(error);
     }
   }
 
   const content = (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         {/* Basic Details */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Basic Information")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Basic Information")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -223,16 +191,13 @@ export default function CreateInspectorForm({
                 <FormItem>
                   <FormLabel>{t("Name")} *</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t("Enter name")}
-                      {...field}
-                    />
+                    <Input placeholder={t("Enter name")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
- <FormField
+            <FormField
               control={form.control}
               name="role"
               render={({ field }) => (
@@ -244,15 +209,11 @@ export default function CreateInspectorForm({
                   >
                     <FormControl className="w-full">
                       <SelectTrigger>
-                        <SelectValue
-                          placeholder={t("Select Role")}
-                        />
+                        <SelectValue placeholder={t("Select Role")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="auditor">
-                        {t("Auditor")}
-                      </SelectItem>
+                      <SelectItem value="auditor">{t("Auditor")}</SelectItem>
 
                       <SelectItem value="super_admin">
                         {t("Super Admin")}
@@ -276,33 +237,25 @@ export default function CreateInspectorForm({
                 name="company_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      {t("Select Company")}
-                    </FormLabel>
+                    <FormLabel>{t("Select Company")}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue
-                            placeholder={t(
-                              "Select Company",
-                            )}
-                          />
+                          <SelectValue placeholder={t("Select Company")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {companiesData?.data.map(
-                          (company: Company) => (
-                            <SelectItem
-                              key={company.id}
-                              value={company.id.toString()}
-                            >
-                              {company.name}
-                            </SelectItem>
-                          ),
-                        )}
+                        {companiesData?.data.map((company: Company) => (
+                          <SelectItem
+                            key={company.id}
+                            value={company.id.toString()}
+                          >
+                            {company.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -317,31 +270,25 @@ export default function CreateInspectorForm({
                 name="branch_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      {t("Select Branch")}
-                    </FormLabel>
+                    <FormLabel>{t("Select Branch")}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue
-                            placeholder={t("Select Branch")}
-                          />
+                          <SelectValue placeholder={t("Select Branch")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {branchesData?.data.map(
-                          (branch: Branch) => (
-                            <SelectItem
-                              key={branch.id}
-                              value={branch.id.toString()}
-                            >
-                              {branch.name}
-                            </SelectItem>
-                          ),
-                        )}
+                        {branchesData?.data.map((branch: Branch) => (
+                          <SelectItem
+                            key={branch.id}
+                            value={branch.id.toString()}
+                          >
+                            {branch.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -356,26 +303,20 @@ export default function CreateInspectorForm({
                 <FormItem>
                   <FormLabel>{t("Email")} *</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t("Enter email")}
-                      {...field}
-                    />
+                    <Input placeholder={t("Enter email")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-<FormField
+            <FormField
               control={form.control}
               name="phone"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("Phone")} *</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t("Enter phone number")}
-                      {...field}
-                    />
+                    <Input placeholder={t("Enter phone number")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -390,18 +331,14 @@ export default function CreateInspectorForm({
                   <FormControl>
                     <div className="relative">
                       <Input
-                        type={
-                          showPassword ? "text" : "password"
-                        }
+                        type={showPassword ? "text" : "password"}
                         placeholder="p@ssw0rd"
                         className={`${language === "ar" ? "pl-10" : "pr-10"}`}
                         {...field}
                       />
                       <button
                         type="button"
-                        onClick={() =>
-                          setShowPassword(!showPassword)
-                        }
+                        onClick={() => setShowPassword(!showPassword)}
                         className={`absolute  top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${language === "ar" ? "left-3" : "right-3"}`}
                       >
                         {showPassword ? (
@@ -422,24 +359,18 @@ export default function CreateInspectorForm({
               name="password_confirmation"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Confirm Password")} *
-                  </FormLabel>
+                  <FormLabel>{t("Confirm Password")} *</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
-                        type={
-                          showPassword ? "text" : "password"
-                        }
+                        type={showPassword ? "text" : "password"}
                         placeholder={t("Confirm password")}
                         className={`${language === "ar" ? "pl-10" : "pr-10"}`}
                         {...field}
                       />
                       <button
                         type="button"
-                        onClick={() =>
-                          setShowPassword(!showPassword)
-                        }
+                        onClick={() => setShowPassword(!showPassword)}
                         className={`absolute  top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors ${language === "ar" ? "left-3" : "right-3"}`}
                       >
                         {showPassword ? (
@@ -455,20 +386,15 @@ export default function CreateInspectorForm({
               )}
             />
 
-            
             <FormField
               control={form.control}
               name="national_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("National Number")}
-                  </FormLabel>
+                  <FormLabel>{t("National Number")}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t(
-                        "Enter national number",
-                      )}
+                      placeholder={t("Enter national number")}
                       {...field}
                     />
                   </FormControl>
@@ -522,18 +448,12 @@ export default function CreateInspectorForm({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue
-                          placeholder={t("Select gender")}
-                        />
+                        <SelectValue placeholder={t("Select gender")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="male">
-                        {t("Male")}
-                      </SelectItem>
-                      <SelectItem value="female">
-                        {t("Female")}
-                      </SelectItem>
+                      <SelectItem value="male">{t("Male")}</SelectItem>
+                      <SelectItem value="female">{t("Female")}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -546,9 +466,7 @@ export default function CreateInspectorForm({
               name="birth_date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>
-                    {t("Date of Birth")}
-                  </FormLabel>
+                  <FormLabel>{t("Date of Birth")}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -556,15 +474,11 @@ export default function CreateInspectorForm({
                           variant={"outline"}
                           className={cn(
                             "w-full pl-3 text-left font-normal flex items-center justify-between",
-                            !field.value &&
-                              "text-muted-foreground",
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           {field.value ? (
-                            format(
-                              new Date(field.value),
-                              "PPP",
-                            )
+                            format(new Date(field.value), "PPP")
                           ) : (
                             <span>{t("Pick a date")}</span>
                           )}
@@ -572,27 +486,16 @@ export default function CreateInspectorForm({
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
-                    >
+                    <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
                         selected={
-                          field.value
-                            ? new Date(field.value)
-                            : undefined
+                          field.value ? new Date(field.value) : undefined
                         }
                         onSelect={(date) =>
-                          field.onChange(
-                            date
-                              ? format(date, "yyyy-MM-dd")
-                              : "",
-                          )
+                          field.onChange(date ? format(date, "yyyy-MM-dd") : "")
                         }
-                        disabled={(date) =>
-                          date > startMonth
-                        }
+                        disabled={(date) => date > startMonth}
                         initialFocus
                         captionLayout="dropdown"
                         endMonth={startMonth}
@@ -603,7 +506,6 @@ export default function CreateInspectorForm({
                 </FormItem>
               )}
             />
-           
 
             {/* <FormField
               control={form.control}
@@ -644,24 +546,16 @@ export default function CreateInspectorForm({
 
         {/* Documents & Expiry Dates */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Documents & Expiry")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Documents & Expiry")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="municipality_certificate"
               render={({
-                field: {
-                  onChange,
-                  value: _value,
-                  ...fieldProps
-                },
+                field: { onChange, value: _value, ...fieldProps },
               }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Municipality Certificate")}
-                  </FormLabel>
+                  <FormLabel>{t("Municipality Certificate")}</FormLabel>
                   <FormControl>
                     <Input
                       name={fieldProps.name}
@@ -670,10 +564,7 @@ export default function CreateInspectorForm({
                       type="file"
                       accept="image/*,.pdf"
                       onChange={(event) =>
-                        onChange(
-                          event.target.files &&
-                            event.target.files[0],
-                        )
+                        onChange(event.target.files && event.target.files[0])
                       }
                     />
                   </FormControl>
@@ -687,9 +578,7 @@ export default function CreateInspectorForm({
               name="certificate_expiry"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>
-                    {t("Certificate Expiry")}
-                  </FormLabel>
+                  <FormLabel>{t("Certificate Expiry")}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -697,15 +586,11 @@ export default function CreateInspectorForm({
                           variant={"outline"}
                           className={cn(
                             "w-full pl-3 text-left font-normal flex items-center justify-between",
-                            !field.value &&
-                              "text-muted-foreground",
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           {field.value ? (
-                            format(
-                              new Date(field.value),
-                              "PPP",
-                            )
+                            format(new Date(field.value), "PPP")
                           ) : (
                             <span>{t("Pick a date")}</span>
                           )}
@@ -713,29 +598,18 @@ export default function CreateInspectorForm({
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
-                    >
+                    <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
                         selected={
-                          field.value
-                            ? new Date(field.value)
-                            : undefined
+                          field.value ? new Date(field.value) : undefined
                         }
                         onSelect={(date) =>
-                          field.onChange(
-                            date
-                              ? format(date, "yyyy-MM-dd")
-                              : "",
-                          )
+                          field.onChange(date ? format(date, "yyyy-MM-dd") : "")
                         }
                         initialFocus
                         captionLayout="dropdown"
-                        disabled={(date) =>
-                          date < new Date()
-                        }
+                        disabled={(date) => date < new Date()}
                         endMonth={new Date("2030-12-31")}
                       />
                     </PopoverContent>
@@ -749,16 +623,10 @@ export default function CreateInspectorForm({
               control={form.control}
               name="driving_license"
               render={({
-                field: {
-                  onChange,
-                  value: _value,
-                  ...fieldProps
-                },
+                field: { onChange, value: _value, ...fieldProps },
               }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Driving License")}
-                  </FormLabel>
+                  <FormLabel>{t("Driving License")}</FormLabel>
                   <FormControl>
                     <Input
                       name={fieldProps.name}
@@ -767,10 +635,7 @@ export default function CreateInspectorForm({
                       type="file"
                       accept="image/*,.pdf"
                       onChange={(event) =>
-                        onChange(
-                          event.target.files &&
-                            event.target.files[0],
-                        )
+                        onChange(event.target.files && event.target.files[0])
                       }
                     />
                   </FormControl>
@@ -784,9 +649,7 @@ export default function CreateInspectorForm({
               name="license_expiry"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>
-                    {t("License Expiry")}
-                  </FormLabel>
+                  <FormLabel>{t("License Expiry")}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -794,15 +657,11 @@ export default function CreateInspectorForm({
                           variant={"outline"}
                           className={cn(
                             "w-full pl-3 text-left font-normal flex items-center justify-between",
-                            !field.value &&
-                              "text-muted-foreground",
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           {field.value ? (
-                            format(
-                              new Date(field.value),
-                              "PPP",
-                            )
+                            format(new Date(field.value), "PPP")
                           ) : (
                             <span>{t("Pick a date")}</span>
                           )}
@@ -810,29 +669,18 @@ export default function CreateInspectorForm({
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
-                    >
+                    <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
                         selected={
-                          field.value
-                            ? new Date(field.value)
-                            : undefined
+                          field.value ? new Date(field.value) : undefined
                         }
                         onSelect={(date) =>
-                          field.onChange(
-                            date
-                              ? format(date, "yyyy-MM-dd")
-                              : "",
-                          )
+                          field.onChange(date ? format(date, "yyyy-MM-dd") : "")
                         }
                         initialFocus
                         captionLayout="dropdown"
-                        disabled={(date) =>
-                          date < new Date()
-                        }
+                        disabled={(date) => date < new Date()}
                         endMonth={new Date("2100-12-31")}
                       />
                     </PopoverContent>
@@ -846,16 +694,10 @@ export default function CreateInspectorForm({
               control={form.control}
               name="personal_photo"
               render={({
-                field: {
-                  onChange,
-                  value: _value,
-                  ...fieldProps
-                },
+                field: { onChange, value: _value, ...fieldProps },
               }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Personal Photo")}
-                  </FormLabel>
+                  <FormLabel>{t("Personal Photo")}</FormLabel>
                   <FormControl>
                     <Input
                       name={fieldProps.name}
@@ -864,10 +706,7 @@ export default function CreateInspectorForm({
                       type="file"
                       accept="image/*"
                       onChange={(event) =>
-                        onChange(
-                          event.target.files &&
-                            event.target.files[0],
-                        )
+                        onChange(event.target.files && event.target.files[0])
                       }
                     />
                   </FormControl>
@@ -889,15 +728,11 @@ export default function CreateInspectorForm({
                           variant={"outline"}
                           className={cn(
                             "w-full pl-3 text-left font-normal flex items-center justify-between",
-                            !field.value &&
-                              "text-muted-foreground",
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           {field.value ? (
-                            format(
-                              new Date(field.value),
-                              "PPP",
-                            )
+                            format(new Date(field.value), "PPP")
                           ) : (
                             <span>{t("Pick a date")}</span>
                           )}
@@ -905,23 +740,14 @@ export default function CreateInspectorForm({
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
-                    >
+                    <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
                         selected={
-                          field.value
-                            ? new Date(field.value)
-                            : undefined
+                          field.value ? new Date(field.value) : undefined
                         }
                         onSelect={(date) =>
-                          field.onChange(
-                            date
-                              ? format(date, "yyyy-MM-dd")
-                              : "",
-                          )
+                          field.onChange(date ? format(date, "yyyy-MM-dd") : "")
                         }
                         initialFocus
                         captionLayout="dropdown"
@@ -940,9 +766,7 @@ export default function CreateInspectorForm({
 
         {/* Other Options */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Options")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Options")}</h3>
           <FormField
             control={form.control}
             name="must_change_password"
@@ -955,9 +779,7 @@ export default function CreateInspectorForm({
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel>
-                    {t("Must Change Password")}
-                  </FormLabel>
+                  <FormLabel>{t("Must Change Password")}</FormLabel>
                 </div>
               </FormItem>
             )}
@@ -965,9 +787,7 @@ export default function CreateInspectorForm({
         </div>
 
         <Button type="submit" className="w-full">
-          {isEditMode
-            ? t("Update Inspector")
-            : t("Create Inspector")}
+          {isEditMode ? t("Update Inspector") : t("Create Inspector")}
         </Button>
       </form>
     </Form>
@@ -981,9 +801,7 @@ export default function CreateInspectorForm({
     <Card className="w-full">
       <CardHeader>
         <CardTitle>
-          {isEditMode
-            ? t("Edit Inspector")
-            : t("Create New Inspector")}
+          {isEditMode ? t("Edit Inspector") : t("Create New Inspector")}
         </CardTitle>
       </CardHeader>
       <CardContent>{content}</CardContent>

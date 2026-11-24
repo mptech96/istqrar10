@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  useForm,
-  useFieldArray,
-  type Resolver,
-} from "react-hook-form";
+import { useForm, useFieldArray, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -34,12 +30,7 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useLoader } from "@/hooks/use-loader";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useEffect } from "react";
 import { Plus, Trash2 } from "lucide-react";
@@ -68,12 +59,8 @@ export default function CreateCriteriaForm({
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
 
-  const form = useForm<
-    z.infer<ReturnType<typeof createCriteriaSchema>>
-  >({
-    resolver: zodResolver(
-      createCriteriaSchema(t),
-    ) as Resolver<
+  const form = useForm<z.infer<ReturnType<typeof createCriteriaSchema>>>({
+    resolver: zodResolver(createCriteriaSchema(t)) as Resolver<
       z.infer<ReturnType<typeof createCriteriaSchema>>
     >,
     defaultValues: initialData
@@ -81,7 +68,7 @@ export default function CreateCriteriaForm({
           name: initialData.name,
           description: initialData.description || "",
           category: initialData.category,
-        
+          weight: initialData.weight,
           is_active: initialData.is_active,
           sort_order: initialData.sort_order,
           ranges: initialData.ranges?.length
@@ -106,7 +93,7 @@ export default function CreateCriteriaForm({
           name: "",
           description: "",
           category: "",
-          
+          weight: 1,
           is_active: true,
           sort_order: 1,
           ranges: [
@@ -128,20 +115,14 @@ export default function CreateCriteriaForm({
 
   useEffect(() => {
     if (isLoading) {
-      start(
-        isEditMode
-          ? t("Updating criteria")
-          : t("Creating criteria"),
-      );
+      start(isEditMode ? t("Updating criteria") : t("Creating criteria"));
     } else {
       stop();
     }
   }, [isLoading, isEditMode, start, stop, t]);
 
   async function onSubmit(
-    values: z.infer<
-      ReturnType<typeof createCriteriaSchema>
-    >,
+    values: z.infer<ReturnType<typeof createCriteriaSchema>>,
   ) {
     try {
       if (isEditMode && initialData) {
@@ -164,10 +145,8 @@ export default function CreateCriteriaForm({
     } catch (error: any) {
       toast.error(
         isEditMode
-          ? error?.data?.message ||
-              t("Failed to update criteria")
-          : error?.data?.message ||
-              t("Failed to create criteria"),
+          ? error?.data?.message || t("Failed to update criteria")
+          : error?.data?.message || t("Failed to create criteria"),
       );
     }
   }
@@ -184,29 +163,19 @@ export default function CreateCriteriaForm({
 
   const content = (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         {/* Basic Details */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Criteria Details")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Criteria Details")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Criteria Name")} *
-                  </FormLabel>
+                  <FormLabel>{t("Criteria Name")} *</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t("Enter criteria name")}
-                      {...field}
-                    />
+                    <Input placeholder={t("Enter criteria name")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -216,35 +185,25 @@ export default function CreateCriteriaForm({
             <FormField
               control={form.control}
               name="category"
-              
               render={({ field }) => (
-                <FormItem className="w-full" >
+                <FormItem className="w-full">
                   <FormLabel>{t("Category")} *</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
-                    
                   >
                     <FormControl className="w-full">
                       <SelectTrigger>
-                        <SelectValue
-                          placeholder={t("Select category")}
-                        />
+                        <SelectValue placeholder={t("Select category")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="cleanliness">
                         {t("Cleanliness")}
                       </SelectItem>
-                      <SelectItem value="safety">
-                        {t("Safety")}
-                      </SelectItem>
-                      <SelectItem value="quality">
-                        {t("Quality")}
-                      </SelectItem>
-                      <SelectItem value="service">
-                        {t("Service")}
-                      </SelectItem>
+                      <SelectItem value="safety">{t("Safety")}</SelectItem>
+                      <SelectItem value="quality">{t("Quality")}</SelectItem>
+                      <SelectItem value="service">{t("Service")}</SelectItem>
                       <SelectItem value="compliance">
                         {t("Compliance")}
                       </SelectItem>
@@ -255,8 +214,24 @@ export default function CreateCriteriaForm({
               )}
             />
 
-            
-
+            <FormField
+              control={form.control}
+              name="weight"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("Weight")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min="1"
+                      placeholder={t("Enter weight")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="sort_order"
@@ -319,9 +294,7 @@ export default function CreateCriteriaForm({
         {/* Ranges Section */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-medium">
-              {t("Score Ranges")}
-            </h3>
+            <h3 className="text-lg font-medium">{t("Score Ranges")}</h3>
             <Button
               type="button"
               variant="outline"
@@ -357,16 +330,9 @@ export default function CreateCriteriaForm({
                   name={`ranges.${index}.name`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        {t("Range Name")} *
-                      </FormLabel>
+                      <FormLabel>{t("Range Name")} *</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder={t(
-                            "Enter range name",
-                          )}
-                          {...field}
-                        />
+                        <Input placeholder={t("Enter range name")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -378,9 +344,7 @@ export default function CreateCriteriaForm({
                   name={`ranges.${index}.min_score`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        {t("Min Score")} *
-                      </FormLabel>
+                      <FormLabel>{t("Min Score")} *</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -400,9 +364,7 @@ export default function CreateCriteriaForm({
                   name={`ranges.${index}.max_score`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        {t("Max Score")} *
-                      </FormLabel>
+                      <FormLabel>{t("Max Score")} *</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -449,14 +411,10 @@ export default function CreateCriteriaForm({
                   name={`ranges.${index}.description`}
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>
-                        {t("Range Description")}
-                      </FormLabel>
+                      <FormLabel>{t("Range Description")}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t(
-                            "Enter range description",
-                          )}
+                          placeholder={t("Enter range description")}
                           {...field}
                         />
                       </FormControl>
@@ -475,9 +433,7 @@ export default function CreateCriteriaForm({
         </div>
 
         <Button type="submit" className="w-full">
-          {isEditMode
-            ? t("Update Criteria")
-            : t("Create Criteria")}
+          {isEditMode ? t("Update Criteria") : t("Create Criteria")}
         </Button>
       </form>
     </Form>
@@ -491,9 +447,7 @@ export default function CreateCriteriaForm({
     <Card className="w-full">
       <CardHeader>
         <CardTitle>
-          {isEditMode
-            ? t("Edit Criteria")
-            : t("Create New Criteria")}
+          {isEditMode ? t("Edit Criteria") : t("Create New Criteria")}
         </CardTitle>
       </CardHeader>
       <CardContent>{content}</CardContent>

@@ -164,7 +164,7 @@ export default function CreateVisitForm({
         router.push("/dashboard/visits");
       }
     } catch (error: any) {
-      toast.error(error.message || t("Failed to create visit"));
+      toast.error(error.data.message || t("Failed to create visit"));
     }
   }
 

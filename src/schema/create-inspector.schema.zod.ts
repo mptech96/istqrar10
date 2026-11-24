@@ -74,9 +74,9 @@ export const createInspectorSchema = (t: any) =>
       national_number: z
         .string()
         .min(10, t("ID must be 10 digits"))
-        .max(10, t("ID must be 10 digits"))
-        .regex(/^[12]\d{9}$/, t("Invalid Saudi National ID"))
-        .refine(isValidSaudiIDChecksum, t("Invalid Saudi National ID")),
+        .max(10, t("ID must be 10 digits")),
+      /* .regex(/^[12]\d{9}$/, t("Invalid Saudi National ID"))
+        .refine(isValidSaudiIDChecksum, t("Invalid Saudi National ID")), */
       company_id: z.string().optional(),
       branch_id: z.string().optional(),
 
