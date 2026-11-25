@@ -337,6 +337,9 @@ export function CreateConditionsForm({
                         {t("Multiple Choice")}
                       </SelectItem>
                       <SelectItem value="rating">{t("Rating")}</SelectItem>
+                      <SelectItem value="scale_1_5">
+                        {t("Rating (Scale 1-5)")}
+                      </SelectItem>
                       <SelectItem value="text">{t("Text")}</SelectItem>
                       <SelectItem value="number">{t("Number")}</SelectItem>
                       <SelectItem value="date">{t("Date")}</SelectItem>

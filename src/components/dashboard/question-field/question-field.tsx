@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { useState } from "react";
 import { Question } from "@/types/question";
 import { Control } from "react-hook-form";
 import {
@@ -98,10 +99,9 @@ export function QuestionField({
         />
       )}
 
-      {question.type === "rating" ||
-        (question.type === "scale_1_5" && (
-          <RatingField question={question} control={control} index={index} />
-        ))}
+      {(question.type === "rating" || question.type === "scale_1_5") && (
+        <RatingField question={question} control={control} index={index} />
+      )}
 
       {question.type === "text" && (
         <TextField question={question} control={control} index={index} />
@@ -266,48 +266,78 @@ function MultipleChoiceField({ question, control, index }: QuestionFieldProps) {
   );
 }
 
-// Rating Field Component - ✅ Changed from 'answer' to 'answer_value'
+// Rating Field Component - Scale from 1 to 5 stars
 function RatingField({ question, control, index }: QuestionFieldProps) {
-  const maxRating = question.max_score;
+  const maxScore = Number(question.max_score) || 5;
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
 
   return (
     <FormField
       control={control}
       name={`answers.${index}.answer_value`}
-      render={({ field }) => (
-        <FormItem>
-          <FormControl>
-            <div className="flex gap-2">
-              {Array.from({ length: maxRating }, (_, i) => i + 1).map(
-                (rating) => (
-                  <button
-                    key={rating}
-                    type="button"
-                    onClick={() => field.onChange(rating)}
-                    className={cn(
-                      "transition-colors",
-                      Number(field.value) >= rating
-                        ? "text-yellow-500"
-                        : "text-gray-300",
-                    )}
-                  >
-                    <Star
-                      className="h-8 w-8"
-                      fill={
-                        Number(field.value) >= rating ? "currentColor" : "none"
-                      }
-                    />
-                  </button>
-                ),
+      render={({ field }) => {
+        const selectedStars = Number(field.value) || 0;
+        const displayStars = hoverRating ?? selectedStars;
+        const calculatedScore =
+          selectedStars > 0
+            ? Math.round((selectedStars / 5) * maxScore * 100) / 100
+            : 0;
+
+        return (
+          <FormItem>
+            <FormControl>
+              <div className="flex items-center gap-2">
+                {Array.from({ length: 5 }, (_, i) => i + 1).map((rating) => {
+                  const isFilled = displayStars >= rating;
+                  return (
+                    <button
+                      key={rating}
+                      type="button"
+                      onClick={() => field.onChange(rating)}
+                      onMouseEnter={() => setHoverRating(rating)}
+                      onMouseLeave={() => setHoverRating(null)}
+                      className={cn(
+                        "p-1 rounded-md transition-all hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer",
+                        isFilled
+                          ? "text-yellow-500"
+                          : "text-gray-300 hover:text-yellow-300",
+                      )}
+                      aria-label={`${rating} من 5 نجوم`}
+                    >
+                      <Star
+                        className="h-8 w-8"
+                        fill={isFilled ? "currentColor" : "none"}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            </FormControl>
+            <FormDescription>
+              {selectedStars > 0 ? (
+                <span>
+                  التقييم:{" "}
+                  <span className="font-bold text-foreground">
+                    {selectedStars}
+                  </span>{" "}
+                  من 5 نجوم
+                  {" • "}
+                  الدرجة المحسوبة:{" "}
+                  <span className="font-bold text-primary">
+                    {calculatedScore}
+                  </span>{" "}
+                  من {maxScore}
+                </span>
+              ) : (
+                <span>
+                  اختر تقييماً من 1 إلى 5 نجوم (الدرجة القصوى: {maxScore})
+                </span>
               )}
-            </div>
-          </FormControl>
-          <FormDescription>
-            {field.value && `التقييم: ${field.value} من ${maxRating}`}
-          </FormDescription>
-          <FormMessage />
-        </FormItem>
-      )}
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 }

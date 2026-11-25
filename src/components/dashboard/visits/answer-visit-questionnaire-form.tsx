@@ -86,8 +86,17 @@ export function VisitAnswersForm() {
         score = selectedOption
           ? Number(selectedOption.score)
           : 0;
-      } else if (question.type === "rating") {
-        score = Number(answer.answer_value);
+      } else if (
+        question.type === "rating" ||
+        question.type === "scale_1_5"
+      ) {
+        const starValue = Number(answer.answer_value) || 0;
+        const maxScore = Number(question.max_score) || 5;
+        // Scaled proportionally: selecting 5 stars gives the full mark (max_score)
+        score =
+          starValue > 0
+            ? Math.round(((starValue / 5) * maxScore) * 100) / 100
+            : 0;
       } else if (question.type === "yes_no") {
         score =
           answer.answer_value === "yes"

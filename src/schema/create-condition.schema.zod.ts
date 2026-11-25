@@ -20,6 +20,7 @@ export const createConditionSchema = (t: any) =>
       "yes_no",
       "multiple_choice",
       "rating",
+      "scale_1_5",
       "text",
       "number",
       "date",
