@@ -11,10 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -35,12 +32,7 @@ export function QuestionField({
   index,
 }: QuestionFieldProps) {
   return (
-    <Card
-      className={cn(
-        "p-6 space-y-4",
-        question.is_critical && "",
-      )}
-    >
+    <Card className={cn("p-6 space-y-4", question.is_critical && "")}>
       {/* Question Header */}
       <div className="space-y-2">
         <div className="flex items-start justify-between gap-4">
@@ -49,9 +41,7 @@ export function QuestionField({
               <FormLabel className="text-lg font-semibold">
                 {index + 1}. {question.question_text}
                 {question.is_required && (
-                  <span className="text-red-500 mr-1">
-                    *
-                  </span>
+                  <span className="text-red-500 mr-1">*</span>
                 )}
               </FormLabel>
             </div>
@@ -65,19 +55,13 @@ export function QuestionField({
 
           <div className="flex gap-2">
             {question.is_critical && (
-              <Badge
-                variant="destructive"
-                className="flex items-center gap-1"
-              >
+              <Badge variant="destructive" className="flex items-center gap-1">
                 <AlertCircle className="h-3 w-3" />
                 {question.is_critical_text}
               </Badge>
             )}
             {question.has_attachment && (
-              <Badge
-                variant="outline"
-                className="flex items-center gap-1"
-              >
+              <Badge variant="outline" className="flex items-center gap-1">
                 <Paperclip className="h-3 w-3" />
                 مرفقات
               </Badge>
@@ -87,9 +71,7 @@ export function QuestionField({
 
         {question.help_text && (
           <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-            <p className="text-sm text-blue-800">
-              {question.help_text}
-            </p>
+            <p className="text-sm text-blue-800">{question.help_text}</p>
           </div>
         )}
 
@@ -105,11 +87,7 @@ export function QuestionField({
 
       {/* Question Input Based on Type */}
       {question.type === "yes_no" && (
-        <YesNoField
-          question={question}
-          control={control}
-          index={index}
-        />
+        <YesNoField question={question} control={control} index={index} />
       )}
 
       {question.type === "multiple_choice" && (
@@ -120,36 +98,21 @@ export function QuestionField({
         />
       )}
 
-      {question.type === "rating" && (
-        <RatingField
-          question={question}
-          control={control}
-          index={index}
-        />
-      )}
+      {question.type === "rating" ||
+        (question.type === "scale_1_5" && (
+          <RatingField question={question} control={control} index={index} />
+        ))}
 
       {question.type === "text" && (
-        <TextField
-          question={question}
-          control={control}
-          index={index}
-        />
+        <TextField question={question} control={control} index={index} />
       )}
 
       {question.type === "number" && (
-        <NumberField
-          question={question}
-          control={control}
-          index={index}
-        />
+        <NumberField question={question} control={control} index={index} />
       )}
 
       {question.type === "date" && (
-        <DateField
-          question={question}
-          control={control}
-          index={index}
-        />
+        <DateField question={question} control={control} index={index} />
       )}
 
       {/* Notes Field - ✅ Changed from 'notes' to 'comment' */}
@@ -176,9 +139,7 @@ export function QuestionField({
         <FormField
           control={control}
           name={`answers.${index}.attachments`}
-          render={({
-            field: { onChange, value, ...field },
-          }) => (
+          render={({ field: { onChange, value, ...field } }) => (
             <FormItem>
               <FormLabel>المرفقات</FormLabel>
               {question.attachment_instructions && (
@@ -193,9 +154,7 @@ export function QuestionField({
                   accept="image/*,.pdf"
                   onChange={(e) => {
                     const files = e.target.files;
-                    onChange(
-                      files ? Array.from(files) : [],
-                    );
+                    onChange(files ? Array.from(files) : []);
                   }}
                   {...field}
                 />
@@ -210,11 +169,7 @@ export function QuestionField({
 }
 
 // Yes/No Field Component - ✅ Changed from 'answer' to 'answer_value'
-function YesNoField({
-  question,
-  control,
-  index,
-}: QuestionFieldProps) {
+function YesNoField({ question, control, index }: QuestionFieldProps) {
   return (
     <FormField
       control={control}
@@ -228,10 +183,7 @@ function YesNoField({
               className="flex gap-4"
             >
               <div className="flex items-center space-x-2 space-x-reverse">
-                <RadioGroupItem
-                  value="yes"
-                  id={`q${question.id}-yes`}
-                />
+                <RadioGroupItem value="yes" id={`q${question.id}-yes`} />
                 <Label
                   htmlFor={`q${question.id}-yes`}
                   className="cursor-pointer"
@@ -240,10 +192,7 @@ function YesNoField({
                 </Label>
               </div>
               <div className="flex items-center space-x-2 space-x-reverse">
-                <RadioGroupItem
-                  value="no"
-                  id={`q${question.id}-no`}
-                />
+                <RadioGroupItem value="no" id={`q${question.id}-no`} />
                 <Label
                   htmlFor={`q${question.id}-no`}
                   className="cursor-pointer"
@@ -261,11 +210,7 @@ function YesNoField({
 }
 
 // Multiple Choice Field Component - ✅ Changed from 'answer' to 'answer_value'
-function MultipleChoiceField({
-  question,
-  control,
-  index,
-}: QuestionFieldProps) {
+function MultipleChoiceField({ question, control, index }: QuestionFieldProps) {
   return (
     <FormField
       control={control}
@@ -278,44 +223,40 @@ function MultipleChoiceField({
               value={field.value}
               className="space-y-3"
             >
-              {question.options?.map(
-                (option, optionIndex) => (
+              {question.options?.map((option, optionIndex) => (
+                <div
+                  key={optionIndex}
+                  className={cn(
+                    "flex items-start space-x-3 space-x-reverse border rounded-lg p-4 transition-colors",
+                    field.value === option.value &&
+                      "border-primary bg-primary/5",
+                  )}
+                >
+                  <RadioGroupItem
+                    value={option.value}
+                    id={`q${question.id}-opt${optionIndex}`}
+                  />
                   <div
-                    key={optionIndex}
-                    className={cn(
-                      "flex items-start space-x-3 space-x-reverse border rounded-lg p-4 transition-colors",
-                      field.value === option.value &&
-                        "border-primary bg-primary/5",
-                    )}
+                    className="flex-1 cursor-pointer"
+                    onClick={() => field.onChange(option.value)}
                   >
-                    <RadioGroupItem
-                      value={option.value}
-                      id={`q${question.id}-opt${optionIndex}`}
-                    />
-                    <div
-                      className="flex-1 cursor-pointer"
-                      onClick={() =>
-                        field.onChange(option.value)
-                      }
+                    <Label
+                      htmlFor={`q${question.id}-opt${optionIndex}`}
+                      className="cursor-pointer font-medium"
                     >
-                      <Label
-                        htmlFor={`q${question.id}-opt${optionIndex}`}
-                        className="cursor-pointer font-medium"
-                      >
-                        {option.value}
-                      </Label>
-                      {option.description && (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {option.description}
-                        </p>
-                      )}
-                      <span className="text-xs text-primary mt-1 inline-block">
-                        النقاط: {option.score}
-                      </span>
-                    </div>
+                      {option.value}
+                    </Label>
+                    {option.description && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {option.description}
+                      </p>
+                    )}
+                    <span className="text-xs text-primary mt-1 inline-block">
+                      النقاط: {option.score}
+                    </span>
                   </div>
-                ),
-              )}
+                </div>
+              ))}
             </RadioGroup>
           </FormControl>
           <FormMessage />
@@ -326,11 +267,7 @@ function MultipleChoiceField({
 }
 
 // Rating Field Component - ✅ Changed from 'answer' to 'answer_value'
-function RatingField({
-  question,
-  control,
-  index,
-}: QuestionFieldProps) {
+function RatingField({ question, control, index }: QuestionFieldProps) {
   const maxRating = question.max_score;
 
   return (
@@ -341,36 +278,32 @@ function RatingField({
         <FormItem>
           <FormControl>
             <div className="flex gap-2">
-              {Array.from(
-                { length: maxRating },
-                (_, i) => i + 1,
-              ).map((rating) => (
-                <button
-                  key={rating}
-                  type="button"
-                  onClick={() => field.onChange(rating)}
-                  className={cn(
-                    "transition-colors",
-                    Number(field.value) >= rating
-                      ? "text-yellow-500"
-                      : "text-gray-300",
-                  )}
-                >
-                  <Star
-                    className="h-8 w-8"
-                    fill={
+              {Array.from({ length: maxRating }, (_, i) => i + 1).map(
+                (rating) => (
+                  <button
+                    key={rating}
+                    type="button"
+                    onClick={() => field.onChange(rating)}
+                    className={cn(
+                      "transition-colors",
                       Number(field.value) >= rating
-                        ? "currentColor"
-                        : "none"
-                    }
-                  />
-                </button>
-              ))}
+                        ? "text-yellow-500"
+                        : "text-gray-300",
+                    )}
+                  >
+                    <Star
+                      className="h-8 w-8"
+                      fill={
+                        Number(field.value) >= rating ? "currentColor" : "none"
+                      }
+                    />
+                  </button>
+                ),
+              )}
             </div>
           </FormControl>
           <FormDescription>
-            {field.value &&
-              `التقييم: ${field.value} من ${maxRating}`}
+            {field.value && `التقييم: ${field.value} من ${maxRating}`}
           </FormDescription>
           <FormMessage />
         </FormItem>
@@ -380,11 +313,7 @@ function RatingField({
 }
 
 // Text Field Component - ✅ Changed from 'answer' to 'answer_value'
-function TextField({
-  question,
-  control,
-  index,
-}: QuestionFieldProps) {
+function TextField({ question, control, index }: QuestionFieldProps) {
   return (
     <FormField
       control={control}
@@ -406,11 +335,7 @@ function TextField({
 }
 
 // Number Field Component - ✅ Changed from 'answer' to 'answer_value'
-function NumberField({
-  question,
-  control,
-  index,
-}: QuestionFieldProps) {
+function NumberField({ question, control, index }: QuestionFieldProps) {
   return (
     <FormField
       control={control}
@@ -418,11 +343,7 @@ function NumberField({
       render={({ field }) => (
         <FormItem>
           <FormControl>
-            <Input
-              type="number"
-              placeholder="أدخل رقم..."
-              {...field}
-            />
+            <Input type="number" placeholder="أدخل رقم..." {...field} />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -432,11 +353,7 @@ function NumberField({
 }
 
 // Date Field Component - ✅ Changed from 'answer' to 'answer_value'
-function DateField({
-  question,
-  control,
-  index,
-}: QuestionFieldProps) {
+function DateField({ question, control, index }: QuestionFieldProps) {
   return (
     <FormField
       control={control}

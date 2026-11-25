@@ -1,11 +1,12 @@
 // types/question.ts
 
-export type QuestionType = 
-  | "yes_no" 
-  | "multiple_choice" 
-  | "rating" 
-  | "text" 
-  | "number" 
+export type QuestionType =
+  | "yes_no"
+  | "multiple_choice"
+  | "rating"
+  | "scale_1_5"
+  | "text"
+  | "number"
   | "date";
 
 export interface QuestionOption {

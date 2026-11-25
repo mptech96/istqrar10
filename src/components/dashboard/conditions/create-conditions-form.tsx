@@ -59,7 +59,7 @@ export function CreateConditionsForm({
     useCreateConditionMutation();
   const [updateCondition, { isLoading: isUpdating }] =
     useUpdateConditionMutation();
-
+  console.log("qustion", initialData);
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
   const { language } = useAppSelector((state) => state.settings);
