@@ -24,6 +24,7 @@ export const createConditionSchema = (t: any) =>
       "number",
       "date",
     ]),
+    weight: z.coerce.number().min(1, t("weight is required)")),
     options: z
       .array(optionSchema(t))
       .min(1, t("At least one option is required")),

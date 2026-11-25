@@ -1,9 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import {
-  useForm,
-  useFieldArray,
-  type Resolver,
-} from "react-hook-form";
+import { useForm, useFieldArray, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -27,12 +24,7 @@ import {
 } from "@/components/ui/select";
 import { VirtualSelect } from "@/components/virtual-select";
 import { Switch } from "@/components/ui/switch";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2, Plus } from "lucide-react";
 import { createConditionSchema } from "@/schema/create-condition.schema.zod";
 import { useTranslations } from "next-intl";
@@ -70,9 +62,7 @@ export function CreateConditionsForm({
 
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
-  const { language } = useAppSelector(
-    (state) => state.settings,
-  );
+  const { language } = useAppSelector((state) => state.settings);
 
   const router = useRouter();
   const t = useTranslations();
@@ -85,12 +75,8 @@ export function CreateConditionsForm({
       stop();
     }
   }, [isLoading, start, stop]);
-  const form = useForm<
-    z.infer<ReturnType<typeof createConditionSchema>>
-  >({
-    resolver: zodResolver(
-      createConditionSchema(t),
-    ) as Resolver<
+  const form = useForm<z.infer<ReturnType<typeof createConditionSchema>>>({
+    resolver: zodResolver(createConditionSchema(t)) as Resolver<
       z.infer<ReturnType<typeof createConditionSchema>>
     >,
     defaultValues: initialData
@@ -109,14 +95,13 @@ export function CreateConditionsForm({
               }))
             : [{ value: "", score: 0, description: "" }],
           correct_answer: initialData.correct_answer || "",
-          
+          weight: initialData.weight || 1,
           max_score: initialData.max_score,
           passing_score: initialData.passing_score,
           is_required: initialData.is_required,
           is_critical: initialData.is_critical,
           has_attachment: initialData.has_attachment,
-          attachment_instructions:
-            initialData.attachment_instructions || "",
+          attachment_instructions: initialData.attachment_instructions || "",
           sort_order: initialData.sort_order,
           is_active: initialData.is_active,
         }
@@ -127,11 +112,9 @@ export function CreateConditionsForm({
           description: "",
           help_text: "",
           type: "yes_no",
-          options: [
-            { value: "", score: 0, description: "" },
-          ],
+          options: [{ value: "", score: 0, description: "" }],
           correct_answer: "",
-          
+
           max_score: 10,
           passing_score: 6,
           is_required: true,
@@ -149,9 +132,7 @@ export function CreateConditionsForm({
   });
 
   const onSubmit = async (
-    values: z.infer<
-      ReturnType<typeof createConditionSchema>
-    >,
+    values: z.infer<ReturnType<typeof createConditionSchema>>,
   ) => {
     const formData = new FormData();
 
@@ -163,14 +144,8 @@ export function CreateConditionsForm({
           // For arrays, append each item properly
           if (key === "options" && value.length > 0) {
             value.forEach((item, index) => {
-              formData.append(
-                `${key}[${index}][value]`,
-                item.value,
-              );
-              formData.append(
-                `${key}[${index}][score]`,
-                item.score.toString(),
-              );
+              formData.append(`${key}[${index}][value]`, item.value);
+              formData.append(`${key}[${index}][score]`, item.score.toString());
               formData.append(
                 `${key}[${index}][description]`,
                 item.description || "",
@@ -206,29 +181,20 @@ export function CreateConditionsForm({
       } else {
         router.push("/dashboard/checklists");
       }
-    } catch (error) {
-      toast.error(
-        isEditMode
-          ? t("Failed to update condition")
-          : t("Failed to create condition"),
-      );
+    } catch (error: any) {
+      toast.error(error?.data?.message || t("Failed to create condition"));
       console.error(error);
     }
   };
 
   const content = (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {/* Basic Information */}
         <Card>
           <CardHeader>
             <CardTitle>
-              {isEditMode
-                ? t("Update Question")
-                : t("Save Question")}
+              {isEditMode ? t("Update Question") : t("Save Question")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -238,9 +204,7 @@ export function CreateConditionsForm({
                 name="checklist_id"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>
-                      {t("Checklist")} *
-                    </FormLabel>
+                    <FormLabel>{t("Checklist")} *</FormLabel>
                     <FormControl>
                       <VirtualSelect<Checklist>
                         value={field.value?.toString()}
@@ -250,15 +214,9 @@ export function CreateConditionsForm({
                         placeholder={t("Select Checklist")}
                         searchPlaceholder={t("Search")}
                         emptyMessage={t("No checklists found")}
-                        useQuery={
-                          useGetChecklistsSelectInfiniteQuery
-                        }
-                        getOptionValue={(checklist) =>
-                          checklist.id.toString()
-                        }
-                        getOptionLabel={(checklist) =>
-                          checklist.name
-                        }
+                        useQuery={useGetChecklistsSelectInfiniteQuery}
+                        getOptionValue={(checklist) => checklist.id.toString()}
+                        getOptionLabel={(checklist) => checklist.name}
                         renderOption={(checklist) => (
                           <div className="flex min-w-0 flex-col">
                             <span className="truncate font-medium">
@@ -293,23 +251,16 @@ export function CreateConditionsForm({
                         placeholder={t("Select Criteria")}
                         searchPlaceholder={t("Search")}
                         emptyMessage={t("No criteria found")}
-                        useQuery={
-                          useGetCriteriaSelectInfiniteQuery
-                        }
-                        getOptionValue={(criteria) =>
-                          criteria.id.toString()
-                        }
-                        getOptionLabel={(criteria) =>
-                          criteria.name
-                        }
+                        useQuery={useGetCriteriaSelectInfiniteQuery}
+                        getOptionValue={(criteria) => criteria.id.toString()}
+                        getOptionLabel={(criteria) => criteria.name}
                         renderOption={(criteria) => (
                           <div className="flex min-w-0 flex-col">
                             <span className="truncate font-medium">
                               {criteria.name}
                             </span>
                             <span className="truncate text-xs text-muted-foreground">
-                              {criteria.category} -{" "}
-                              {criteria.weight}
+                              {criteria.category} - {criteria.weight}
                             </span>
                           </div>
                         )}
@@ -325,9 +276,7 @@ export function CreateConditionsForm({
               name="question_text"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Question Text")} *
-                  </FormLabel>
+                  <FormLabel>{t("Question Text")} *</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder={t("Enter question text")}
@@ -344,14 +293,9 @@ export function CreateConditionsForm({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Basic description")}
-                  </FormLabel>
+                  <FormLabel>{t("Basic description")}</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder={t("Enter description")}
-                      {...field}
-                    />
+                    <Textarea placeholder={t("Enter description")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -365,10 +309,7 @@ export function CreateConditionsForm({
                 <FormItem>
                   <FormLabel>{t("Help Text")}</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t("Enter help text")}
-                      {...field}
-                    />
+                    <Input placeholder={t("Enter help text")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -380,41 +321,25 @@ export function CreateConditionsForm({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Question Type")} *
-                  </FormLabel>
+                  <FormLabel>{t("Question Type")} *</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue
-                          placeholder={t(
-                            "Select question type",
-                          )}
-                        />
+                        <SelectValue placeholder={t("Select question type")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="yes_no">
-                        {t("Yes/No")}
-                      </SelectItem>
+                      <SelectItem value="yes_no">{t("Yes/No")}</SelectItem>
                       <SelectItem value="multiple_choice">
                         {t("Multiple Choice")}
                       </SelectItem>
-                      <SelectItem value="rating">
-                        {t("Rating")}
-                      </SelectItem>
-                      <SelectItem value="text">
-                        {t("Text")}
-                      </SelectItem>
-                      <SelectItem value="number">
-                        {t("Number")}
-                      </SelectItem>
-                      <SelectItem value="date">
-                        {t("Date")}
-                      </SelectItem>
+                      <SelectItem value="rating">{t("Rating")}</SelectItem>
+                      <SelectItem value="text">{t("Text")}</SelectItem>
+                      <SelectItem value="number">{t("Number")}</SelectItem>
+                      <SelectItem value="date">{t("Date")}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -458,10 +383,7 @@ export function CreateConditionsForm({
                     <FormItem>
                       <FormLabel>{t("Value")} *</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder={t("Enter value")}
-                          {...field}
-                        />
+                        <Input placeholder={t("Enter value")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -475,11 +397,7 @@ export function CreateConditionsForm({
                     <FormItem>
                       <FormLabel>{t("Points")} *</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="10"
-                          {...field}
-                        />
+                        <Input type="number" placeholder="10" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -491,14 +409,10 @@ export function CreateConditionsForm({
                   name={`options.${index}.description`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        {t("Basic description")}
-                      </FormLabel>
+                      <FormLabel>{t("Basic description")}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t(
-                            "Enter description",
-                          )}
+                          placeholder={t("Enter description")}
                           {...field}
                         />
                       </FormControl>
@@ -530,9 +444,7 @@ export function CreateConditionsForm({
         {/* Scoring & Validation */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              {t("Scoring & Validation")}
-            </CardTitle>
+            <CardTitle>{t("Scoring & Validation")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -540,9 +452,7 @@ export function CreateConditionsForm({
               name="correct_answer"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Correct Answer")}
-                  </FormLabel>
+                  <FormLabel>{t("Correct Answer")}</FormLabel>
                   <FormControl>
                     <Input placeholder="نعم" {...field} />
                   </FormControl>
@@ -551,23 +461,15 @@ export function CreateConditionsForm({
               )}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-             
-
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="max_score"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      {t("Max Points")} *
-                    </FormLabel>
+                    <FormLabel>{t("Max Points")} *</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="10"
-                        {...field}
-                      />
+                      <Input type="number" placeholder="10" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -579,48 +481,50 @@ export function CreateConditionsForm({
                 name="passing_score"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      {t("Passing Score")} *
-                    </FormLabel>
+                    <FormLabel>{t("Passing Score")} *</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="6"
-                        {...field}
-                      />
+                      <Input type="number" placeholder="6" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-
-            <FormField
-              control={form.control}
-              name="sort_order"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("Sort Order")} *</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="1"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="weight"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("Weight")} *</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="1" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="sort_order"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("Sort Order")} *</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="1" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </CardContent>
         </Card>
 
         {/* Attachment Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              {t("Attachment Settings")}
-            </CardTitle>
+            <CardTitle>{t("Attachment Settings")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -651,14 +555,10 @@ export function CreateConditionsForm({
               name="attachment_instructions"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Attachment Instructions")}
-                  </FormLabel>
+                  <FormLabel>{t("Attachment Instructions")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t(
-                        "Enter attachment instructions",
-                      )}
+                      placeholder={t("Enter attachment instructions")}
                       {...field}
                     />
                   </FormControl>
@@ -730,22 +630,16 @@ export function CreateConditionsForm({
                   className="flex flex-row items-center justify-between rounded-lg border p-4"
                 >
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">
-                      {t("Active")}
-                    </FormLabel>
+                    <FormLabel className="text-base">{t("Active")}</FormLabel>
                     <FormDescription>
                       {t("Is this question active?")}
                     </FormDescription>
                   </div>
-                  <FormControl
-                    dir={language === "ar" ? "rtl" : "ltr"}
-                  >
+                  <FormControl dir={language === "ar" ? "rtl" : "ltr"}>
                     <Switch
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                      dir={
-                        language === "ar" ? "rtl" : "ltr"
-                      }
+                      dir={language === "ar" ? "rtl" : "ltr"}
                     />
                   </FormControl>
                 </FormItem>
@@ -766,9 +660,7 @@ export function CreateConditionsForm({
             </Button>
           )}
           <Button type="submit">
-            {isEditMode
-              ? t("Update Question")
-              : t("Save Question")}
+            {isEditMode ? t("Update Question") : t("Save Question")}
           </Button>
         </div>
       </form>

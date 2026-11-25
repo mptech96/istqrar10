@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useForm, type Resolver } from "react-hook-form";
@@ -33,12 +34,7 @@ import { useGetCompaniesSelectInfiniteQuery } from "@/services/api/companies";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useLoader } from "@/hooks/use-loader";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useEffect } from "react";
 import { Company } from "@/types/company";
@@ -67,12 +63,8 @@ export default function CreateChecklistForm({
   const isEditMode = !!initialData;
   const isLoading = isCreating || isUpdating;
 
-  const form = useForm<
-    z.infer<ReturnType<typeof createChecklistSchema>>
-  >({
-    resolver: zodResolver(
-      createChecklistSchema(t),
-    ) as Resolver<
+  const form = useForm<z.infer<ReturnType<typeof createChecklistSchema>>>({
+    resolver: zodResolver(createChecklistSchema(t)) as Resolver<
       z.infer<ReturnType<typeof createChecklistSchema>>
     >,
     defaultValues: initialData
@@ -106,20 +98,14 @@ export default function CreateChecklistForm({
 
   useEffect(() => {
     if (isLoading) {
-      start(
-        isEditMode
-          ? t("Updating checklist")
-          : t("Creating checklist"),
-      );
+      start(isEditMode ? t("Updating checklist") : t("Creating checklist"));
     } else {
       stop();
     }
   }, [isLoading, isEditMode, start, stop, t]);
 
   async function onSubmit(
-    values: z.infer<
-      ReturnType<typeof createChecklistSchema>
-    >,
+    values: z.infer<ReturnType<typeof createChecklistSchema>>,
   ) {
     try {
       if (isEditMode && initialData) {
@@ -138,43 +124,26 @@ export default function CreateChecklistForm({
       } else {
         router.push("/dashboard/checklists");
       }
-    } catch (error) {
-      toast.error(
-        isEditMode
-          ? t("Failed to update checklist")
-          : t("Failed to create checklist"),
-      );
-      console.error(error);
+    } catch (error: any) {
+      toast.error(error?.data?.message || t("Failed to create checklist"));
     }
   }
 
   const FormContent = (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 p-1"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-1">
         {/* Basic Details */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Checklist Details")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Checklist Details")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Checklist Name")} *
-                  </FormLabel>
+                  <FormLabel>{t("Checklist Name")} *</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t(
-                        "Enter checklist name",
-                      )}
-                      {...field}
-                    />
+                    <Input placeholder={t("Enter checklist name")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -188,10 +157,7 @@ export default function CreateChecklistForm({
                 <FormItem>
                   <FormLabel>{t("Code")} *</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t("Enter code")}
-                      {...field}
-                    />
+                    <Input placeholder={t("Enter code")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -229,9 +195,7 @@ export default function CreateChecklistForm({
                       searchPlaceholder={t("Search")}
                       emptyMessage={t("No companies found")}
                       useQuery={useGetCompaniesSelectInfiniteQuery}
-                      getOptionValue={(company) =>
-                        company.id.toString()
-                      }
+                      getOptionValue={(company) => company.id.toString()}
                       getOptionLabel={(company) => company.name}
                       renderOption={(company) => (
                         <div className="flex min-w-0 flex-col">
@@ -255,32 +219,22 @@ export default function CreateChecklistForm({
               name="industry_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Industry Type")}
-                  </FormLabel>
+                  <FormLabel>{t("Industry Type")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue
-                          placeholder={t(
-                            "Select industry type",
-                          )}
-                        />
+                        <SelectValue placeholder={t("Select industry type")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="restaurants">
                         {t("Restaurants")}
                       </SelectItem>
-                      <SelectItem value="hotels">
-                        {t("Hotels")}
-                      </SelectItem>
-                      <SelectItem value="retail">
-                        {t("Retail")}
-                      </SelectItem>
+                      <SelectItem value="hotels">{t("Hotels")}</SelectItem>
+                      <SelectItem value="retail">{t("Retail")}</SelectItem>
                       <SelectItem value="healthcare">
                         {t("Healthcare")}
                       </SelectItem>
@@ -318,9 +272,7 @@ export default function CreateChecklistForm({
 
         {/* Scoring Section */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Scoring Settings")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Scoring Settings")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormField
               control={form.control}
@@ -329,12 +281,7 @@ export default function CreateChecklistForm({
                 <FormItem>
                   <FormLabel>{t("Total Score")}</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      min="0"
-                      placeholder="100"
-                      {...field}
-                    />
+                    <Input type="number" min="0" placeholder="100" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -346,16 +293,9 @@ export default function CreateChecklistForm({
               name="passing_score"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {t("Passing Score")}
-                  </FormLabel>
+                  <FormLabel>{t("Passing Score")}</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      min="0"
-                      placeholder="70"
-                      {...field}
-                    />
+                    <Input type="number" min="0" placeholder="70" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -371,12 +311,7 @@ export default function CreateChecklistForm({
                     {t("Time Estimate")} ({t("min")})
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      min="0"
-                      placeholder="60"
-                      {...field}
-                    />
+                    <Input type="number" min="0" placeholder="60" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -389,9 +324,7 @@ export default function CreateChecklistForm({
 
         {/* Options */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("Options")}
-          </h3>
+          <h3 className="text-lg font-medium">{t("Options")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -423,9 +356,7 @@ export default function CreateChecklistForm({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      {t("Is Template")}
-                    </FormLabel>
+                    <FormLabel>{t("Is Template")}</FormLabel>
                   </div>
                 </FormItem>
               )}
@@ -434,9 +365,7 @@ export default function CreateChecklistForm({
         </div>
 
         <Button type="submit" className="w-full">
-          {isEditMode
-            ? t("Update Checklist")
-            : t("Create Checklist")}
+          {isEditMode ? t("Update Checklist") : t("Create Checklist")}
         </Button>
       </form>
     </Form>
@@ -450,9 +379,7 @@ export default function CreateChecklistForm({
     <Card className="w-full">
       <CardHeader>
         <CardTitle>
-          {isEditMode
-            ? t("Update Checklist")
-            : t("Create New Checklist")}
+          {isEditMode ? t("Update Checklist") : t("Create New Checklist")}
         </CardTitle>
       </CardHeader>
       <CardContent>{FormContent}</CardContent>
